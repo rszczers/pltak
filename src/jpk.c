@@ -4,7 +4,7 @@
 #include "parse.h"
 
 typedef enum {
-    COLUMN_NAME,
+    COLUMN_NAME = 1,
     HEADER,
     PROFILE,
     ADDRESS,
@@ -13,7 +13,7 @@ typedef enum {
 } Row;
 
 typedef enum {
-    KODFORMULARZA,
+    KODFORMULARZA = 1,
     KODSYSTEMOWY,
     WERSJASCHEMY,
     WARIANTFORMULARZA,
@@ -207,7 +207,7 @@ JPKHeader* convHeader(tData* data) {
 JPKProfile* convProfile(tData* data) {
     JPKProfile* profile = (JPKProfile*)malloc(sizeof(JPKProfile));
     profile->nip = getCell(data, PROFILE, NIP);
-    profile->pelnaNazwa = getCell(data, PROFILE, PelnaNazwa);
+    profile->pelnaNazwa = getCell(data, PROFILE, PELNANAZWA);
     profile->regon = getCell(data, PROFILE, REGON);
     profile->kodKraju = getCell(data, PROFILE, KODKRAJU);
     profile->wojewodztwo = getCell(data, PROFILE, WOJEWODZTWO);
@@ -283,16 +283,16 @@ JPKBought* rowToBoughts(tData* data, int row) {
     raport->dowodZakupu = getCell(data, row, DOWODZAKUPU);
     raport->dataZakupu = getCell(data, row, DATAZAKUPU);
     raport->dataWplywu = getCell(data, row, DATAWPLYWU);
-    scanf(getCell(data, row, 72), "%lf", raport->k_43);
-    scanf(getCell(data, row, 73), "%lf", raport->k_44);
-    scanf(getCell(data, row, 74), "%lf", raport->k_45);
-    scanf(getCell(data, row, 75), "%lf", raport->k_46);
-    scanf(getCell(data, row, 76), "%lf", raport->k_47);
-    scanf(getCell(data, row, 77), "%lf", raport->k_48);
-    scanf(getCell(data, row, 78), "%lf", raport->k_49);
-    scanf(getCell(data, row, 79), "%lf", raport->k_50);
-    scanf(getCell(data, row, 80), "%lf", raport->liczbaWierszyZakupow);
-    scanf(getCell(data, row, 81), "%lf", raport->podatekNaliczony);
+    scanf(getCell(data, row, K_43), "%lf", raport->k_43);
+    scanf(getCell(data, row, K_44), "%lf", raport->k_44);
+    scanf(getCell(data, row, K_45), "%lf", raport->k_45);
+    scanf(getCell(data, row, K_46), "%lf", raport->k_46);
+    scanf(getCell(data, row, K_47), "%lf", raport->k_47);
+    scanf(getCell(data, row, K_48), "%lf", raport->k_48);
+    scanf(getCell(data, row, K_49), "%lf", raport->k_49);
+    scanf(getCell(data, row, K_50), "%lf", raport->k_50);
+    scanf(getCell(data, row, LICZBAWIERSZYZAKUPOW), "%lf", raport->liczbaWierszyZakupow);
+    scanf(getCell(data, row, PODATEKNALICZONY), "%lf", raport->podatekNaliczony);
     return raport;
 }
 
