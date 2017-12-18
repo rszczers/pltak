@@ -1,8 +1,17 @@
 #ifndef PARSE_H_
 #define PARSE_H_
 
-typedef struct sToken tToken;
-typedef struct sData tData;
+typedef struct sToken {
+    int colNum;
+    char *val;
+    struct sToken *next;
+} tToken;
+
+typedef struct sData {
+    int rowNum;
+    tToken *row;
+    struct sData *next;
+} tData;
 
 tData* parse(const char* filename);
 tToken* getRow(tData* data, int row);

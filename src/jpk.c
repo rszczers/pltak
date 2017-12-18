@@ -168,7 +168,7 @@ typedef struct sSold {
     double podatekNalezny;
 } JPKSold;
 
-typedef struct sBought {
+typedef struct sPurchase {
     char* typZakupu;
     int lpZakupu;
     int nrDostawcy;
@@ -187,7 +187,37 @@ typedef struct sBought {
     double k_50;
     double liczbaWierszyZakupow;
     double podatekNaliczony;
-} JPKBought;
+} JPKPurchase;
+
+typedef struct SoldNode {
+    JPKSold* val;
+    struct SoldNode *next;
+} JPKSoldList;
+
+void addSold(JPKSoldList* list, JPKSold* row) {
+    while(list->next != NULL) {
+        list = list->next;
+    }
+    JPKSoldList* newData = (JPKSoldList*)malloc(sizeof(JPKSoldList));
+    newData->val = row;
+    newData->next = NULL;
+    list->next = newData;
+}
+
+typedef struct PurchaseNode {
+    JPKPurchase* val;
+    struct PurchaseNode *next;
+} JPKPurchaseList;
+
+void addPurchase(JPKPurchaseList* list, JPKPurchase* row) {
+    while(list->next != NULL) {
+        list = list->next;
+    }
+    JPKPurchaseList* newData = (JPKPurchaseList*)malloc(sizeof(JPKPurchaseList));
+    newData->val = row;
+    newData->next = NULL;
+    list->next = newData;
+}
 
 JPKHeader* convHeader(tData* data) {
     JPKHeader* header = (JPKHeader*)malloc(sizeof(JPKHeader));
@@ -273,8 +303,8 @@ JPKSold* rowToSold(tData* data, int row) {
 /* Uzupenia strukturę zakupów
  * row – numer wiersza pole zakupów do wczytania do struktury
  */
-JPKBought* rowToBoughts(tData* data, int row) {
-    JPKBought* raport = (JPKBought*)malloc(sizeof(JPKBought));
+JPKPurchase* rowToPurchase(tData* data, int row) {
+    JPKPurchase* raport = (JPKPurchase*)malloc(sizeof(JPKPurchase));
     raport->typZakupu = getCell(data, row, TYPZAKUPU);
     raport->lpZakupu = strtol(getCell(data, row, LPZAKUPU), NULL, 10);
     raport->nrDostawcy = strtol(getCell(data, row, NRDOSTAWCY), NULL, 10);
@@ -298,6 +328,26 @@ JPKBought* rowToBoughts(tData* data, int row) {
 
 int countSells(tData* data) {
     int c = 0;
-
+    for (int i = 0; i < SELLS; ++i) {
+        data = data->next;
+    }
+    while (data->next != NULL && data->row != NULL) {
+        c++;
+        data = data->next;
+    }
     return c;
 }
+
+int countPurchases(tData* data) {
+    int c = 0;
+    for (int i = 0; i < PURCHASES; ++i) {
+        data = data->next;
+    }
+    while (data->next != NULL && strcmp(data->row->val, "G") == 0) {
+        c++;
+        data = data->next;
+    }
+    return c;
+}
+
+
