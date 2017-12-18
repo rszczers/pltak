@@ -6,6 +6,6 @@ typedef struct sProfile JPKProfile;
 typedef struct sSold JPKSold;
 typedef struct sPurchase JPKPurchase;
 
-int countSells(tData* data);
-int countPurchases(tData* data);
+void loadJPK(char*);
+
 #endif // JPK_H_

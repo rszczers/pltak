@@ -3,6 +3,10 @@
 #include <stdlib.h>
 #include "parse.h"
 
+tData* parsedData = NULL;
+int sellRegLen;
+int purchaseRegLen;
+
 typedef enum {
     COLUMN_NAME = 1,
     HEADER,
@@ -10,7 +14,7 @@ typedef enum {
     ADDRESS,
     SELLS,
     PURCHASES = 16
-} Row;
+} JPKRow;
 
 typedef enum {
     KODFORMULARZA = 1,
@@ -94,7 +98,7 @@ typedef enum {
     K_50,
     LICZBAWIERSZYZAKUPOW,
     PODATEKNALICZONY
-} Col;
+} JPKCol;
 
 typedef struct sHeader {
     char* kodFormularza;
@@ -328,7 +332,7 @@ JPKPurchase* rowToPurchase(tData* data, int row) {
 
 int countSells(tData* data) {
     int c = 0;
-    for (int i = 0; i < SELLS; ++i) {
+    for (int i = 0; i < SELLS - 1; ++i) {
         data = data->next;
     }
     while (data->next != NULL && data->row != NULL) {
@@ -340,7 +344,7 @@ int countSells(tData* data) {
 
 int countPurchases(tData* data) {
     int c = 0;
-    for (int i = 0; i < PURCHASES; ++i) {
+    for (int i = 0; i < PURCHASES - 1; ++i) {
         data = data->next;
     }
     while (data->next != NULL && strcmp(data->row->val, "G") == 0) {
@@ -350,4 +354,44 @@ int countPurchases(tData* data) {
     return c;
 }
 
+void loadJPK(char *filename) {
+    parsedData = parse(filename);
+    sellRegLen = countSells(parsedData);
+    purchaseRegLen = countPurchases(parsedData);
+}
 
+void closeJPK() {
+    free(parsedData);
+}
+
+JPKHeader* getHeader() {
+    JPKHeader* header = NULL;
+    if (parsedData != NULL) {
+        header = convHeader(parsedData);
+    }
+    return header;
+}
+
+JPKProfile* getProfile() {
+    JPKProfile* profile = NULL;
+    if (parsedData != NULL) {
+        profile = convProfile(parsedData);
+    }
+    return profile;
+}
+
+JPKSoldList* getSoldList() {
+    JPKSoldList* sells = (JPKSoldList*)malloc(sizeof(JPKSoldList));
+    for (int i = SELLS; i < SELLS + sellRegLen; ++i) {
+        addSold(sells, rowToSold(parsedData, i));
+    }
+    return sells;
+}
+
+JPKPurchaseList* getPurchasesList() {
+    JPKPurchaseList* purchases = (JPKPurchaseList*)malloc(sizeof(JPKPurchaseList));
+    for (int i = PURCHASES; i < PURCHASES + purchaseRegLen; ++i) {
+        addPurchase(purchases, rowToPurchase(parsedData, i));
+    }
+    return purchases;
+}
