@@ -1,0 +1,17 @@
+[
+    {
+        "command": "cc -c -g -o ./build/parse.o ./src/parse.c",
+        "directory": "/home/fulgjon/Dokumenty/Tak",
+        "file": "/home/fulgjon/Dokumenty/Tak/src/parse.c"
+    },
+    {
+        "command": "cc -c -g -o ./build/jpk.o ./src/jpk.c",
+        "directory": "/home/fulgjon/Dokumenty/Tak",
+        "file": "/home/fulgjon/Dokumenty/Tak/src/jpk.c"
+    },
+    {
+        "command": "cc -c -g -o ./build/main.o ./src/main.c",
+        "directory": "/home/fulgjon/Dokumenty/Tak",
+        "file": "/home/fulgjon/Dokumenty/Tak/src/main.c"
+    }
+]

@@ -1,11 +1,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdbool.h>
+#include <regex.h>
 #include "parse.h"
-
-tData* parsedData = NULL;
-int sellRegLen;
-int purchaseRegLen;
 
 typedef enum {
     COLUMN_NAME = 1,
@@ -202,10 +200,14 @@ void addSold(JPKSoldList* list, JPKSold* row) {
     while(list->next != NULL) {
         list = list->next;
     }
-    JPKSoldList* newData = (JPKSoldList*)malloc(sizeof(JPKSoldList));
-    newData->val = row;
-    newData->next = NULL;
-    list->next = newData;
+    if (list->val != NULL) {
+        JPKSoldList* newData = (JPKSoldList*)malloc(sizeof(JPKSoldList));
+        newData->val = row;
+        newData->next = NULL;
+        list->next = newData;
+    } else {
+        list->val = row;
+    }
 }
 
 typedef struct PurchaseNode {
@@ -217,13 +219,28 @@ void addPurchase(JPKPurchaseList* list, JPKPurchase* row) {
     while(list->next != NULL) {
         list = list->next;
     }
-    JPKPurchaseList* newData = (JPKPurchaseList*)malloc(sizeof(JPKPurchaseList));
-    newData->val = row;
-    newData->next = NULL;
-    list->next = newData;
+    if (list->val != NULL) {
+        JPKPurchaseList* newData = (JPKPurchaseList*)malloc(sizeof(JPKPurchaseList));
+        newData->val = row;
+        newData->next = NULL;
+        list->next = newData;
+    } else {
+        list->val = row;
+    }
 }
 
-JPKHeader* convHeader(tData* data) {
+typedef struct {
+    JPKHeader* header;
+    JPKProfile* profile;
+    JPKSoldList* sold;
+    int soldCount;
+    double soldTotal;
+    JPKPurchaseList* purchase;
+    int purchaseCount;
+    double purchaseTotal;
+} JPK;
+
+JPKHeader* getHeader(tData* data) {
     JPKHeader* header = (JPKHeader*)malloc(sizeof(JPKHeader));
     header->kodFormularza = getCell(data, HEADER, KODFORMULARZA);
     header->kodSystemowy = getCell(data, HEADER, KODSYSTEMOWY);
@@ -238,7 +255,7 @@ JPKHeader* convHeader(tData* data) {
     return header;
 }
 
-JPKProfile* convProfile(tData* data) {
+JPKProfile* getProfile(tData* data) {
     JPKProfile* profile = (JPKProfile*)malloc(sizeof(JPKProfile));
     profile->nip = getCell(data, PROFILE, NIP);
     profile->pelnaNazwa = getCell(data, PROFILE, PELNANAZWA);
@@ -256,6 +273,35 @@ JPKProfile* convProfile(tData* data) {
     return profile;
 }
 
+double m2d(char* cell) {
+    char *buffer = (char*)malloc(strlen(cell) + 1);
+    buffer = strdup(cell);
+    bool frac = false;
+
+    // Zamień przecinki z notacji europejskiej na kropki
+    for (char *p = buffer; *p != '\0'; ++p) {
+        if (*p == ',') {
+            *p = '.';
+            frac = true;
+        }
+    }
+
+    // Wyzeruj wszystkie cyfry od drugiego miejsca dziesiętnego
+    if (frac) {
+        char *p = &buffer[0];
+        while (*p != '.')
+            p++;
+        p = p + 3;
+        while (*p != '\0') {
+            *p = '0';
+            p++;
+        }
+    }
+
+    return strtod(buffer, NULL);
+}
+
+
 /* Uzupełnia strukturę sprzedaży
  * row - numer wiersza sprzedaży do wczytania do struktury
  */
@@ -269,38 +315,39 @@ JPKSold* rowToSold(tData* data, int row) {
     raport->dowodSprzedazy = getCell(data, row, DOWODSPRZEDAZY);
     raport->dataWystawienia = getCell(data, row, DATAWYSTAWIENIA);
     raport->dataSprzedazy = getCell(data, row, DATASPRZEDAZY);
-    sscanf(getCell(data, row, K_10), "%lf", raport->k_10);
-    sscanf(getCell(data, row, K_11), "%lf", raport->k_11);
-    sscanf(getCell(data, row, K_13), "%lf", raport->k_13);
-    sscanf(getCell(data, row, K_13), "%lf", raport->k_13);
-    sscanf(getCell(data, row, K_14), "%lf", raport->k_14);
-    sscanf(getCell(data, row, K_15), "%lf", raport->k_15);
-    sscanf(getCell(data, row, K_16), "%lf", raport->k_16);
-    sscanf(getCell(data, row, K_17), "%lf", raport->k_17);
-    sscanf(getCell(data, row, K_18), "%lf", raport->k_18);
-    sscanf(getCell(data, row, K_19), "%lf", raport->k_19);
-    sscanf(getCell(data, row, K_20), "%lf", raport->k_20);
-    sscanf(getCell(data, row, K_21), "%lf", raport->k_21);
-    sscanf(getCell(data, row, K_22), "%lf", raport->k_22);
-    sscanf(getCell(data, row, K_23), "%lf", raport->k_23);
-    sscanf(getCell(data, row, K_24), "%lf", raport->k_24);
-    sscanf(getCell(data, row, K_25), "%lf", raport->k_25);
-    sscanf(getCell(data, row, K_26), "%lf", raport->k_26);
-    sscanf(getCell(data, row, K_27), "%lf", raport->k_27);
-    sscanf(getCell(data, row, K_28), "%lf", raport->k_28);
-    sscanf(getCell(data, row, K_29), "%lf", raport->k_29);
-    sscanf(getCell(data, row, K_30), "%lf", raport->k_30);
-    sscanf(getCell(data, row, K_31), "%lf", raport->k_31);
-    sscanf(getCell(data, row, K_32), "%lf", raport->k_32);
-    sscanf(getCell(data, row, K_33), "%lf", raport->k_33);
-    sscanf(getCell(data, row, K_34), "%lf", raport->k_34);
-    sscanf(getCell(data, row, K_35), "%lf", raport->k_35);
-    sscanf(getCell(data, row, K_36), "%lf", raport->k_36);
-    sscanf(getCell(data, row, K_37), "%lf", raport->k_37);
-    sscanf(getCell(data, row, K_38), "%lf", raport->k_38);
-    sscanf(getCell(data, row, K_39), "%lf", raport->k_39);
-    sscanf(getCell(data, row + 1, LICZBAWIERSZYSPRZEDAZY), "%lf", raport->liczbaWierszySprzedazy);
-    sscanf(getCell(data, row + 1, PODATEKNALEZNY), "%lf", raport->podatekNalezny);
+    raport->k_10 = m2d(getCell(data, row, K_10));
+    raport->k_11 = m2d(getCell(data, row, K_11));
+    raport->k_12 = m2d(getCell(data, row, K_12));
+    raport->k_13 = m2d(getCell(data, row, K_13));
+    raport->k_13 = m2d(getCell(data, row, K_13));
+    raport->k_14 = m2d(getCell(data, row, K_14));
+    raport->k_15 = m2d(getCell(data, row, K_15));
+    raport->k_16 = m2d(getCell(data, row, K_16));
+    raport->k_17 = m2d(getCell(data, row, K_17));
+    raport->k_18 = m2d(getCell(data, row, K_18));
+    raport->k_19 = m2d(getCell(data, row, K_19));
+    raport->k_20 = m2d(getCell(data, row, K_20));
+    raport->k_21 = m2d(getCell(data, row, K_21));
+    raport->k_22 = m2d(getCell(data, row, K_22));
+    raport->k_23 = m2d(getCell(data, row, K_23));
+    raport->k_24 = m2d(getCell(data, row, K_24));
+    raport->k_25 = m2d(getCell(data, row, K_25));
+    raport->k_26 = m2d(getCell(data, row, K_26));
+    raport->k_27 = m2d(getCell(data, row, K_27));
+    raport->k_28 = m2d(getCell(data, row, K_28));
+    raport->k_29 = m2d(getCell(data, row, K_29));
+    raport->k_30 = m2d(getCell(data, row, K_30));
+    raport->k_31 = m2d(getCell(data, row, K_31));
+    raport->k_32 = m2d(getCell(data, row, K_32));
+    raport->k_33 = m2d(getCell(data, row, K_33));
+    raport->k_34 = m2d(getCell(data, row, K_34));
+    raport->k_35 = m2d(getCell(data, row, K_35));
+    raport->k_36 = m2d(getCell(data, row, K_36));
+    raport->k_37 = m2d(getCell(data, row, K_37));
+    raport->k_38 = m2d(getCell(data, row, K_38));
+    raport->k_39 = m2d(getCell(data, row, K_39));
+    raport->liczbaWierszySprzedazy = m2d(getCell(data, row + 1, LICZBAWIERSZYSPRZEDAZY));
+    raport->podatekNalezny = m2d(getCell(data, row + 1, PODATEKNALEZNY));
     return raport;
 }
 
@@ -317,16 +364,16 @@ JPKPurchase* rowToPurchase(tData* data, int row) {
     raport->dowodZakupu = getCell(data, row, DOWODZAKUPU);
     raport->dataZakupu = getCell(data, row, DATAZAKUPU);
     raport->dataWplywu = getCell(data, row, DATAWPLYWU);
-    scanf(getCell(data, row, K_43), "%lf", raport->k_43);
-    scanf(getCell(data, row, K_44), "%lf", raport->k_44);
-    scanf(getCell(data, row, K_45), "%lf", raport->k_45);
-    scanf(getCell(data, row, K_46), "%lf", raport->k_46);
-    scanf(getCell(data, row, K_47), "%lf", raport->k_47);
-    scanf(getCell(data, row, K_48), "%lf", raport->k_48);
-    scanf(getCell(data, row, K_49), "%lf", raport->k_49);
-    scanf(getCell(data, row, K_50), "%lf", raport->k_50);
-    scanf(getCell(data, row, LICZBAWIERSZYZAKUPOW), "%lf", raport->liczbaWierszyZakupow);
-    scanf(getCell(data, row, PODATEKNALICZONY), "%lf", raport->podatekNaliczony);
+    raport->k_43 = m2d(getCell(data, row, K_43));
+    raport->k_44 = m2d(getCell(data, row, K_44));
+    raport->k_45 = m2d(getCell(data, row, K_45));
+    raport->k_46 = m2d(getCell(data, row, K_46));
+    raport->k_47 = m2d(getCell(data, row, K_47));
+    raport->k_48 = m2d(getCell(data, row, K_48));
+    raport->k_49 = m2d(getCell(data, row, K_49));
+    raport->k_50 = m2d(getCell(data, row, K_50));
+    raport->liczbaWierszyZakupow = m2d(getCell(data, row, LICZBAWIERSZYZAKUPOW));
+    raport->podatekNaliczony = m2d(getCell(data, row, PODATEKNALICZONY));
     return raport;
 }
 
@@ -335,7 +382,7 @@ int countSells(tData* data) {
     for (int i = 0; i < SELLS - 1; ++i) {
         data = data->next;
     }
-    while (data->next != NULL && data->row != NULL) {
+    while (data->next != NULL && data->row->val != NULL) {
         c++;
         data = data->next;
     }
@@ -354,44 +401,178 @@ int countPurchases(tData* data) {
     return c;
 }
 
-void loadJPK(char *filename) {
-    parsedData = parse(filename);
-    sellRegLen = countSells(parsedData);
-    purchaseRegLen = countPurchases(parsedData);
-}
-
-void closeJPK() {
-    free(parsedData);
-}
-
-JPKHeader* getHeader() {
-    JPKHeader* header = NULL;
-    if (parsedData != NULL) {
-        header = convHeader(parsedData);
-    }
-    return header;
-}
-
-JPKProfile* getProfile() {
-    JPKProfile* profile = NULL;
-    if (parsedData != NULL) {
-        profile = convProfile(parsedData);
-    }
-    return profile;
-}
-
-JPKSoldList* getSoldList() {
+JPKSoldList* getSoldList(tData* parsedData, int soldCount) {
     JPKSoldList* sells = (JPKSoldList*)malloc(sizeof(JPKSoldList));
-    for (int i = SELLS; i < SELLS + sellRegLen; ++i) {
+    sells->val = NULL;
+    sells->next = NULL;
+    for (int i = SELLS; i < SELLS + soldCount; ++i) {
         addSold(sells, rowToSold(parsedData, i));
     }
     return sells;
 }
 
-JPKPurchaseList* getPurchasesList() {
+JPKPurchaseList* getPurchaseList(tData* parsedData, int purchaseCount) {
     JPKPurchaseList* purchases = (JPKPurchaseList*)malloc(sizeof(JPKPurchaseList));
-    for (int i = PURCHASES; i < PURCHASES + purchaseRegLen; ++i) {
+    purchases->next = NULL;
+    for (int i = PURCHASES; i < PURCHASES + purchaseCount ; ++i) {
         addPurchase(purchases, rowToPurchase(parsedData, i));
     }
     return purchases;
+}
+
+JPK* loadJPK(char *filename) {
+    tData* parsedData = parse(filename);
+    JPK* data = (JPK*)malloc(sizeof(JPK));
+
+    data->header = getHeader(parsedData);
+    data->profile = getProfile(parsedData);
+
+    // Te dwa musza być zdefiniowane wcześniej, bo
+    // pozostałe funkcje uzywają tych pól
+    data->soldCount = countSells(parsedData);
+    data->purchaseCount = countPurchases(parsedData);
+    data->sold = getSoldList(parsedData, data->soldCount);
+    data->soldTotal = 0.0;
+    data->purchase = getPurchaseList(parsedData, data->purchaseCount);
+    data->purchaseTotal = 0.0;
+
+    return data;
+}
+
+void printSold(JPK* jpk) {
+    JPKSoldList* row = jpk->sold;
+    int i = SELLS;
+    while (row != NULL) {
+        printf("%d) \t typSprzedazy: %s, \n"
+                "\t lpSprzedazy: %d, \n"
+                "\t nrKontrahenta: %d, \n"
+                "\t nazwaKontrahenta: %s, \n"
+                "\t adresKontrahenta: %s, \n"
+                "\t dowodSprzedazy: %s, \n"
+                "\t dataWystawienia: %s, \n"
+                "\t dataSprzedazy: %s, \n"
+                "\t k_10: %.2lf, \n"
+                "\t k_11: %.2lf, \n"
+                "\t k_12: %.2lf, \n"
+                "\t k_13: %.2lf, \n"
+                "\t k_14: %.2lf, \n"
+                "\t k_15: %.2lf, \n"
+                "\t k_16: %.2lf, \n"
+                "\t k_17: %.2lf, \n"
+                "\t k_18: %.2lf, \n"
+                "\t k_19: %.2lf, \n"
+                "\t k_20: %.4lf, \n"
+                "\t k_21: %.2lf, \n"
+                "\t k_22: %.2lf, \n"
+                "\t k_23: %.2lf, \n"
+                "\t k_24: %.2lf, \n"
+                "\t k_25: %.2lf, \n"
+                "\t k_26: %.2lf, \n"
+                "\t k_27: %.2lf, \n"
+                "\t k_28: %.2lf, \n"
+                "\t k_29: %.2lf, \n"
+                "\t k_30: %.2lf, \n"
+                "\t k_31: %.2lf, \n"
+                "\t k_32: %.2lf, \n"
+                "\t k_33: %.2lf, \n"
+                "\t k_34: %.2lf, \n"
+                "\t k_35: %.2lf, \n"
+                "\t k_36: %.2lf, \n"
+                "\t k_37: %.2lf, \n"
+                "\t k_38: %.2lf, \n"
+                "\t k_39: %.2lf, \n"
+                "\t liczbaWierszySprzedazy: %.2lf, \n"
+                "\t podatekNalezny: %.2lf, \n"
+                "\n",
+                i,
+                row->val->typSprzedazy,
+                row->val->lpSprzedazy,
+                row->val->nrKontrahenta,
+                row->val->nazwaKontrahenta,
+                row->val->adresKontrahenta,
+                row->val->dowodSprzedazy,
+                row->val->dataWystawienia,
+                row->val->dataSprzedazy,
+                row->val->k_10,
+                row->val->k_11,
+                row->val->k_12,
+                row->val->k_13,
+                row->val->k_14,
+                row->val->k_15,
+                row->val->k_16,
+                row->val->k_17,
+                row->val->k_18,
+                row->val->k_19,
+                row->val->k_20,
+                row->val->k_21,
+                row->val->k_22,
+                row->val->k_23,
+                row->val->k_24,
+                row->val->k_25,
+                row->val->k_26,
+                row->val->k_27,
+                row->val->k_28,
+                row->val->k_29,
+                row->val->k_30,
+                row->val->k_31,
+                row->val->k_32,
+                row->val->k_33,
+                row->val->k_34,
+                row->val->k_35,
+                row->val->k_36,
+                row->val->k_37,
+                row->val->k_38,
+                row->val->k_39,
+                row->val->liczbaWierszySprzedazy,
+                row->val->podatekNalezny);
+        i++;
+        row = row->next;
+    }
+}
+
+void printPurchases(JPK* jpk) {
+    JPKPurchaseList* row = jpk->purchase;
+    int i = PURCHASES;
+    while (row != NULL) {
+        printf("%d) \t typZakupu: %s, \n"
+                "\t lpZakupu: %d, \n"
+                "\t nrDostawcy: %d, \n"
+                "\t nazwaDostawcy: %s, \n"
+                "\t adresDostawcy: %s, \n"
+                "\t dowodZakupu: %s, \n"
+                "\t dataZakupu: %s, \n"
+                "\t dataWplywu: %s, \n"
+                "\t k_43: %.2lf, \n"
+                "\t k_44: %.2lf, \n"
+                "\t k_45: %.2lf, \n"
+                "\t k_46: %.2lf, \n"
+                "\t k_47: %.2lf, \n"
+                "\t k_48: %.2lf, \n"
+                "\t k_49: %.2lf, \n"
+                "\t k_50: %.2lf, \n"
+                "\t liczbaWierszyZakupow: %.2lf, \n"
+                "\t podatekNaliczony: %.2lf, \n"
+                "\n",
+                i,
+                row->val->typZakupu,
+                row->val->lpZakupu,
+                row->val->nrDostawcy,
+                row->val->nazwaDostawcy,
+                row->val->adresDostawcy,
+                row->val->dowodZakupu,
+                row->val->dataZakupu,
+                row->val->dataWplywu,
+                row->val->k_43,
+                row->val->k_44,
+                row->val->k_45,
+                row->val->k_46,
+                row->val->k_47,
+                row->val->k_48,
+                row->val->k_49,
+                row->val->k_50,
+                row->val->liczbaWierszyZakupow,
+                row->val->podatekNaliczony);
+        i++;
+        row = row->next;
+    }
 }

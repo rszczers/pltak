@@ -63,35 +63,33 @@ void addToken(tToken *head, int colNum, char *val) {
  * listy tToken.
  */
 tToken* getRow(tData* data, int row) {
-    tToken* content = NULL;
     if (data != NULL) {
         if (data->rowNum == row) {
-            content = data->row;
+            return data->row;
         } else {
             if (data->next != NULL) {
-                getRow(data->next, row);
+                return getRow(data->next, row);
             } else {
                 return NULL;
             }
         }
     }
-    return content;
+    return NULL;
 }
 
 tToken* getCol(tToken* tokenList, int col) {
-    tToken* content = NULL;
     if (tokenList != NULL) {
         if (tokenList->colNum == col) {
-            content = tokenList;
+            return tokenList;
         } else {
             if (tokenList->next != NULL) {
-                getCol(tokenList->next, col);
+                return getCol(tokenList->next, col);
             } else {
                 return NULL;
             }
         }
     }
-    return content;
+    return NULL;
 }
 
 /* Zwraca zawartość ij-tej komórki
