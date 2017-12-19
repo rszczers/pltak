@@ -8,8 +8,8 @@
 typedef enum {
     COLUMN_NAME = 1,
     HEADER,
-    PROFILE,
-    ADDRESS,
+    PROFILE_1,
+    PROFILE_2,
     SELLS,
     PURCHASES = 16
 } JPKRow;
@@ -129,8 +129,8 @@ typedef struct sProfile {
 
 typedef struct sSold {
     char* typSprzedazy;
-    int lpSprzedazy;
-    int nrKontrahenta;
+    unsigned int lpSprzedazy;
+    char* nrKontrahenta;
     char* nazwaKontrahenta;
     char* adresKontrahenta;
     char* dowodSprzedazy;
@@ -166,14 +166,12 @@ typedef struct sSold {
     double k_37;
     double k_38;
     double k_39;
-    double liczbaWierszySprzedazy;
-    double podatekNalezny;
 } JPKSold;
 
 typedef struct sPurchase {
     char* typZakupu;
-    int lpZakupu;
-    int nrDostawcy;
+    unsigned int lpZakupu;
+    char* nrDostawcy;
     char* nazwaDostawcy;
     char* adresDostawcy;
     char* dowodZakupu;
@@ -187,8 +185,6 @@ typedef struct sPurchase {
     double k_48;
     double k_49;
     double k_50;
-    double liczbaWierszyZakupow;
-    double podatekNaliczony;
 } JPKPurchase;
 
 typedef struct SoldNode {
@@ -257,19 +253,19 @@ JPKHeader* getHeader(tData* data) {
 
 JPKProfile* getProfile(tData* data) {
     JPKProfile* profile = (JPKProfile*)malloc(sizeof(JPKProfile));
-    profile->nip = getCell(data, PROFILE, NIP);
-    profile->pelnaNazwa = getCell(data, PROFILE, PELNANAZWA);
-    profile->regon = getCell(data, PROFILE, REGON);
-    profile->kodKraju = getCell(data, PROFILE, KODKRAJU);
-    profile->wojewodztwo = getCell(data, PROFILE, WOJEWODZTWO);
-    profile->powiat = getCell(data, PROFILE, POWIAT);
-    profile->gmina = getCell(data, PROFILE, GMINA);
-    profile->ulica = getCell(data, PROFILE, ULICA);
-    profile->nrDomu = getCell(data, PROFILE, NRDOMU);
-    profile->nrLokalu = getCell(data, PROFILE, NRLOKALU);
-    profile->miejscowosc = getCell(data, PROFILE, MIEJSCOWOSC);
-    profile->kodPocztowy = getCell(data, PROFILE, KODPOCZTOWY);
-    profile->poczta = getCell(data, PROFILE, POCZTA);
+    profile->nip = getCell(data, PROFILE_1, NIP);
+    profile->pelnaNazwa = getCell(data, PROFILE_1, PELNANAZWA);
+    profile->regon = getCell(data, PROFILE_1, REGON);
+    profile->kodKraju = getCell(data, PROFILE_2, KODKRAJU);
+    profile->wojewodztwo = getCell(data, PROFILE_2, WOJEWODZTWO);
+    profile->powiat = getCell(data, PROFILE_2, POWIAT);
+    profile->gmina = getCell(data, PROFILE_2, GMINA);
+    profile->ulica = getCell(data, PROFILE_2, ULICA);
+    profile->nrDomu = getCell(data, PROFILE_2, NRDOMU);
+    profile->nrLokalu = getCell(data, PROFILE_2, NRLOKALU);
+    profile->miejscowosc = getCell(data, PROFILE_2, MIEJSCOWOSC);
+    profile->kodPocztowy = getCell(data, PROFILE_2, KODPOCZTOWY);
+    profile->poczta = getCell(data, PROFILE_2, POCZTA);
     return profile;
 }
 
@@ -309,7 +305,7 @@ JPKSold* rowToSold(tData* data, int row) {
     JPKSold* raport = (JPKSold*)malloc(sizeof(JPKSold));
     raport->typSprzedazy = getCell(data, row, TYPSPRZEDAZY);
     raport->lpSprzedazy = strtol(getCell(data, row, LPSPRZEDAZY), NULL, 10);
-    raport->nrKontrahenta = strtol(getCell(data, row, NRKONTRAHENTA), NULL, 10);
+    raport->nrKontrahenta = getCell(data, row, NRKONTRAHENTA);
     raport->nazwaKontrahenta = getCell(data, row, NAZWAKONTRAHENTA);
     raport->adresKontrahenta = getCell(data, row, ADRESKONTRAHENTA);
     raport->dowodSprzedazy = getCell(data, row, DOWODSPRZEDAZY);
@@ -346,8 +342,6 @@ JPKSold* rowToSold(tData* data, int row) {
     raport->k_37 = m2d(getCell(data, row, K_37));
     raport->k_38 = m2d(getCell(data, row, K_38));
     raport->k_39 = m2d(getCell(data, row, K_39));
-    raport->liczbaWierszySprzedazy = m2d(getCell(data, row + 1, LICZBAWIERSZYSPRZEDAZY));
-    raport->podatekNalezny = m2d(getCell(data, row + 1, PODATEKNALEZNY));
     return raport;
 }
 
@@ -358,7 +352,7 @@ JPKPurchase* rowToPurchase(tData* data, int row) {
     JPKPurchase* raport = (JPKPurchase*)malloc(sizeof(JPKPurchase));
     raport->typZakupu = getCell(data, row, TYPZAKUPU);
     raport->lpZakupu = strtol(getCell(data, row, LPZAKUPU), NULL, 10);
-    raport->nrDostawcy = strtol(getCell(data, row, NRDOSTAWCY), NULL, 10);
+    raport->nrDostawcy = getCell(data, row, NRDOSTAWCY);
     raport->nazwaDostawcy = getCell(data, row, NAZWADOSTAWCY);
     raport->adresDostawcy = getCell(data, row, ADRESDOSTAWCY);
     raport->dowodZakupu = getCell(data, row, DOWODZAKUPU);
@@ -372,8 +366,6 @@ JPKPurchase* rowToPurchase(tData* data, int row) {
     raport->k_48 = m2d(getCell(data, row, K_48));
     raport->k_49 = m2d(getCell(data, row, K_49));
     raport->k_50 = m2d(getCell(data, row, K_50));
-    raport->liczbaWierszyZakupow = m2d(getCell(data, row, LICZBAWIERSZYZAKUPOW));
-    raport->podatekNaliczony = m2d(getCell(data, row, PODATEKNALICZONY));
     return raport;
 }
 
@@ -445,7 +437,7 @@ void printSold(JPK* jpk) {
     while (row != NULL) {
         printf("%d) \t typSprzedazy: %s, \n"
                 "\t lpSprzedazy: %d, \n"
-                "\t nrKontrahenta: %d, \n"
+                "\t nrKontrahenta: %s, \n"
                 "\t nazwaKontrahenta: %s, \n"
                 "\t adresKontrahenta: %s, \n"
                 "\t dowodSprzedazy: %s, \n"
@@ -481,8 +473,6 @@ void printSold(JPK* jpk) {
                 "\t k_37: %.2lf, \n"
                 "\t k_38: %.2lf, \n"
                 "\t k_39: %.2lf, \n"
-                "\t liczbaWierszySprzedazy: %.2lf, \n"
-                "\t podatekNalezny: %.2lf, \n"
                 "\n",
                 i,
                 row->val->typSprzedazy,
@@ -522,9 +512,7 @@ void printSold(JPK* jpk) {
                 row->val->k_36,
                 row->val->k_37,
                 row->val->k_38,
-                row->val->k_39,
-                row->val->liczbaWierszySprzedazy,
-                row->val->podatekNalezny);
+                row->val->k_39);
         i++;
         row = row->next;
     }
@@ -536,7 +524,7 @@ void printPurchases(JPK* jpk) {
     while (row != NULL) {
         printf("%d) \t typZakupu: %s, \n"
                 "\t lpZakupu: %d, \n"
-                "\t nrDostawcy: %d, \n"
+                "\t nrDostawcy: %s, \n"
                 "\t nazwaDostawcy: %s, \n"
                 "\t adresDostawcy: %s, \n"
                 "\t dowodZakupu: %s, \n"
@@ -550,8 +538,6 @@ void printPurchases(JPK* jpk) {
                 "\t k_48: %.2lf, \n"
                 "\t k_49: %.2lf, \n"
                 "\t k_50: %.2lf, \n"
-                "\t liczbaWierszyZakupow: %.2lf, \n"
-                "\t podatekNaliczony: %.2lf, \n"
                 "\n",
                 i,
                 row->val->typZakupu,
@@ -569,9 +555,7 @@ void printPurchases(JPK* jpk) {
                 row->val->k_47,
                 row->val->k_48,
                 row->val->k_49,
-                row->val->k_50,
-                row->val->liczbaWierszyZakupow,
-                row->val->podatekNaliczony);
+                row->val->k_50);
         i++;
         row = row->next;
     }

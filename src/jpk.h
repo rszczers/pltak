@@ -32,8 +32,8 @@ typedef struct sProfile {
 
 typedef struct sSold {
     char* typSprzedazy;
-    int lpSprzedazy;
-    int nrKontrahenta;
+    unsigned int lpSprzedazy;
+    char* nrKontrahenta;
     char* nazwaKontrahenta;
     char* adresKontrahenta;
     char* dowodSprzedazy;
@@ -75,8 +75,8 @@ typedef struct sSold {
 
 typedef struct sPurchase {
     char* typZakupu;
-    int lpZakupu;
-    int nrDostawcy;
+    unsigned int lpZakupu;
+    char* nrDostawcy;
     char* nazwaDostawcy;
     char* adresDostawcy;
     char* dowodZakupu;

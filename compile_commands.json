@@ -10,6 +10,11 @@
         "file": "/home/fulgjon/Dokumenty/Tak/src/jpk.c"
     },
     {
+        "command": "cc -c -g -o ./build/tocsv.o ./src/tocsv.c",
+        "directory": "/home/fulgjon/Dokumenty/Tak",
+        "file": "/home/fulgjon/Dokumenty/Tak/src/tocsv.c"
+    },
+    {
         "command": "cc -c -g -o ./build/main.o ./src/main.c",
         "directory": "/home/fulgjon/Dokumenty/Tak",
         "file": "/home/fulgjon/Dokumenty/Tak/src/main.c"
