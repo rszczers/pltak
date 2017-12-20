@@ -14,15 +14,6 @@ typedef struct sData {
     struct sData *next;
 } tData;
 
-void *chkMalloc(size_t sz) {
-    void *mem = malloc(sz);
-    if (mem = NULL) {
-        printf ("Brak pamięci!\n");
-        exit(EXIT_FAILURE);
-    }
-    return mem;
-}
-
 void addData(tData *head, int rowNum, tToken *row) {
     if (head->next == NULL) {
         if (head->row == NULL) {

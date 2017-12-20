@@ -412,6 +412,28 @@ JPKPurchaseList* getPurchaseList(tData* parsedData, int purchaseCount) {
     return purchases;
 }
 
+double evalTotalSold(JPKSoldList* jpk) {
+    double eval = 0.0;
+    while (jpk != NULL) {
+        eval += jpk->val->k_16 +
+            jpk->val->k_18 + jpk->val->k_20 + jpk->val->k_24 + jpk->val->k_26 +
+            jpk->val->k_28 + jpk->val->k_30 + jpk->val->k_33 + jpk->val->k_35 +
+            jpk->val->k_36 + jpk->val->k_37 - jpk->val->k_38 - jpk->val->k_39;
+        jpk = jpk->next;
+    }
+    return eval;
+}
+
+double evalTotalPurchase(JPKPurchaseList* jpk) {
+    double eval = 0.0;
+    while (jpk != NULL) {
+        eval += jpk->val->k_44 + jpk->val->k_46 + jpk->val->k_47 +
+            jpk->val->k_48 + jpk->val->k_49 + jpk->val->k_50;
+        jpk = jpk->next;
+    }
+    return eval;
+}
+
 JPK* loadJPK(char *filename) {
     tData* parsedData = parse(filename);
     JPK* data = (JPK*)malloc(sizeof(JPK));
@@ -424,9 +446,9 @@ JPK* loadJPK(char *filename) {
     data->soldCount = countSells(parsedData);
     data->purchaseCount = countPurchases(parsedData);
     data->sold = getSoldList(parsedData, data->soldCount);
-    data->soldTotal = 0.0;
+    data->soldTotal = evalTotalSold(data->sold);
     data->purchase = getPurchaseList(parsedData, data->purchaseCount);
-    data->purchaseTotal = 0.0;
+    data->purchaseTotal = evalTotalPurchase(data->purchase);
 
     return data;
 }

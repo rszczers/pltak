@@ -170,7 +170,7 @@ char* genSold(JPK* jpk) {
             row->val->k_39,        //double
             tail_1);
 
-        asprintf(&buffer, "%s%s", soldField, soldRow); 
+        asprintf(&buffer, "%s%s", soldField, soldRow);
         free(soldRow);
 
         soldField = buffer;
@@ -228,7 +228,7 @@ char* genPurchase(JPK* jpk) {
             row->val->k_49,        //double
             row->val->k_50,        //double
             tail_1);
-        asprintf(&buffer, "%s%s", purchaseField, purchaseRow); 
+        asprintf(&buffer, "%s%s", purchaseField, purchaseRow);
         free(purchaseRow);
 
         purchaseField = buffer;
