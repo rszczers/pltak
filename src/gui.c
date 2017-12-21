@@ -36,11 +36,13 @@ static void save_dialog(GtkWidget *widget, gpointer data) {
 
 static void about_dialog(GtkWidget *widget, gpointer data) {}
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     gtk_init(&argc, &argv);
     GtkWidget *window, *menu_bar, *menu_item, *file_menu, *help_menu,
-              *vbox, *button, *notebook, *label_tab, *label;
+              *vbox, *button, *notebook, *label_tab, *label, *hbox_sell,
+              *hbox_purchase, *check_sell, *check_purchase, *vbox_col_sell,
+              *scroll_col_sell, *vbox_col_pur, *scroll_col_pur, *hbox_profile,
+              *label_profile;
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     g_signal_connect(window, "delete_event", G_CALLBACK(gtk_main_quit), NULL);
 
@@ -95,16 +97,142 @@ int main(int argc, char *argv[])
 
     label_tab = gtk_label_new("Sprzedaże");
     label = gtk_label_new("To jest przykladowy tekst 1 ");
-    gtk_notebook_append_page(GTK_NOTEBOOK(notebook), label, label_tab);
+    hbox_sell = gtk_hbox_new(0, 0);
+    vbox_col_sell = gtk_vbox_new(0, 0);
+    check_sell = gtk_check_button_new_with_label("nrKontrahenta");
+    gtk_box_pack_start(GTK_BOX(vbox_col_sell), check_sell, 0, 0, 0);
+    check_sell = gtk_check_button_new_with_label("NazwaKontrahenta");
+    gtk_box_pack_start(GTK_BOX(vbox_col_sell), check_sell, 0, 0, 0);
+    check_sell = gtk_check_button_new_with_label("AdresKontrahenta");
+    gtk_box_pack_start(GTK_BOX(vbox_col_sell), check_sell, 0, 0, 0);
+    check_sell = gtk_check_button_new_with_label("DowodSprzedazy");
+    gtk_box_pack_start(GTK_BOX(vbox_col_sell), check_sell, 0, 0, 0);
+    check_sell = gtk_check_button_new_with_label("DataWystawienia");
+    gtk_box_pack_start(GTK_BOX(vbox_col_sell), check_sell, 0, 0, 0);
+    check_sell = gtk_check_button_new_with_label("DataSprzedazy");
+    gtk_box_pack_start(GTK_BOX(vbox_col_sell), check_sell, 0, 0, 0);
+    check_sell = gtk_check_button_new_with_label("K_10");
+    gtk_box_pack_start(GTK_BOX(vbox_col_sell), check_sell, 0, 0, 0);
+    check_sell = gtk_check_button_new_with_label("K_11");
+    gtk_box_pack_start(GTK_BOX(vbox_col_sell), check_sell, 0, 0, 0);
+    check_sell = gtk_check_button_new_with_label("K_12");
+    gtk_box_pack_start(GTK_BOX(vbox_col_sell), check_sell, 0, 0, 0);
+    check_sell = gtk_check_button_new_with_label("K_13");
+    gtk_box_pack_start(GTK_BOX(vbox_col_sell), check_sell, 0, 0, 0);
+    check_sell = gtk_check_button_new_with_label("K_14");
+    gtk_box_pack_start(GTK_BOX(vbox_col_sell), check_sell, 0, 0, 0);
+    check_sell = gtk_check_button_new_with_label("K_15");
+    gtk_box_pack_start(GTK_BOX(vbox_col_sell), check_sell, 0, 0, 0);
+    check_sell = gtk_check_button_new_with_label("K_16");
+    gtk_box_pack_start(GTK_BOX(vbox_col_sell), check_sell, 0, 0, 0);
+    check_sell = gtk_check_button_new_with_label("K_17");
+    gtk_box_pack_start(GTK_BOX(vbox_col_sell), check_sell, 0, 0, 0);
+    check_sell = gtk_check_button_new_with_label("K_18");
+    gtk_box_pack_start(GTK_BOX(vbox_col_sell), check_sell, 0, 0, 0);
+    check_sell = gtk_check_button_new_with_label("K_19");
+    gtk_box_pack_start(GTK_BOX(vbox_col_sell), check_sell, 0, 0, 0);
+    check_sell = gtk_check_button_new_with_label("K_20");
+    gtk_box_pack_start(GTK_BOX(vbox_col_sell), check_sell, 0, 0, 0);
+    check_sell = gtk_check_button_new_with_label("K_21");
+    gtk_box_pack_start(GTK_BOX(vbox_col_sell), check_sell, 0, 0, 0);
+    check_sell = gtk_check_button_new_with_label("K_22");
+    gtk_box_pack_start(GTK_BOX(vbox_col_sell), check_sell, 0, 0, 0);
+    check_sell = gtk_check_button_new_with_label("K_23");
+    gtk_box_pack_start(GTK_BOX(vbox_col_sell), check_sell, 0, 0, 0);
+    check_sell = gtk_check_button_new_with_label("K_24");
+    gtk_box_pack_start(GTK_BOX(vbox_col_sell), check_sell, 0, 0, 0);
+    check_sell = gtk_check_button_new_with_label("K_25");
+    gtk_box_pack_start(GTK_BOX(vbox_col_sell), check_sell, 0, 0, 0);
+    check_sell = gtk_check_button_new_with_label("K_26");
+    gtk_box_pack_start(GTK_BOX(vbox_col_sell), check_sell, 0, 0, 0);
+    check_sell = gtk_check_button_new_with_label("K_27");
+    gtk_box_pack_start(GTK_BOX(vbox_col_sell), check_sell, 0, 0, 0);
+    check_sell = gtk_check_button_new_with_label("K_28");
+    gtk_box_pack_start(GTK_BOX(vbox_col_sell), check_sell, 0, 0, 0);
+    check_sell = gtk_check_button_new_with_label("K_29");
+    gtk_box_pack_start(GTK_BOX(vbox_col_sell), check_sell, 0, 0, 0);
+    check_sell = gtk_check_button_new_with_label("K_30");
+    gtk_box_pack_start(GTK_BOX(vbox_col_sell), check_sell, 0, 0, 0);
+    check_sell = gtk_check_button_new_with_label("K_31");
+    gtk_box_pack_start(GTK_BOX(vbox_col_sell), check_sell, 0, 0, 0);
+    check_sell = gtk_check_button_new_with_label("K_32");
+    gtk_box_pack_start(GTK_BOX(vbox_col_sell), check_sell, 0, 0, 0);
+    check_sell = gtk_check_button_new_with_label("K_33");
+    gtk_box_pack_start(GTK_BOX(vbox_col_sell), check_sell, 0, 0, 0);
+    check_sell = gtk_check_button_new_with_label("K_34");
+    gtk_box_pack_start(GTK_BOX(vbox_col_sell), check_sell, 0, 0, 0);
+    check_sell = gtk_check_button_new_with_label("K_35");
+    gtk_box_pack_start(GTK_BOX(vbox_col_sell), check_sell, 0, 0, 0);
+    check_sell = gtk_check_button_new_with_label("K_36");
+    gtk_box_pack_start(GTK_BOX(vbox_col_sell), check_sell, 0, 0, 0);
+    check_sell = gtk_check_button_new_with_label("K_37");
+    gtk_box_pack_start(GTK_BOX(vbox_col_sell), check_sell, 0, 0, 0);
+    check_sell = gtk_check_button_new_with_label("K_38");
+    gtk_box_pack_start(GTK_BOX(vbox_col_sell), check_sell, 0, 0, 0);
+    check_sell = gtk_check_button_new_with_label("K_39");
+    gtk_box_pack_start(GTK_BOX(vbox_col_sell), check_sell, 0, 0, 0);
+    gtk_toggle_button_set_state (GTK_TOGGLE_BUTTON (check_sell), TRUE);
+    scroll_col_sell = gtk_scrolled_window_new (NULL, NULL);
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroll_col_sell),
+            GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+    gtk_scrolled_window_add_with_viewport(
+            GTK_SCROLLED_WINDOW(scroll_col_sell), vbox_col_sell);
+    gtk_widget_set_size_request(scroll_col_sell, 180, 480);
+    gtk_box_pack_start(GTK_BOX(hbox_sell), label, 1, 1, 0);
+    gtk_box_pack_start(GTK_BOX(hbox_sell), scroll_col_sell, 0, 0, 0);
+    gtk_notebook_append_page(GTK_NOTEBOOK(notebook), hbox_sell, label_tab);
+
     label_tab = gtk_label_new("Zakupy");
     label = gtk_label_new("To jest przykladowy tekst 2 ");
-    gtk_notebook_append_page(GTK_NOTEBOOK(notebook), label, label_tab);
+    hbox_purchase = gtk_hbox_new(0, 0);
+    vbox_col_pur = gtk_vbox_new(0, 0);
+    check_purchase = gtk_check_button_new_with_label("NrDostawcy");
+    gtk_box_pack_start(GTK_BOX(vbox_col_pur), check_purchase, 0, 0, 0);
+    check_purchase = gtk_check_button_new_with_label("NazwaDostawcy");
+    gtk_box_pack_start(GTK_BOX(vbox_col_pur), check_purchase, 0, 0, 0);
+    check_purchase = gtk_check_button_new_with_label("AdresDostawcy");
+    gtk_box_pack_start(GTK_BOX(vbox_col_pur), check_purchase, 0, 0, 0);
+    check_purchase = gtk_check_button_new_with_label("DowodZakupu");
+    gtk_box_pack_start(GTK_BOX(vbox_col_pur), check_purchase, 0, 0, 0);
+    check_purchase = gtk_check_button_new_with_label("DataZakupu");
+    gtk_box_pack_start(GTK_BOX(vbox_col_pur), check_purchase, 0, 0, 0);
+    check_purchase = gtk_check_button_new_with_label("DataWplywu");
+    gtk_box_pack_start(GTK_BOX(vbox_col_pur), check_purchase, 0, 0, 0);
+    check_purchase = gtk_check_button_new_with_label("K_43");
+    gtk_box_pack_start(GTK_BOX(vbox_col_pur), check_purchase, 0, 0, 0);
+    check_purchase = gtk_check_button_new_with_label("K_44");
+    gtk_box_pack_start(GTK_BOX(vbox_col_pur), check_purchase, 0, 0, 0);
+    check_purchase = gtk_check_button_new_with_label("K_45");
+    gtk_box_pack_start(GTK_BOX(vbox_col_pur), check_purchase, 0, 0, 0);
+    check_purchase = gtk_check_button_new_with_label("K_46");
+    gtk_box_pack_start(GTK_BOX(vbox_col_pur), check_purchase, 0, 0, 0);
+    check_purchase = gtk_check_button_new_with_label("K_47");
+    gtk_box_pack_start(GTK_BOX(vbox_col_pur), check_purchase, 0, 0, 0);
+    check_purchase = gtk_check_button_new_with_label("K_48");
+    gtk_box_pack_start(GTK_BOX(vbox_col_pur), check_purchase, 0, 0, 0);
+    check_purchase = gtk_check_button_new_with_label("K_49");
+    gtk_box_pack_start(GTK_BOX(vbox_col_pur), check_purchase, 0, 0, 0);
+    check_purchase = gtk_check_button_new_with_label("K_50");
+    gtk_box_pack_start(GTK_BOX(vbox_col_pur), check_purchase, 0, 0, 0);
+    gtk_toggle_button_set_state (GTK_TOGGLE_BUTTON (check_purchase), TRUE);
+    scroll_col_pur = gtk_scrolled_window_new (NULL, NULL);
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroll_col_pur),
+            GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+    gtk_scrolled_window_add_with_viewport(
+            GTK_SCROLLED_WINDOW(scroll_col_pur), vbox_col_pur);
+    gtk_widget_set_size_request(scroll_col_pur, 180, 480);
+    gtk_box_pack_start(GTK_BOX(hbox_purchase), label, 1, 1, 0);
+    gtk_box_pack_start(GTK_BOX(hbox_purchase), scroll_col_pur, 0, 0, 0);
+    gtk_notebook_append_page(GTK_NOTEBOOK(notebook), hbox_purchase, label_tab);
+    
+    hbox_profile = gtk_hbox_new(0, 0); 
     label_tab = gtk_label_new("Firma");
-    label = gtk_label_new("To jest przykladowy tekst 3");
-    gtk_notebook_append_page(GTK_NOTEBOOK(notebook), label, label_tab);
+    label_profile = gtk_label_new("To jest przykladowy tekst 3");
+    gtk_box_pack_start(GTK_BOX(hbox_profile), label_profile, 1, 1, 0);
+    gtk_notebook_append_page(GTK_NOTEBOOK(notebook), hbox_profile, label_tab);
 
     vbox = gtk_vbox_new(0, 0);
-    button = gtk_button_new_with_label("Testowy przycisk");
+    //button = gtk_button_new_with_label("Testowy przycisk");
     gtk_box_pack_start(GTK_BOX(vbox), menu_bar, 0, 0, 0);
     gtk_box_pack_start(GTK_BOX(vbox), notebook, 1, 1, 0);
 
