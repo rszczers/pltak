@@ -39,10 +39,10 @@ static void about_dialog(GtkWidget *widget, gpointer data) {}
 int main(int argc, char *argv[]) {
     gtk_init(&argc, &argv);
     GtkWidget *window, *menu_bar, *menu_item, *file_menu, *help_menu,
-              *vbox, *button, *notebook, *label_tab, *label, *hbox_sell,
+              *vbox, *notebook, *label_tab, *label, *hbox_sell,
               *hbox_purchase, *check_sell, *check_purchase, *vbox_col_sell,
               *scroll_col_sell, *vbox_col_pur, *scroll_col_pur, *hbox_profile,
-              *label_profile;
+              *label_profile, *radio_aim_gr, *radio_aim, *hbox_bottom;
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     g_signal_connect(window, "delete_event", G_CALLBACK(gtk_main_quit), NULL);
 
@@ -50,7 +50,7 @@ int main(int argc, char *argv[]) {
     file_menu = gtk_menu_new();
     help_menu = gtk_menu_new();
 
-    menu_item = gtk_menu_item_new_with_label("Plik");
+    menu_item = gtk_menu_item_new_with_label("Rejestr");
     gtk_menu_item_set_submenu(GTK_MENU_ITEM(menu_item), file_menu);
     gtk_menu_shell_append(GTK_MENU_SHELL(menu_bar), menu_item);
 
@@ -178,7 +178,7 @@ int main(int argc, char *argv[]) {
     gtk_scrolled_window_add_with_viewport(
             GTK_SCROLLED_WINDOW(scroll_col_sell), vbox_col_sell);
     gtk_widget_set_size_request(scroll_col_sell, 180, 480);
-    gtk_box_pack_start(GTK_BOX(hbox_sell), label, 1, 1, 0);
+    gtk_box_pack_start(GTK_BOX(hbox_sell), label, 1, 0, 0);
     gtk_box_pack_start(GTK_BOX(hbox_sell), scroll_col_sell, 0, 0, 0);
     gtk_notebook_append_page(GTK_NOTEBOOK(notebook), hbox_sell, label_tab);
 
@@ -230,14 +230,27 @@ int main(int argc, char *argv[]) {
     label_profile = gtk_label_new("To jest przykladowy tekst 3");
     gtk_box_pack_start(GTK_BOX(hbox_profile), label_profile, 1, 1, 0);
     gtk_notebook_append_page(GTK_NOTEBOOK(notebook), hbox_profile, label_tab);
+    
+    hbox_bottom = gtk_hbox_new(0, 0);
+    radio_aim_gr = gtk_radio_button_new_with_label(NULL,
+            "Złożenie po raz pierwszy");
+    gtk_box_pack_start(GTK_BOX(hbox_bottom), radio_aim_gr, 0, 0, 0);
+    radio_aim = gtk_radio_button_new_with_label(
+         gtk_radio_button_get_group(
+          GTK_RADIO_BUTTON(radio_aim_gr)), "Pierwsza korekta");   
+    gtk_box_pack_start(GTK_BOX(hbox_bottom), radio_aim, 0, 0, 0);
+    radio_aim = gtk_radio_button_new_with_label(
+         gtk_radio_button_get_group(
+          GTK_RADIO_BUTTON(radio_aim_gr)), "Druga korekta");   
+    gtk_box_pack_start(GTK_BOX(hbox_bottom), radio_aim, 0, 0, 0);
 
     vbox = gtk_vbox_new(0, 0);
-    //button = gtk_button_new_with_label("Testowy przycisk");
     gtk_box_pack_start(GTK_BOX(vbox), menu_bar, 0, 0, 0);
-    gtk_box_pack_start(GTK_BOX(vbox), notebook, 1, 1, 0);
+    gtk_box_pack_start(GTK_BOX(vbox), notebook, 0, 0, 0);
+    gtk_box_pack_start(GTK_BOX(vbox), hbox_bottom, 0, 0, 0);
 
     gtk_container_add(GTK_CONTAINER(window), vbox);
-    gtk_widget_set_size_request(window, 640, 480);
+    gtk_widget_set_size_request(window, 800, 600);
     gtk_widget_show_all(window);
     gtk_main();
     return 0;
