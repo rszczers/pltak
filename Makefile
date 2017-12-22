@@ -7,8 +7,9 @@ ARGS=
 all: main.o parse.o jpk.o tocsv.o
 	$(CC) -g $(BUILD_DIR)main.o $(BUILD_DIR)tocsv.o $(BUILD_DIR)jpk.o $(BUILD_DIR)parse.o -o $(BUILD_DIR)$(PROJECT_NAME)
 
-gui: ./src/gui.c
-	gcc -o $(BUILD_DIR)gui ./src/gui.c -Wall `pkg-config --cflags --libs gtk+-2.0` -export-dynamic
+gui: ./src/gui.c jpk.o
+	gcc -g -o $(BUILD_DIR)gui ./src/gui.c  -Wall `pkg-config --cflags --libs gtk+-2.0` -export-dynamic
+
 main.o: ./src/main.c jpk.o tocsv.o
 	$(CC) -g -c ./src/main.c -o $(BUILD_DIR)$@
 

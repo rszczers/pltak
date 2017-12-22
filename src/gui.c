@@ -1,4 +1,9 @@
 #include <gtk/gtk.h>
+#include "jpk.h"
+
+static void spreadsheet(JPK* data) {
+
+}
 
 static void open_dialog(GtkWidget *widget, gpointer data) {
     GtkWidget *dialog;
@@ -42,7 +47,10 @@ int main(int argc, char *argv[]) {
               *vbox, *notebook, *label_tab, *label, *hbox_sell,
               *hbox_purchase, *check_sell, *check_purchase, *vbox_col_sell,
               *scroll_col_sell, *vbox_col_pur, *scroll_col_pur, *hbox_profile,
-              *label_profile, *radio_aim_gr, *radio_aim, *hbox_bottom;
+              *label_profile, *radio_aim_gr, *radio_aim, *hbox_bottom,
+              *table_sell, *table_pur, *scroll_sell, *scroll_pur, *entry,
+              *vbox_spread, *button_add_row, *hbox_space;
+
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     g_signal_connect(window, "delete_event", G_CALLBACK(gtk_main_quit), NULL);
 
@@ -98,6 +106,7 @@ int main(int argc, char *argv[]) {
     label_tab = gtk_label_new("Sprzedaże");
     label = gtk_label_new("To jest przykladowy tekst 1 ");
     hbox_sell = gtk_hbox_new(0, 0);
+    vbox_spread = gtk_vbox_new(0, 0);
     vbox_col_sell = gtk_vbox_new(0, 0);
     check_sell = gtk_check_button_new_with_label("nrKontrahenta");
     gtk_box_pack_start(GTK_BOX(vbox_col_sell), check_sell, 0, 0, 0);
@@ -178,7 +187,35 @@ int main(int argc, char *argv[]) {
     gtk_scrolled_window_add_with_viewport(
             GTK_SCROLLED_WINDOW(scroll_col_sell), vbox_col_sell);
     gtk_widget_set_size_request(scroll_col_sell, 180, 480);
-    gtk_box_pack_start(GTK_BOX(hbox_sell), label, 1, 0, 0);
+    scroll_sell = gtk_scrolled_window_new (NULL, NULL);
+    table_sell = gtk_table_new(10, 10, FALSE);
+    gtk_table_set_homogeneous(GTK_TABLE(table_sell), FALSE);
+    char* buffer = (char*)malloc(64);
+    for (int i = 0; i < 10; i++) { 
+        label = gtk_label_new("Tytuł kolumny");
+        gtk_table_attach_defaults (GTK_TABLE(table_sell), label,
+                i, i+1, 0, 1);
+        for (int j = 1; j < 10; j++) {
+            sprintf (buffer, "(%d,%d)", i, j);
+            entry = gtk_entry_new ();
+            gtk_entry_set_text (GTK_ENTRY(entry), buffer);
+            gtk_table_attach_defaults (GTK_TABLE(table_sell), entry,
+                    i, i+1, j, j+1);
+            gtk_widget_show (entry);
+        }
+    }
+    gtk_table_set_row_spacings(GTK_TABLE(table_sell), 1);
+    gtk_table_set_col_spacings(GTK_TABLE(table_sell), 1);
+    button_add_row = gtk_button_new_with_label("Dodaj wiersz");
+    hbox_space = gtk_hbox_new(0, 0);
+    gtk_box_pack_start(GTK_BOX(vbox_spread), table_sell, 1, 1, 0);
+    gtk_box_pack_start(GTK_BOX(vbox_spread), button_add_row, 0, 0, 0);
+    gtk_box_pack_start(GTK_BOX(vbox_spread), hbox_space, 1, 1, 0);
+    gtk_scrolled_window_add_with_viewport(
+            GTK_SCROLLED_WINDOW(scroll_sell), vbox_spread);
+    gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW(scroll_sell),
+            GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+    gtk_box_pack_start(GTK_BOX(hbox_sell), scroll_sell, 1, 1, 0);
     gtk_box_pack_start(GTK_BOX(hbox_sell), scroll_col_sell, 0, 0, 0);
     gtk_notebook_append_page(GTK_NOTEBOOK(notebook), hbox_sell, label_tab);
 
@@ -224,29 +261,29 @@ int main(int argc, char *argv[]) {
     gtk_box_pack_start(GTK_BOX(hbox_purchase), label, 1, 1, 0);
     gtk_box_pack_start(GTK_BOX(hbox_purchase), scroll_col_pur, 0, 0, 0);
     gtk_notebook_append_page(GTK_NOTEBOOK(notebook), hbox_purchase, label_tab);
-    
-    hbox_profile = gtk_hbox_new(0, 0); 
+
+    hbox_profile = gtk_hbox_new(0, 0);
     label_tab = gtk_label_new("Firma");
     label_profile = gtk_label_new("To jest przykladowy tekst 3");
     gtk_box_pack_start(GTK_BOX(hbox_profile), label_profile, 1, 1, 0);
     gtk_notebook_append_page(GTK_NOTEBOOK(notebook), hbox_profile, label_tab);
-    
-    hbox_bottom = gtk_hbox_new(0, 0);
+
+    hbox_bottom = gtk_hbox_new(0, 15);
     radio_aim_gr = gtk_radio_button_new_with_label(NULL,
             "Złożenie po raz pierwszy");
-    gtk_box_pack_start(GTK_BOX(hbox_bottom), radio_aim_gr, 0, 0, 0);
+    gtk_box_pack_start(GTK_BOX(hbox_bottom), radio_aim_gr, 0, 1, 0);
     radio_aim = gtk_radio_button_new_with_label(
          gtk_radio_button_get_group(
-          GTK_RADIO_BUTTON(radio_aim_gr)), "Pierwsza korekta");   
-    gtk_box_pack_start(GTK_BOX(hbox_bottom), radio_aim, 0, 0, 0);
+          GTK_RADIO_BUTTON(radio_aim_gr)), "Pierwsza korekta");
+    gtk_box_pack_start(GTK_BOX(hbox_bottom), radio_aim, 0, 1, 0);
     radio_aim = gtk_radio_button_new_with_label(
          gtk_radio_button_get_group(
-          GTK_RADIO_BUTTON(radio_aim_gr)), "Druga korekta");   
-    gtk_box_pack_start(GTK_BOX(hbox_bottom), radio_aim, 0, 0, 0);
+          GTK_RADIO_BUTTON(radio_aim_gr)), "Druga korekta");
+    gtk_box_pack_start(GTK_BOX(hbox_bottom), radio_aim, 0, 1, 0);
 
     vbox = gtk_vbox_new(0, 0);
     gtk_box_pack_start(GTK_BOX(vbox), menu_bar, 0, 0, 0);
-    gtk_box_pack_start(GTK_BOX(vbox), notebook, 0, 0, 0);
+    gtk_box_pack_start(GTK_BOX(vbox), notebook, 1, 1, 0);
     gtk_box_pack_start(GTK_BOX(vbox), hbox_bottom, 0, 0, 0);
 
     gtk_container_add(GTK_CONTAINER(window), vbox);
