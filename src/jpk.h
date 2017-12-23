@@ -1,6 +1,6 @@
 #ifndef JPK_H_
 #define JPK_H_
-
+#include "parse.h"
 typedef struct sHeader {
     char* kodFormularza;
     char* kodSystemowy;
@@ -105,7 +105,13 @@ typedef struct PurchaseNode {
     struct PurchaseNode *next;
 } JPKPurchaseList;
 
+typedef struct ColNode {
+    char* title;
+    struct ColNode *next;
+} JPKColumns;
+
 typedef struct {
+    JPKColumns* col_names;
     JPKHeader* header;
     JPKProfile* profile;
     JPKSoldList* sold;
@@ -115,7 +121,6 @@ typedef struct {
     int purchaseCount;
     double purchaseTotal;
 } JPK;
-
 
 JPK* loadJPK(char*);
 void printSold(JPK*);

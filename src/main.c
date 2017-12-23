@@ -1,11 +1,13 @@
 #include <stdio.h>
 #include "jpk.h"
 #include "tocsv.h"
+#include "gui.h"
 
 int main(int argc, char *argv[])
 {
     JPK* data = loadJPK("./data/JPK_VAT_02.csv");
-    csvExport("./data/test.csv", data);
+    //csvExport("./data/test.csv", data);
+    drawGui(data);
     //printSold(data);
     //printPurchases(data);
     //

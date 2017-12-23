@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <regex.h>
 #include "parse.h"
+#include <assert.h>
 
 typedef enum {
     COLUMN_NAME = 1,
@@ -225,7 +226,26 @@ void addPurchase(JPKPurchaseList* list, JPKPurchase* row) {
     }
 }
 
+typedef struct ColNode {
+    char* title;
+    struct ColNode *next;
+} JPKColumns;
+
+void addColumn(JPKColumns* col, char* title) {
+    if (col->title == NULL && col->next == NULL) {
+        col->title = title;
+    } else if (col->next == NULL) {
+        JPKColumns* newNode = (JPKColumns*)malloc(sizeof(JPKColumns));
+        newNode->title = title;
+        newNode->next = NULL;
+        col->next = newNode;
+    } else {
+        addColumn(col->next, title);
+    }
+}
+
 typedef struct {
+    JPKColumns* col_names;
     JPKHeader* header;
     JPKProfile* profile;
     JPKSoldList* sold;
@@ -235,6 +255,18 @@ typedef struct {
     int purchaseCount;
     double purchaseTotal;
 } JPK;
+
+JPKColumns* getColumns(tData* data) {
+    JPKColumns* cols = (JPKColumns*)malloc(sizeof(JPKColumns));
+    cols->next = NULL;
+    cols->title = NULL;
+    tToken* titles = data->row;
+    while (titles != NULL) {
+        addColumn(cols, titles->val);
+        titles = titles->next;
+    }
+    return cols;
+}
 
 JPKHeader* getHeader(tData* data) {
     JPKHeader* header = (JPKHeader*)malloc(sizeof(JPKHeader));
@@ -437,7 +469,8 @@ double evalTotalPurchase(JPKPurchaseList* jpk) {
 JPK* loadJPK(char *filename) {
     tData* parsedData = parse(filename);
     JPK* data = (JPK*)malloc(sizeof(JPK));
-
+    
+    data->col_names = getColumns(parsedData);
     data->header = getHeader(parsedData);
     data->profile = getProfile(parsedData);
 
@@ -582,3 +615,4 @@ void printPurchases(JPK* jpk) {
         row = row->next;
     }
 }
+
