@@ -18,10 +18,11 @@ typedef struct {
     char* Miejscowosc;
     char* KodPocztowy;
     char* Poczta;
-    char** sellColumns;
-    char** purchaseColumns;
+    JPKColumns* sellColumns;
+    JPKColumns* purchaseColumns;
 } TakConfig;
 
 TakConfig* parseConfig();
+void saveConfig(TakConfig*);
 void printTakConfig(TakConfig*);
 #endif /* ifndef CONFIG_H_ */

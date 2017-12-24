@@ -9,7 +9,9 @@ int main(int argc, char *argv[])
     JPK* data = loadJPK("./data/JPK_VAT_02.csv");
     //csvExport("./data/test.csv", data);
     //drawGui(data);
-    printTakConfig(parseConfig());
+    //printTakConfig(parseConfig());
+    TakConfig* test = parseConfig();
+    saveConfig(test);
     //printSold(data);
     //printPurchases(data);
     //
