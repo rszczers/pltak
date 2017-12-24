@@ -111,7 +111,8 @@ typedef struct ColNode {
 } JPKColumns;
 
 typedef struct {
-    JPKColumns* col_names;
+    JPKColumns* colNames;
+    int colsCount;
     JPKHeader* header;
     JPKProfile* profile;
     JPKSoldList* sold;
@@ -122,6 +123,7 @@ typedef struct {
     double purchaseTotal;
 } JPK;
 
+void addColumn(JPKColumns*, char*);
 JPK* loadJPK(char*);
 void printSold(JPK*);
 void printPurchases(JPK*);

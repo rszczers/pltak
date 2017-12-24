@@ -20,6 +20,11 @@
         "file": "/home/fulgjon/Dokumenty/Tak/src/gui.c"
     },
     {
+        "command": "cc -c -g -o ./build/config.o ./src/config.c",
+        "directory": "/home/fulgjon/Dokumenty/Tak",
+        "file": "/home/fulgjon/Dokumenty/Tak/src/config.c"
+    },
+    {
         "command": "cc -c -g -o ./build/main.o ./src/main.c",
         "directory": "/home/fulgjon/Dokumenty/Tak",
         "file": "/home/fulgjon/Dokumenty/Tak/src/main.c"

@@ -245,7 +245,8 @@ void addColumn(JPKColumns* col, char* title) {
 }
 
 typedef struct {
-    JPKColumns* col_names;
+    JPKColumns* colNames;
+    int colsCount;
     JPKHeader* header;
     JPKProfile* profile;
     JPKSoldList* sold;
@@ -466,11 +467,22 @@ double evalTotalPurchase(JPKPurchaseList* jpk) {
     return eval;
 }
 
+int countCols(JPK* jpk) {
+    int c = 0;
+    JPKColumns* cur = jpk->colNames;
+    while(cur != NULL) {
+        cur = cur->next;
+        c++;
+    }
+    return c;
+}
+
 JPK* loadJPK(char *filename) {
     tData* parsedData = parse(filename);
     JPK* data = (JPK*)malloc(sizeof(JPK));
-    
-    data->col_names = getColumns(parsedData);
+
+    data->colNames = getColumns(parsedData);
+    data->colsCount = countCols(data); //ta linia musi być wykonana po getColumns
     data->header = getHeader(parsedData);
     data->profile = getProfile(parsedData);
 

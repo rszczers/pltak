@@ -5,9 +5,9 @@
 
 static void create_sell_col_filter(GtkWidget* widget, JPK* jpk) {
     GtkWidget* check_sell;
-    JPKColumns* title = jpk->col_names;
+    JPKColumns* title = jpk->colNames;
     while(strcmp(title->title, "NrKontrahenta") != 0)
-         title = title->next; 
+         title = title->next;
     while(strcmp(title->title, "LiczbaWierszySprzedazy") != 0) {
         check_sell = gtk_check_button_new_with_label(title->title);
         gtk_box_pack_start(GTK_BOX(widget), check_sell, 0, 0, 0);
@@ -17,9 +17,9 @@ static void create_sell_col_filter(GtkWidget* widget, JPK* jpk) {
 
 static void create_pur_col_filter(GtkWidget* widget, JPK* jpk) {
     GtkWidget* check_purchase;
-    JPKColumns* title = jpk->col_names;
+    JPKColumns* title = jpk->colNames;
     while(strcmp(title->title, "NrDostawcy") != 0)
-         title = title->next; 
+         title = title->next;
     while(strcmp(title->title, "LiczbaWierszyZakupow") != 0) {
         check_purchase = gtk_check_button_new_with_label(title->title);
         gtk_box_pack_start(GTK_BOX(widget), check_purchase, 0, 0, 0);
