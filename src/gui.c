@@ -47,9 +47,10 @@ USList* loadUSCodes() {
 
     if (access(filename, R_OK | F_OK) != -1) {
         fp = fopen(filename, "r");
-        char *code = (char*)malloc(5);
+        char *code;
         char *name;
         while ((read = getline(&line, &len, fp)) != -1) {
+            code = (char*)malloc(5);
             memcpy(code, line, 4);
             code[4] = '\0';
             asprintf(&name, "%s", line + 5);
@@ -387,7 +388,7 @@ static void create_purchase_notebook(GtkWidget *notebook, JPK* jpk) {
 }
 
 static void create_profile_notebook(GtkWidget *notebook, TakConfig* config) {
-    GtkWidget *hbox_profile = gtk_hbox_new(1, 0);
+    GtkWidget *hbox_profile = gtk_hbox_new(0, 0);
     GtkWidget* scroll_profile = gtk_scrolled_window_new(NULL, NULL);
     GtkWidget *label_tab = gtk_label_new("Firma");
     GtkWidget *label_profile;
