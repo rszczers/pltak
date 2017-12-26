@@ -1,7 +1,80 @@
+#define _GNU_SOURCE
 #include <gtk/gtk.h>
 #include <stdlib.h>
 #include <string.h>
 #include "jpk.h"
+#include "config.h"
+
+static void waluta_callback(GtkWidget* widget, gpointer data) {
+    TakConfig* config = (TakConfig*) data;
+    config->DomyslnyKodWaluty = (char*)gtk_entry_get_text(GTK_ENTRY(widget));
+    saveConfig(config);
+}
+static void nip_callback(GtkWidget* widget, gpointer data) {
+    TakConfig* config = (TakConfig*) data;
+    config->NIP = (char*)gtk_entry_get_text(GTK_ENTRY(widget));
+    saveConfig(config);
+}
+static void pelnanazwa_callback(GtkWidget* widget, gpointer data) {
+    TakConfig* config = (TakConfig*) data;
+    config->PelnaNazwa = (char*)gtk_entry_get_text(GTK_ENTRY(widget));
+    saveConfig(config);
+}
+static void regon_callback(GtkWidget* widget, gpointer data) {
+    TakConfig* config = (TakConfig*) data;
+    config->REGON = (char*)gtk_entry_get_text(GTK_ENTRY(widget));
+    saveConfig(config);
+}
+static void kraj_callback(GtkWidget* widget, gpointer data) {
+    TakConfig* config = (TakConfig*) data;
+    config->KodKraju = (char*)gtk_entry_get_text(GTK_ENTRY(widget));
+    saveConfig(config);
+}
+static void wojewodztwo_callback(GtkWidget* widget, gpointer data) {
+    TakConfig* config = (TakConfig*) data;
+    config->Wojewodztwo = (char*)gtk_entry_get_text(GTK_ENTRY(widget));
+    saveConfig(config);
+}
+static void powiat_callback(GtkWidget* widget, gpointer data) {
+    TakConfig* config = (TakConfig*) data;
+    config->Powiat = (char*)gtk_entry_get_text(GTK_ENTRY(widget));
+    saveConfig(config);
+}
+static void gmina_callback(GtkWidget* widget, gpointer data) {
+    TakConfig* config = (TakConfig*) data;
+    config->Gmina = (char*)gtk_entry_get_text(GTK_ENTRY(widget));
+    saveConfig(config);
+}
+static void ulica_callback(GtkWidget* widget, gpointer data) {
+    TakConfig* config = (TakConfig*) data;
+    config->Ulica = (char*)gtk_entry_get_text(GTK_ENTRY(widget));
+    saveConfig(config);
+}
+static void nrdomu_callback(GtkWidget* widget, gpointer data) {
+    TakConfig* config = (TakConfig*) data;
+    config->NrDomu = (char*)gtk_entry_get_text(GTK_ENTRY(widget));
+    saveConfig(config);
+}
+static void nrlokalu_callback(GtkWidget* widget, gpointer data) {
+    TakConfig* config = (TakConfig*) data;
+    config->NrLokalu = (char*)gtk_entry_get_text(GTK_ENTRY(widget));
+    saveConfig(config);
+}
+static void miejscowosc_callback(GtkWidget* widget, gpointer data) {
+    TakConfig* config = (TakConfig*) data;
+    config->Miejscowosc = (char*)gtk_entry_get_text(GTK_ENTRY(widget));
+    saveConfig(config);
+}
+static void kodpocztowy_callback(GtkWidget* widget, gpointer data) {
+    TakConfig* config = (TakConfig*) data;
+    config->KodPocztowy = (char*)gtk_entry_get_text(GTK_ENTRY(widget));
+    saveConfig(config);
+}
+static void poczta_callback(GtkWidget* widget, gpointer data) {
+    TakConfig* config = (TakConfig*) data;
+    config->Poczta = (char*)gtk_entry_get_text(GTK_ENTRY(widget));
+    saveConfig(config);
+}
 
 static void create_sell_col_filter(GtkWidget* widget, JPK* jpk) {
     GtkWidget* check_sell;
@@ -33,18 +106,21 @@ static GtkWidget* spreadsheet(JPK* data) {
     gtk_table_set_homogeneous(GTK_TABLE(table_sell), FALSE);
     char* buffer = (char*)malloc(64);
     for (int i = 0; i < 10; i++) {
-        gtk_table_attach_defaults (GTK_TABLE(table_sell), gtk_label_new("Tytuł kolumny"),
+        gtk_table_attach_defaults(GTK_TABLE(table_sell),
+                gtk_label_new("Tytuł kolumny"),
                 i, i+1, 0, 1);
         for (int j = 1; j < 10; j++) {
             if (i == 0) {
                 button = gtk_button_new_with_label("Usuń");
-                gtk_table_attach_defaults (GTK_TABLE(table_sell), button,
+                gtk_table_attach_defaults (GTK_TABLE(table_sell),
+                        button,
                         i, i+1, j, j+1);
             } else {
                 sprintf (buffer, "(%d,%d)", i, j);
                 entry = gtk_entry_new ();
                 gtk_entry_set_text (GTK_ENTRY(entry), buffer);
-                gtk_table_attach_defaults (GTK_TABLE(table_sell), entry,
+                gtk_table_attach_defaults (GTK_TABLE(table_sell),
+                        entry,
                         i, i+1, j, j+1);
             }
         }
@@ -187,20 +263,288 @@ static void create_purchase_notebook(GtkWidget *notebook, JPK* jpk) {
     gtk_notebook_append_page(GTK_NOTEBOOK(notebook), hbox_purchase, label_tab);
 }
 
-static void create_profile_notebook(GtkWidget *notebook) {
-    GtkWidget *hbox_profile = gtk_hbox_new(0, 0);
+static void create_profile_notebook(GtkWidget *notebook, TakConfig* config) {
+    GtkWidget *hbox_profile = gtk_hbox_new(1, 0);
+    GtkWidget* scroll_profile = gtk_scrolled_window_new(NULL, NULL);
     GtkWidget *label_tab = gtk_label_new("Firma");
-    GtkWidget *label_profile = gtk_label_new("To jest przykladowy tekst 3");
-    gtk_box_pack_start(GTK_BOX(hbox_profile), label_profile, 1, 1, 0);
-    gtk_notebook_append_page(GTK_NOTEBOOK(notebook), hbox_profile, label_tab);
+    GtkWidget *label_profile;
+    GtkWidget* table_profile = gtk_table_new(10, 2, FALSE);
+    gtk_table_set_col_spacings (GTK_TABLE(table_profile), 20);
+    GtkWidget *entry;
+
+    label_profile = gtk_label_new("Waluta");
+    gtk_table_attach_defaults(
+            GTK_TABLE(table_profile),
+            label_profile,
+            0, 1, 0, 1);
+    entry = gtk_entry_new();
+    g_signal_connect(entry, "changed", G_CALLBACK(waluta_callback), config);
+    if (config->DomyslnyKodWaluty == NULL) {
+        gtk_entry_set_text(GTK_ENTRY(entry), "");
+    } else {
+        gtk_entry_set_text(GTK_ENTRY(entry), config->DomyslnyKodWaluty);
+    }
+    gtk_table_attach_defaults(
+            GTK_TABLE(table_profile),
+            entry,
+            1, 2, 0, 1);
+
+    label_profile = gtk_label_new("Urząd skarbowy");
+    gtk_table_attach_defaults(
+            GTK_TABLE(table_profile),
+            label_profile,
+            0, 1, 1, 2);
+    entry = gtk_entry_new();
+    GList *combo_items = NULL;
+    GtkWidget *combo_entry;
+    combo_items = g_list_append(combo_items, "Starachowice");
+    combo_items = g_list_append(combo_items, "2");
+    combo_items = g_list_append(combo_items, "3");
+    combo_items = g_list_append(combo_items, "4");
+    combo_entry = gtk_combo_new();
+    gtk_combo_set_popdown_strings (GTK_COMBO(combo_entry), combo_items);
+    gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(combo_entry)->entry), "Starachowice");
+    gtk_entry_set_editable (GTK_ENTRY (GTK_COMBO (combo_entry)->entry), FALSE);
+    gtk_table_attach_defaults(
+            GTK_TABLE(table_profile),
+            combo_entry,
+            1, 2, 1, 2);
+
+    label_profile = gtk_label_new("NIP firmy");
+    gtk_table_attach_defaults(
+            GTK_TABLE(table_profile),
+            label_profile,
+            0, 1, 2, 3);
+    entry = gtk_entry_new();
+    g_signal_connect(entry, "changed", G_CALLBACK(nip_callback), config);
+    if (config->NIP == NULL) {
+        gtk_entry_set_text(GTK_ENTRY(entry), "");
+    } else {
+        gtk_entry_set_text(GTK_ENTRY(entry), config->NIP);
+    }
+    gtk_table_attach_defaults(
+            GTK_TABLE(table_profile),
+            entry,
+            1, 2, 2, 3);
+
+    label_profile = gtk_label_new("Pełna nazwa");
+    gtk_table_attach_defaults(
+            GTK_TABLE(table_profile),
+            label_profile,
+            0, 1, 3, 4);
+    entry = gtk_entry_new();
+    g_signal_connect(entry, "changed", G_CALLBACK(pelnanazwa_callback), config);
+    if (config->PelnaNazwa == NULL) {
+        gtk_entry_set_text(GTK_ENTRY(entry), "");
+    } else {
+        gtk_entry_set_text(GTK_ENTRY(entry), config->PelnaNazwa);
+    }
+    gtk_table_attach_defaults(
+            GTK_TABLE(table_profile),
+            entry,
+            1, 2, 3, 4);
+
+    label_profile = gtk_label_new("REGON");
+    gtk_table_attach_defaults(
+            GTK_TABLE(table_profile),
+            label_profile,
+            0, 1, 4, 5);
+    entry = gtk_entry_new();
+    g_signal_connect(entry, "changed", G_CALLBACK(regon_callback), config);
+    if (config->REGON == NULL) {
+        gtk_entry_set_text(GTK_ENTRY(entry), "");
+    } else {
+        gtk_entry_set_text(GTK_ENTRY(entry), config->REGON);
+    }
+    gtk_table_attach_defaults(
+            GTK_TABLE(table_profile),
+            entry,
+            1, 2, 4, 5);
+
+    label_profile = gtk_label_new("Kraj");
+    gtk_table_attach_defaults(
+            GTK_TABLE(table_profile),
+            label_profile,
+            0, 1, 5, 6);
+    entry = gtk_entry_new();
+    g_signal_connect(entry, "changed", G_CALLBACK(kraj_callback), config);
+    if (config->KodKraju == NULL) {
+        gtk_entry_set_text(GTK_ENTRY(entry), "");
+    } else {
+        gtk_entry_set_text(GTK_ENTRY(entry), config->KodKraju);
+    }
+    gtk_table_attach_defaults(
+            GTK_TABLE(table_profile),
+            entry,
+            1, 2, 5, 6);
+
+    label_profile = gtk_label_new("Województwo");
+    gtk_table_attach_defaults(
+            GTK_TABLE(table_profile),
+            label_profile,
+            0, 1, 6, 7);
+    entry = gtk_entry_new();
+    g_signal_connect(entry, "changed", G_CALLBACK(wojewodztwo_callback), config);
+    gtk_table_attach_defaults(
+            GTK_TABLE(table_profile),
+            entry,
+            1, 2, 6, 7);
+    if (config->Wojewodztwo == NULL) {
+        gtk_entry_set_text(GTK_ENTRY(entry), "");
+    } else {
+        gtk_entry_set_text(GTK_ENTRY(entry), config->Wojewodztwo);
+    }
+
+    label_profile = gtk_label_new("Powiat");
+    gtk_table_attach_defaults(
+            GTK_TABLE(table_profile),
+            label_profile,
+            0, 1, 7, 8);
+    entry = gtk_entry_new();
+    g_signal_connect(entry, "changed", G_CALLBACK(powiat_callback), config);
+    gtk_table_attach_defaults(
+            GTK_TABLE(table_profile),
+            entry,
+            1, 2, 7, 8);
+    if (config->Powiat == NULL) {
+        gtk_entry_set_text(GTK_ENTRY(entry), "");
+    } else {
+        gtk_entry_set_text(GTK_ENTRY(entry), config->Powiat);
+    }
+
+    label_profile = gtk_label_new("Gmina");
+    gtk_table_attach_defaults(
+            GTK_TABLE(table_profile),
+            label_profile,
+            0, 1, 8, 9);
+    entry = gtk_entry_new();
+    g_signal_connect(entry, "changed", G_CALLBACK(gmina_callback), config);
+    gtk_table_attach_defaults(
+            GTK_TABLE(table_profile),
+            entry,
+            1, 2, 8, 9);
+    if (config->Gmina == NULL) {
+        gtk_entry_set_text(GTK_ENTRY(entry), "");
+    } else {
+        gtk_entry_set_text(GTK_ENTRY(entry), config->Gmina);
+    }
+
+    label_profile = gtk_label_new("Ulica");
+    gtk_table_attach_defaults(
+            GTK_TABLE(table_profile),
+            label_profile,
+            0, 1, 9, 10);
+    entry = gtk_entry_new();
+    g_signal_connect(entry, "changed", G_CALLBACK(ulica_callback), config);
+    gtk_table_attach_defaults(
+            GTK_TABLE(table_profile),
+            entry,
+            1, 2, 9, 10);
+    if (config->Ulica == NULL) {
+        gtk_entry_set_text(GTK_ENTRY(entry), "");
+    } else {
+        gtk_entry_set_text(GTK_ENTRY(entry), config->Ulica);
+    }
+
+    label_profile = gtk_label_new("Numer domu");
+    gtk_table_attach_defaults(
+            GTK_TABLE(table_profile),
+            label_profile,
+            0, 1, 10, 11);
+    entry = gtk_entry_new();
+    g_signal_connect(entry, "changed", G_CALLBACK(nrdomu_callback), config);
+    if (config->NrDomu == NULL) {
+        gtk_entry_set_text(GTK_ENTRY(entry), "");
+    } else {
+        gtk_entry_set_text(GTK_ENTRY(entry), config->NrDomu);
+    }
+    gtk_table_attach_defaults(
+            GTK_TABLE(table_profile),
+            entry,
+            1, 2, 10, 11);
+
+    label_profile = gtk_label_new("Numer lokalu");
+    gtk_table_attach_defaults(
+            GTK_TABLE(table_profile),
+            label_profile,
+            0, 1, 11, 12);
+    entry = gtk_entry_new();
+    g_signal_connect(entry, "changed", G_CALLBACK(nrlokalu_callback), config);
+    if (config->NrLokalu == NULL) {
+        gtk_entry_set_text(GTK_ENTRY(entry), "");
+    } else {
+        gtk_entry_set_text(GTK_ENTRY(entry), config->NrLokalu);
+    }
+    gtk_table_attach_defaults(
+            GTK_TABLE(table_profile),
+            entry,
+            1, 2, 11, 12);
+
+    label_profile = gtk_label_new("Miejcowość");
+    gtk_table_attach_defaults(
+            GTK_TABLE(table_profile),
+            label_profile,
+            0, 1, 12, 13);
+    entry = gtk_entry_new();
+    g_signal_connect(entry, "changed", G_CALLBACK(miejscowosc_callback), config);
+    if (config->Miejscowosc == NULL) {
+        gtk_entry_set_text(GTK_ENTRY(entry), "");
+    } else {
+        gtk_entry_set_text(GTK_ENTRY(entry), config->Miejscowosc);
+    }
+    gtk_table_attach_defaults(
+            GTK_TABLE(table_profile),
+            entry,
+            1, 2, 12, 13);
+
+    label_profile = gtk_label_new("Kod pocztowy");
+    gtk_table_attach_defaults(
+            GTK_TABLE(table_profile),
+            label_profile,
+            0, 1, 13, 14);
+    entry = gtk_entry_new();
+    g_signal_connect(entry, "changed", G_CALLBACK(kodpocztowy_callback), config);
+    if (config->KodPocztowy == NULL) {
+        gtk_entry_set_text(GTK_ENTRY(entry), "");
+    } else {
+        gtk_entry_set_text(GTK_ENTRY(entry), config->KodPocztowy);
+    }
+    gtk_table_attach_defaults(
+            GTK_TABLE(table_profile),
+            entry,
+            1, 2, 13, 14);
+
+    label_profile = gtk_label_new("Poczta");
+    gtk_table_attach_defaults(
+            GTK_TABLE(table_profile),
+            label_profile,
+            0, 1, 14, 15);
+    entry = gtk_entry_new();
+    g_signal_connect(entry, "changed", G_CALLBACK(poczta_callback), config);
+    if (config->Poczta == NULL) {
+        gtk_entry_set_text(GTK_ENTRY(entry), "");
+    } else {
+        gtk_entry_set_text(GTK_ENTRY(entry), config->Poczta);
+    }
+    gtk_table_attach_defaults(
+            GTK_TABLE(table_profile),
+            entry,
+            1, 2, 14, 15);
+
+    gtk_box_pack_start(GTK_BOX(hbox_profile), table_profile, 0, 0, 0);
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroll_profile),
+            GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+    gtk_scrolled_window_add_with_viewport(
+            GTK_SCROLLED_WINDOW(scroll_profile), hbox_profile);
+    gtk_notebook_append_page(GTK_NOTEBOOK(notebook), scroll_profile, label_tab);
 }
 
-static GtkWidget* create_notebooks(JPK* jpk) {
+static GtkWidget* create_notebooks(JPK* jpk, TakConfig* config) {
     GtkWidget *notebook = gtk_notebook_new();
     gtk_notebook_set_tab_pos(GTK_NOTEBOOK(notebook), GTK_POS_TOP);
     create_sell_notebook(notebook, jpk);
     create_purchase_notebook(notebook, jpk);
-    create_profile_notebook(notebook);
+    create_profile_notebook(notebook, config);
     return notebook;
 }
 
@@ -221,7 +565,7 @@ static GtkWidget* create_box_bottom() {
 }
 
 void drawGui(JPK* jpk) {
-//    gtk_init(&argc, &argv);
+    TakConfig* config = parseConfig();
     gtk_init(NULL, NULL);
     GtkWidget *window, *vbox;
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
@@ -229,10 +573,11 @@ void drawGui(JPK* jpk) {
 
     vbox = gtk_vbox_new(0, 0);
     gtk_box_pack_start(GTK_BOX(vbox), create_menu_bar(), 0, 0, 0);
-    gtk_box_pack_start(GTK_BOX(vbox), create_notebooks(jpk), 1, 1, 0);
+    gtk_box_pack_start(GTK_BOX(vbox), create_notebooks(jpk, config), 1, 1, 0);
     gtk_box_pack_start(GTK_BOX(vbox), create_box_bottom(), 0, 0, 0);
     gtk_container_add(GTK_CONTAINER(window), vbox);
     gtk_widget_set_size_request(window, 800, 600);
     gtk_widget_show_all(window);
     gtk_main();
 }
+

@@ -2,16 +2,15 @@
 #include "jpk.h"
 #include "tocsv.h"
 #include "gui.h"
-#include "config.h"
 
 int main(int argc, char *argv[])
 {
     JPK* data = loadJPK("./data/JPK_VAT_02.csv");
     //csvExport("./data/test.csv", data);
-    //drawGui(data);
+    drawGui(data);
     //printTakConfig(parseConfig());
-    TakConfig* test = parseConfig();
-    saveConfig(test);
+    //TakConfig* test = parseConfig();
+    //saveConfig(test);
     //printSold(data);
     //printPurchases(data);
     //

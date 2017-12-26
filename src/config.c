@@ -45,42 +45,87 @@ TakConfig* parseConfig() {
     char *filename;
     asprintf(&filename, "%s/.pltak/config", homedir);
 
-    if (access(filename, R_OK) != -1) {
+    if (access(filename, R_OK | F_OK) != -1) {
         fp = fopen(filename, "r");
         char *token;
         while ((read = getline(&line, &len, fp)) != -1) {
             token = strtok(line, "=\n");
             if (token != NULL) {
                 if (strcmp(token, "DomyslnyKodWaluty") == 0) {
-                    asprintf(&(config->DomyslnyKodWaluty), "%s", strtok(NULL, "\n"));
+                    char *cur = strtok(NULL, "\n");
+                    if (cur != NULL)
+                        asprintf(&(config->DomyslnyKodWaluty), "%s",
+                               cur == NULL ? "" : cur);
                 } else if (strcmp(token, "KodUrzedu") == 0) {
-                    asprintf(&(config->KodUrzedu), "%s", strtok(NULL, "\n"));
+                    char *cur = strtok(NULL, "\n");
+                    if (cur != NULL)
+                        asprintf(&(config->KodUrzedu), "%s",
+                               cur == NULL ? "" : cur);
                 } else if (strcmp(token, "NIP") == 0) {
-                    asprintf(&(config->NIP), "%s", strtok(NULL, "\n"));
+                    char *cur = strtok(NULL, "\n");
+                    if (cur != NULL)
+                        asprintf(&(config->NIP), "%s",
+                               cur == NULL ? "" : cur);
                 } else if (strcmp(token, "PelnaNazwa") == 0) {
-                    asprintf(&(config->PelnaNazwa), "%s", strtok(NULL, "\n"));
+                    char *cur = strtok(NULL, "\n");
+                    if (cur != NULL)
+                        asprintf(&(config->PelnaNazwa), "%s",
+                               cur == NULL ? "" : cur);
                 } else if (strcmp(token, "REGON") == 0) {
-                    asprintf(&(config->REGON), "%s", strtok(NULL, "\n"));
+                    char *cur = strtok(NULL, "\n");
+                    if (cur != NULL)
+                        asprintf(&(config->REGON), "%s",
+                               cur == NULL ? "" : cur);
                 } else if (strcmp(token, "KodKraju") == 0) {
-                    asprintf(&(config->KodKraju), "%s", strtok(NULL, "\n"));
+                    char *cur = strtok(NULL, "\n");
+                    if (cur != NULL)
+                        asprintf(&(config->KodKraju), "%s",
+                               cur == NULL ? "" : cur);
                 } else if (strcmp(token, "Wojewodztwo") == 0) {
-                    asprintf(&(config->Wojewodztwo), "%s", strtok(NULL, "\n"));
+                    char *cur = strtok(NULL, "\n");
+                    if (cur != NULL)
+                        asprintf(&(config->Wojewodztwo), "%s",
+                               cur == NULL ? "" : cur);
                 } else if (strcmp(token, "Powiat") == 0) {
-                    asprintf(&(config->Powiat), "%s", strtok(NULL, "\n"));
+                    char *cur = strtok(NULL, "\n");
+                    if (cur != NULL)
+                        asprintf(&(config->Powiat), "%s",
+                               cur == NULL ? "" : cur);
                 } else if (strcmp(token, "Gmina") == 0) {
-                    asprintf(&(config->Gmina), "%s", strtok(NULL, "\n"));
+                    char *cur = strtok(NULL, "\n");
+                    if (cur != NULL)
+                        asprintf(&(config->Gmina), "%s",
+                               cur == NULL ? "" : cur);
                 } else if (strcmp(token, "Ulica") == 0) {
-                    asprintf(&(config->Ulica), "%s", strtok(NULL, "\n"));
+                    char *cur = strtok(NULL, "\n");
+                    if (cur != NULL)
+                        asprintf(&(config->Ulica), "%s",
+                               cur == NULL ? "" : cur);
                 } else if (strcmp(token, "NrDomu") == 0) {
-                    asprintf(&(config->NrDomu), "%s", strtok(NULL, "\n"));
+                    char *cur = strtok(NULL, "\n");
+                    if (cur != NULL)
+                        asprintf(&(config->NrDomu), "%s",
+                               cur == NULL ? "" : cur);
                 } else if (strcmp(token, "NrLokalu") == 0) {
-                    asprintf(&(config->NrLokalu), "%s", strtok(NULL, "\n"));
+                    char *cur = strtok(NULL, "\n");
+                    if (cur != NULL)
+                        asprintf(&(config->NrLokalu), "%s",
+                               cur == NULL ? "" : cur);
                 } else if (strcmp(token, "Miejscowosc") == 0) {
-                    asprintf(&(config->Miejscowosc), "%s", strtok(NULL, "\n"));
+                    char *cur = strtok(NULL, "\n");
+                    if (cur != NULL)
+                        asprintf(&(config->Miejscowosc), "%s",
+                               cur == NULL ? "" : cur);
                 } else if (strcmp(token, "KodPocztowy") == 0) {
-                    asprintf(&(config->KodPocztowy), "%s", strtok(NULL, "\n"));
+                    char *cur = strtok(NULL, "\n");
+                    if (cur != NULL)
+                        asprintf(&(config->KodPocztowy), "%s",
+                               cur == NULL ? "" : cur);
                 } else if (strcmp(token, "Poczta") == 0) {
-                    asprintf(&(config->Poczta), "%s", strtok(NULL, "\n"));
+                    char *cur = strtok(NULL, "\n");
+                    if (cur != NULL)
+                        asprintf(&(config->Poczta), "%s",
+                               cur == NULL ? "" : cur);
                 } else if (strcmp(token, "sellColumns") == 0) {
                     token = strtok(NULL, "=");
                     char *buffer;
@@ -106,6 +151,7 @@ TakConfig* parseConfig() {
                 }
             }
         }
+        fclose(fp);
     } else { // stwórz domyślną konfigurację
         fp = fopen(filename, "ab");
         char* defaultConfig = "DomyslnyKodWaluty=PLN\n"
@@ -130,6 +176,7 @@ TakConfig* parseConfig() {
             fputs(defaultConfig, fp);
             fclose(fp);
         }
+        config->DomyslnyKodWaluty = "PLN";
     }
     return config;
 }
@@ -196,23 +243,23 @@ void saveConfig(TakConfig* tak) {
                       "Poczta=%s\n"
                       "sellColumns=%s\n"
                       "purchaseColumns=%s",
-                    tak->DomyslnyKodWaluty,
-                    tak->KodUrzedu,
-                    tak->NIP,
-                    tak->PelnaNazwa,
-                    tak->REGON,
-                    tak->KodKraju,
-                    tak->Wojewodztwo,
-                    tak->Powiat,
-                    tak->Gmina,
-                    tak->Ulica,
-                    tak->NrDomu,
-                    tak->NrLokalu,
-                    tak->Miejscowosc,
-                    tak->KodPocztowy,
-                    tak->Poczta,
-                    sell,
-                    purchase);
+                tak->DomyslnyKodWaluty != NULL ? tak->DomyslnyKodWaluty : "",
+                tak->KodUrzedu != NULL ? tak->KodUrzedu : "",
+                tak->NIP != NULL ? tak->NIP : "",
+                tak->PelnaNazwa != NULL ? tak->PelnaNazwa : "",
+                tak->REGON != NULL ? tak->REGON : "",
+                tak->KodKraju != NULL ? tak->KodKraju : "",
+                tak->Wojewodztwo != NULL ? tak->Wojewodztwo : "",
+                tak->Powiat != NULL ? tak->Powiat : "",
+                tak->Gmina != NULL ? tak->Gmina : "",
+                tak->Ulica != NULL ? tak->Ulica : "",
+                tak->NrDomu != NULL ? tak->NrDomu : "",
+                tak->NrLokalu != NULL ? tak->NrLokalu : "",
+                tak->Miejscowosc != NULL ? tak->Miejscowosc : "",
+                tak->KodPocztowy != NULL ? tak->KodPocztowy : "",
+                tak->Poczta != NULL ? tak->Poczta : "",
+                sell,
+                purchase);
 
     // Pozostaje wycziścić plik konfiguracyjny
     // i zapisać nową zawartość
