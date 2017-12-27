@@ -93,11 +93,9 @@ static void uscode_callback(GtkWidget* entry, gpointer data) {
 
     char* filter;
     asprintf(&filter, "%s", (char *)gtk_entry_get_text(GTK_ENTRY(entry)));
-
     for (int i = 0; i < strlen(filter); ++i) {
-       filter[i] = toupper(filter[i]); 
+       filter[i] = toupper(filter[i]);
     }
-
     gtk_widget_destroy(combo);
 
     GList *cbitems = NULL;
@@ -127,6 +125,49 @@ static void uscode_callback(GtkWidget* entry, gpointer data) {
     newData->config = config;
     g_signal_connect(GTK_ENTRY(GTK_COMBO(newCombo)->entry), "activate", G_CALLBACK(uscode_callback), newData);
 //    g_signal_connect(GTK_COMBO(newCombo), "activate", G_CALLBACK(uscode_callback), newData);
+}
+
+typedef struct {
+    char *name;
+    TakConfig *config;
+} ColFilter;
+
+static void sell_filter_callback(GtkWidget* widget, gpointer data) {
+    ColFilter* t = (ColFilter*) data;
+    char* colName = t->name;
+    TakConfig *config = t->config;
+
+    if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget))) {
+        if (config->sellColumns == NULL) {
+            config->sellColumns = (JPKColumns*)malloc(sizeof(JPKColumns));
+            config->sellColumns->title = NULL;
+            config->sellColumns->next = NULL;
+        }
+        addColumn(config->sellColumns, colName);
+        saveConfig(config);
+    } else {
+        rmColumn(config->sellColumns, colName);
+        saveConfig(config);
+    }
+}
+
+static void purchase_filter_callback(GtkWidget* widget, gpointer data) {
+    ColFilter* t = (ColFilter*) data;
+    char* colName = t->name;
+    TakConfig *config = t->config;
+
+    if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget))) {
+        if (config->purchaseColumns == NULL) {
+            config->purchaseColumns = (JPKColumns*)malloc(sizeof(JPKColumns));
+            config->purchaseColumns->title = NULL;
+            config->purchaseColumns->next = NULL;
+        }
+        addColumn(config->purchaseColumns, colName);
+        saveConfig(config);
+    } else {
+        rmColumn(config->purchaseColumns, colName);
+        saveConfig(config);
+    }
 }
 
 static void waluta_callback(GtkWidget* widget, gpointer data) {
@@ -200,40 +241,67 @@ static void poczta_callback(GtkWidget* widget, gpointer data) {
     saveConfig(config);
 }
 
-static void create_sell_col_filter(GtkWidget* widget, JPK* jpk) {
+static void create_sell_col_filter(GtkWidget* widget, JPK* jpk, TakConfig* config) {
     GtkWidget* check_sell;
     JPKColumns* title = jpk->colNames;
     while(strcmp(title->title, "NrKontrahenta") != 0)
          title = title->next;
     while(strcmp(title->title, "LiczbaWierszySprzedazy") != 0) {
+        ColFilter* data = (ColFilter*)malloc(sizeof(ColFilter));
+        data->config = config;
+        data->name = title->title;
         check_sell = gtk_check_button_new_with_label(title->title);
+        gtk_toggle_button_set_active(
+                GTK_TOGGLE_BUTTON (check_sell), 
+                isElem(config->sellColumns, title->title));
+        g_signal_connect(GTK_TOGGLE_BUTTON(check_sell), "clicked",
+                        G_CALLBACK(sell_filter_callback), data);
         gtk_box_pack_start(GTK_BOX(widget), check_sell, 0, 0, 0);
         title = title->next;
     }
 }
 
-static void create_pur_col_filter(GtkWidget* widget, JPK* jpk) {
+static void create_pur_col_filter(GtkWidget* widget, JPK* jpk, TakConfig* config) {
     GtkWidget* check_purchase;
     JPKColumns* title = jpk->colNames;
     while(strcmp(title->title, "NrDostawcy") != 0)
          title = title->next;
     while(strcmp(title->title, "LiczbaWierszyZakupow") != 0) {
+        ColFilter* data = (ColFilter*)malloc(sizeof(ColFilter));
+        data->config = config;
+        data->name = title->title;
         check_purchase = gtk_check_button_new_with_label(title->title);
+        gtk_toggle_button_set_active(
+                GTK_TOGGLE_BUTTON (check_purchase), 
+                isElem(config->purchaseColumns, title->title));
+        g_signal_connect(GTK_TOGGLE_BUTTON(check_purchase), "clicked",
+                        G_CALLBACK(purchase_filter_callback), data);
         gtk_box_pack_start(GTK_BOX(widget), check_purchase, 0, 0, 0);
         title = title->next;
     }
 }
 
-static GtkWidget* spreadsheet(JPK* data) {
-    GtkWidget* table_sell = gtk_table_new(10, 10, FALSE);
+static GtkWidget* draw_sell_spreadsheet(TakConfig* config, JPK* data) {
+    JPKColumns* col = config->sellColumns;
+    int length = 0;
+    while (col != NULL) {
+        length++;
+        col = col->next;
+    }
+	col = config->sellColumns;
+
+    GtkWidget* table_sell = gtk_table_new(length + 1, data->soldCount + 1, FALSE);
     GtkWidget *entry, *button;
     gtk_table_set_homogeneous(GTK_TABLE(table_sell), FALSE);
     char* buffer = (char*)malloc(64);
-    for (int i = 0; i < 10; i++) {
-        gtk_table_attach_defaults(GTK_TABLE(table_sell),
-                gtk_label_new("Tytuł kolumny"),
-                i, i+1, 0, 1);
-        for (int j = 1; j < 10; j++) {
+    for (int i = 0; i < length + 1; i++) {
+        if (i > 0) {
+            gtk_table_attach_defaults(GTK_TABLE(table_sell),
+                    gtk_label_new(col->title),
+                    i, i+1, 0, 1);
+			col = col->next;
+        }
+        for (int j = 1; j < data->soldCount + 1; j++) {
             if (i == 0) {
                 button = gtk_button_new_with_label("Usuń");
                 gtk_table_attach_defaults (GTK_TABLE(table_sell),
@@ -338,12 +406,12 @@ static GtkWidget* create_menu_bar() {
     return menu_bar;
 }
 
-static void create_sell_notebook(GtkWidget *notebook, JPK* jpk) {
+static void create_sell_notebook(GtkWidget *notebook, JPK* jpk, TakConfig* config) {
     GtkWidget* label_tab = gtk_label_new("Sprzedaże");
     GtkWidget* hbox_sell = gtk_hbox_new(0, 0);
     GtkWidget* vbox_spread = gtk_vbox_new(0, 0);
     GtkWidget* vbox_col_sell = gtk_vbox_new(0, 0);
-    create_sell_col_filter(vbox_col_sell, jpk);
+    create_sell_col_filter(vbox_col_sell, jpk, config);
     GtkWidget* scroll_col_sell = gtk_scrolled_window_new (NULL, NULL);
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroll_col_sell),
             GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
@@ -352,7 +420,7 @@ static void create_sell_notebook(GtkWidget *notebook, JPK* jpk) {
     gtk_widget_set_size_request(scroll_col_sell, 180, 480);
     GtkWidget* scroll_sell = gtk_scrolled_window_new (NULL, NULL);
     // Pseudoarkusz
-    GtkWidget* table_sell = spreadsheet(NULL);
+    GtkWidget* table_sell = draw_sell_spreadsheet(config, jpk);
 
     gtk_table_set_row_spacings(GTK_TABLE(table_sell), 1);
     gtk_table_set_col_spacings(GTK_TABLE(table_sell), 1);
@@ -368,15 +436,17 @@ static void create_sell_notebook(GtkWidget *notebook, JPK* jpk) {
     gtk_box_pack_start(GTK_BOX(hbox_sell), scroll_sell, 1, 1, 0);
     gtk_box_pack_start(GTK_BOX(hbox_sell), scroll_col_sell, 0, 0, 0);
     gtk_notebook_append_page(GTK_NOTEBOOK(notebook), hbox_sell, label_tab);
+    gtk_widget_show(notebook);
+
 }
 
-static void create_purchase_notebook(GtkWidget *notebook, JPK* jpk) {
+static void create_purchase_notebook(GtkWidget *notebook, JPK* jpk, TakConfig* config) {
     GtkWidget *label_tab = gtk_label_new("Zakupy");
     GtkWidget* label = gtk_label_new("To jest przykladowy tekst 2 ");
     GtkWidget* hbox_purchase = gtk_hbox_new(0, 0);
     GtkWidget* vbox_col_pur = gtk_vbox_new(0, 0);
     GtkWidget* scroll_col_pur = gtk_scrolled_window_new (NULL, NULL);
-    create_pur_col_filter(vbox_col_pur, jpk);
+    create_pur_col_filter(vbox_col_pur, jpk, config);
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroll_col_pur),
             GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
     gtk_scrolled_window_add_with_viewport(
@@ -672,8 +742,8 @@ static void create_profile_notebook(GtkWidget *notebook, TakConfig* config) {
 static GtkWidget* create_notebooks(JPK* jpk, TakConfig* config) {
     GtkWidget *notebook = gtk_notebook_new();
     gtk_notebook_set_tab_pos(GTK_NOTEBOOK(notebook), GTK_POS_TOP);
-    create_sell_notebook(notebook, jpk);
-    create_purchase_notebook(notebook, jpk);
+    create_sell_notebook(notebook, jpk, config);
+    create_purchase_notebook(notebook, jpk, config);
     create_profile_notebook(notebook, config);
     return notebook;
 }

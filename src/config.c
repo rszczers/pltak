@@ -8,6 +8,7 @@
 #include "jpk.h"
 #include <assert.h>
 
+
 typedef struct {
     char* DomyslnyKodWaluty;
     char* KodUrzedu;
@@ -30,10 +31,6 @@ typedef struct {
 
 TakConfig* parseConfig() {
     TakConfig* config = (TakConfig*)malloc(sizeof(TakConfig));
-    config->purchaseColumns = (JPKColumns*)malloc(sizeof(JPKColumns));
-    config->sellColumns = (JPKColumns*)malloc(sizeof(JPKColumns));
-    config->purchaseColumns->next = NULL;
-    config->sellColumns->next = NULL;
 
     FILE *fp;
     char *line = NULL;
@@ -127,26 +124,38 @@ TakConfig* parseConfig() {
                         asprintf(&(config->Poczta), "%s",
                                cur == NULL ? "" : cur);
                 } else if (strcmp(token, "sellColumns") == 0) {
-                    token = strtok(NULL, "=");
-                    char *buffer;
-                    asprintf(&buffer, "%s", token);
-                    buffer = strtok(token, ":\n");
-                    while (buffer != NULL) {
-                        char* buffer_2;
-                        asprintf(&buffer_2, "%s", buffer);
-                        addColumn(config->sellColumns, buffer_2);
-                        buffer = strtok(NULL, ":\n");
+                    token = strtok(NULL, "=\n");
+                    if (token != NULL) {
+                        config->sellColumns = (JPKColumns*)malloc(sizeof(JPKColumns));
+                        config->sellColumns->next = NULL;
+                        char *buffer;
+                        asprintf(&buffer, "%s", token);
+                        buffer = strtok(token, ":\n");
+                        while (buffer != NULL) {
+                            char* buffer_2;
+                            asprintf(&buffer_2, "%s", buffer);
+                            addColumn(config->sellColumns, buffer_2);
+                            buffer = strtok(NULL, ":\n");
+                        }
+                    } else {
+                        config->sellColumns = NULL;
                     }
                 } else if (strcmp(token, "purchaseColumns") == 0) {
-                    token = strtok(NULL, "=");
-                    char *buffer;
-                    asprintf(&buffer, "%s", token);
-                    buffer = strtok(token, ":\n");
-                    while (buffer != NULL) {
-                        char* buffer_2;
-                        asprintf(&buffer_2, "%s", buffer);
-                        addColumn(config->purchaseColumns, buffer_2);
-                        buffer = strtok(NULL, ":\n");
+                    token = strtok(NULL, "=\n");
+                    if (token != NULL) {
+                        config->purchaseColumns = (JPKColumns*)malloc(sizeof(JPKColumns));
+                        config->purchaseColumns->next = NULL;
+                        char *buffer;
+                        asprintf(&buffer, "%s", token);
+                        buffer = strtok(token, ":\n");
+                        while (buffer != NULL) {
+                            char* buffer_2;
+                            asprintf(&buffer_2, "%s", buffer);
+                            addColumn(config->purchaseColumns, buffer_2);
+                            buffer = strtok(NULL, ":\n");
+                        }
+                    } else {
+                        config->purchaseColumns = NULL;
                     }
                 }
             }
@@ -318,3 +327,4 @@ void printTakConfig(TakConfig* takData) {
       printTakCols(takData->sellColumns);
       printTakCols(takData->purchaseColumns);
 }
+

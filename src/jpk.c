@@ -244,6 +244,33 @@ void addColumn(JPKColumns* col, char* title) {
     }
 }
 
+void rmColumn(JPKColumns* col, char* title) {
+    JPKColumns* prev = col;
+    while (col != NULL) {
+        if (strcmp(col->title, title) == 0) {
+            if (col->next != NULL) {
+                col->title = col->next->title;
+                col->next = col->next->next;
+            } else {
+                prev->next = NULL;
+            }
+            col = NULL;
+            return;
+        }
+        prev = col;
+        col = col->next;
+    }
+}
+
+int isElem(JPKColumns* col, char* title) {
+    while (col != NULL) {
+        if(strcmp(col->title, title) == 0)
+            return 1;
+        col = col->next;
+    }
+    return 0;
+}
+
 typedef struct {
     JPKColumns* colNames;
     int colsCount;

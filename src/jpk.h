@@ -123,6 +123,8 @@ typedef struct {
     double purchaseTotal;
 } JPK;
 
+void rmColumn(JPKColumns*, char*);
+int isElem(JPKColumns*, char*);
 void addColumn(JPKColumns*, char*);
 JPK* loadJPK(char*);
 void printSold(JPK*);
