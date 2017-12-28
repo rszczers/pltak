@@ -128,6 +128,7 @@ TakConfig* parseConfig() {
                     if (token != NULL) {
                         config->sellColumns = (JPKColumns*)malloc(sizeof(JPKColumns));
                         config->sellColumns->next = NULL;
+                        config->sellColumns->title = NULL;
                         char *buffer;
                         asprintf(&buffer, "%s", token);
                         buffer = strtok(token, ":\n");
@@ -145,6 +146,7 @@ TakConfig* parseConfig() {
                     if (token != NULL) {
                         config->purchaseColumns = (JPKColumns*)malloc(sizeof(JPKColumns));
                         config->purchaseColumns->next = NULL;
+                        config->purchaseColumns->title = NULL;
                         char *buffer;
                         asprintf(&buffer, "%s", token);
                         buffer = strtok(token, ":\n");
@@ -202,7 +204,7 @@ void saveConfig(TakConfig* tak) {
         token = col->title;
         int oldLength = strlen(purchase);
         if (oldLength == 0) {
-            purchase = token;
+            asprintf(&purchase, "%s", token);
         } else {
             char *buffer;
             int tokenLength = strlen(token);
@@ -220,9 +222,9 @@ void saveConfig(TakConfig* tak) {
     while (col != NULL) {
         token = col->title;
         int oldLength = strlen(sell);
-        if (oldLength == 0) {
-            sell = token;
-        } else {
+        if (oldLength == 0 && token != NULL) { // jeśli pole w pliku konfiguracyjnym
+            asprintf(&sell, "%s", token);      // jest puste, to wsadź tam pierwszy
+        } else {                               // z brzegu napis
             char *buffer;
             int tokenLength = strlen(token);
             buffer = sell;

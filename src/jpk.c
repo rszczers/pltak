@@ -245,21 +245,19 @@ void addColumn(JPKColumns* col, char* title) {
     }
 }
 
-void rmColumn(JPKColumns* col, char* title) {
-    JPKColumns* prev = col;
+void rmColumn(JPKColumns** col, char* title) {
+    JPKColumns* prev = (*col);
     while (col != NULL) {
-        if (strcmp(col->title, title) == 0) {
-            if (col->next != NULL) {
-                col->title = col->next->title;
-                col->next = col->next->next;
-            } else {
+        if (strcmp((*col)->title, title) == 0) {
+            if ((*col)->next != NULL) { // Jeśli są następniki
+                prev->next = (*col)->next;
+            } else { // Jeśli element jest ostatni
                 prev->next = NULL;
             }
-            col = NULL;
             return;
         }
-        prev = col;
-        col = col->next;
+        prev = *col;
+        col = &((*col)->next);
     }
 }
 
@@ -331,145 +329,138 @@ JPKProfile* getProfile(tData* data) {
 }
 
 char* sell_d2m(JPK* data, int i, int j) {
-    char *out;
-    if (i == 0) {
-        JPKColumns* category = data->colNames;
-        for (int k = 0; k < j; ++k) {
-            category = category->next;
+    char *out = "";
+    if (data->sold != NULL) {
+        if (i == 0) {
+            JPKColumns* category = data->colNames;
+            for (int k = 0; k < j; ++k) {
+                category = category->next;
+            }
+            out = category->title;
+        } else {
+            JPKSoldList* row = data->sold;
+            for (int k = 0; k < i-1; ++k) {
+                row = row->next;
+            }
+            JPKSold* col = row->val;
+
+            switch(j) {
+                case TYPSPRZEDAZY:
+                    asprintf(&out, "%s", col->typSprzedazy);
+                break;
+                case NRKONTRAHENTA:
+                    asprintf(&out, "%s", col->nrKontrahenta);
+                break;
+                case NAZWAKONTRAHENTA:
+                    asprintf(&out, "%s", col->nazwaKontrahenta);
+                break;
+                case ADRESKONTRAHENTA:
+                    asprintf(&out, "%s", col->adresKontrahenta);
+                break;
+                case DOWODSPRZEDAZY:
+                    asprintf(&out, "%s", col->dowodSprzedazy);
+                break;
+                case DATAWYSTAWIENIA:
+                    asprintf(&out, "%s", col->dataWystawienia);
+                break;
+                case DATASPRZEDAZY:
+                    asprintf(&out, "%s", col->dataSprzedazy);
+                break;
+                case LPSPRZEDAZY:
+                    asprintf(&out, "%d", col->lpSprzedazy);
+                break;
+                case K_10:
+                    asprintf(&out, "%.2lf", col->k_10);
+                break;
+                case K_11:
+                    asprintf(&out, "%.2lf", col->k_11);
+                break;
+                case K_12:
+                    asprintf(&out, "%.2lf", col->k_12);
+                break;
+                case K_13:
+                    asprintf(&out, "%.2lf", col->k_13);
+                break;
+                case K_14:
+                    asprintf(&out, "%.2lf", col->k_14);
+                break;
+                case K_15:
+                    asprintf(&out, "%.2lf", col->k_15);
+                break;
+                case K_16:
+                    asprintf(&out, "%.2lf", col->k_16);
+                break;
+                case K_17:
+                    asprintf(&out, "%.2lf", col->k_17);
+                break;
+                case K_18:
+                    asprintf(&out, "%.2lf", col->k_18);
+                break;
+                case K_19:
+                    asprintf(&out, "%.2lf", col->k_19);
+                break;
+                case K_20:
+                    asprintf(&out, "%.2lf", col->k_20);
+                break;
+                case K_21:
+                    asprintf(&out, "%.2lf", col->k_21);
+                break;
+                case K_22:
+                    asprintf(&out, "%.2lf", col->k_22);
+                break;
+                case K_23:
+                    asprintf(&out, "%.2lf", col->k_23);
+                break;
+                case K_24:
+                    asprintf(&out, "%.2lf", col->k_24);
+                break;
+                case K_25:
+                    asprintf(&out, "%.2lf", col->k_25);
+                break;
+                case K_26:
+                    asprintf(&out, "%.2lf", col->k_26);
+                break;
+                case K_27:
+                    asprintf(&out, "%.2lf", col->k_27);
+                break;
+                case K_28:
+                    asprintf(&out, "%.2lf", col->k_28);
+                break;
+                case K_29:
+                    asprintf(&out, "%.2lf", col->k_29);
+                break;
+                case K_30:
+                    asprintf(&out, "%.2lf", col->k_30);
+                break;
+                case K_31:
+                    asprintf(&out, "%.2lf", col->k_31);
+                break;
+                case K_32:
+                    asprintf(&out, "%.2lf", col->k_32);
+                break;
+                case K_33:
+                    asprintf(&out, "%.2lf", col->k_33);
+                break;
+                case K_34:
+                    asprintf(&out, "%.2lf", col->k_34);
+                break;
+                case K_35:
+                    asprintf(&out, "%.2lf", col->k_35);
+                break;
+                case K_36:
+                    asprintf(&out, "%.2lf", col->k_36);
+                break;
+                case K_37:
+                    asprintf(&out, "%.2lf", col->k_37);
+                break;
+                case K_38:
+                    asprintf(&out, "%.2lf", col->k_38);
+                break;
+                case K_39:
+                    asprintf(&out, "%.2lf", col->k_39);
+                break;
+            }
         }
-        return category->title;
-    }
-    // to char*
-    // i<3
-    // 3<i<10
-    // i = 64
-    // 65<i<72
-
-    // to int
-    // i=3
-    // i=65
-    // reszta double
-    JPKSoldList* row = data->sold;
-    for (int k = 0; k < i-1; ++k) {
-        row = row->next;
-    }
-    JPKSold* col = row->val;
-
-    switch(j) {
-        case TYPSPRZEDAZY:
-            asprintf(&out, "%s", col->typSprzedazy);
-        break;
-        case NRKONTRAHENTA:
-            asprintf(&out, "%s", col->nrKontrahenta);
-        break;
-        case NAZWAKONTRAHENTA:
-            asprintf(&out, "%s", col->nazwaKontrahenta);
-        break;
-        case ADRESKONTRAHENTA:
-            asprintf(&out, "%s", col->adresKontrahenta);
-        break;
-        case DOWODSPRZEDAZY:
-            asprintf(&out, "%s", col->dowodSprzedazy);
-        break;
-        case DATAWYSTAWIENIA:
-            asprintf(&out, "%s", col->dataWystawienia);
-        break;
-        case DATASPRZEDAZY:
-            asprintf(&out, "%s", col->dataSprzedazy);
-        break;
-        case LPSPRZEDAZY:
-            asprintf(&out, "%d", col->lpSprzedazy);
-        break;
-        case K_10:
-            asprintf(&out, "%.2lf", col->k_10);
-        break;
-        case K_11:
-            asprintf(&out, "%.2lf", col->k_11);
-        break;
-        case K_12:
-            asprintf(&out, "%.2lf", col->k_12);
-        break;
-        case K_13:
-            asprintf(&out, "%.2lf", col->k_13);
-        break;
-        case K_14:
-            asprintf(&out, "%.2lf", col->k_14);
-        break;
-        case K_15:
-            asprintf(&out, "%.2lf", col->k_15);
-        break;
-        case K_16:
-            asprintf(&out, "%.2lf", col->k_16);
-        break;
-        case K_17:
-            asprintf(&out, "%.2lf", col->k_17);
-        break;
-        case K_18:
-            asprintf(&out, "%.2lf", col->k_18);
-        break;
-        case K_19:
-            asprintf(&out, "%.2lf", col->k_19);
-        break;
-        case K_20:
-            asprintf(&out, "%.2lf", col->k_20);
-        break;
-        case K_21:
-            asprintf(&out, "%.2lf", col->k_21);
-        break;
-        case K_22:
-            asprintf(&out, "%.2lf", col->k_22);
-        break;
-        case K_23:
-            asprintf(&out, "%.2lf", col->k_23);
-        break;
-        case K_24:
-            asprintf(&out, "%.2lf", col->k_24);
-        break;
-        case K_25:
-            asprintf(&out, "%.2lf", col->k_25);
-        break;
-        case K_26:
-            asprintf(&out, "%.2lf", col->k_26);
-        break;
-        case K_27:
-            asprintf(&out, "%.2lf", col->k_27);
-        break;
-        case K_28:
-            asprintf(&out, "%.2lf", col->k_28);
-        break;
-        case K_29:
-            asprintf(&out, "%.2lf", col->k_29);
-        break;
-        case K_30:
-            asprintf(&out, "%.2lf", col->k_30);
-        break;
-        case K_31:
-            asprintf(&out, "%.2lf", col->k_31);
-        break;
-        case K_32:
-            asprintf(&out, "%.2lf", col->k_32);
-        break;
-        case K_33:
-            asprintf(&out, "%.2lf", col->k_33);
-        break;
-        case K_34:
-            asprintf(&out, "%.2lf", col->k_34);
-        break;
-        case K_35:
-            asprintf(&out, "%.2lf", col->k_35);
-        break;
-        case K_36:
-            asprintf(&out, "%.2lf", col->k_36);
-        break;
-        case K_37:
-            asprintf(&out, "%.2lf", col->k_37);
-        break;
-        case K_38:
-            asprintf(&out, "%.2lf", col->k_38);
-        break;
-        case K_39:
-            asprintf(&out, "%.2lf", col->k_39);
-        break;
     }
     return out;
 }

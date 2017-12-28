@@ -147,7 +147,7 @@ static void sell_filter_callback(GtkWidget* widget, gpointer data) {
         addColumn(config->sellColumns, colName);
         saveConfig(config);
     } else {
-        rmColumn(config->sellColumns, colName);
+        rmColumn(&(config->sellColumns), colName);
         saveConfig(config);
     }
 }
@@ -318,6 +318,7 @@ static GtkWidget* draw_sell_spreadsheet(TakConfig* config, JPK* data) {
 
     //Tę tablicę trzeba przesortować
     qsort(whichCols, sizeof(whichCols)/sizeof(*whichCols), sizeof(*whichCols), comp);
+
     //Na jej podstawie należy przefiltrować dane do tabeli.
     GtkWidget* table_sell = gtk_table_new(length + 1, data->soldCount + 1, FALSE);
     GtkWidget *entry, *button;
@@ -796,18 +797,19 @@ static GtkWidget* create_box_bottom() {
     GtkWidget* hbox_spacing = gtk_hbox_new(0, 0);
     GtkWidget *combo_months = gtk_combo_new();
     GList *months = NULL;
-    months = g_list_append (months, "Styczeń");
-    months = g_list_append (months, "Luty");
-    months = g_list_append (months, "Marzec"); 
-    months = g_list_append (months, "Kwiecień");
-    months = g_list_append (months, "Maj");
-    months = g_list_append (months, "Czerwiec");
-    months = g_list_append (months, "Lipiec");
-    months = g_list_append (months, "Sierpień");
-    months = g_list_append (months, "Wrzesień");
-    months = g_list_append (months, "Październik");
-    months = g_list_append (months, "Listopad");
-    months = g_list_append (months, "Grudzień");
+    months = g_list_append(months, "Styczeń");
+    months = g_list_append(months, "Luty");
+    months = g_list_append(months, "Marzec");
+    months = g_list_append(months, "Kwiecień");
+    months = g_list_append(months, "Maj");
+    months = g_list_append(months, "Czerwiec");
+    months = g_list_append(months, "Lipiec");
+    months = g_list_append(months, "Sierpień");
+    months = g_list_append(months, "Wrzesień");
+    months = g_list_append(months, "Październik");
+    months = g_list_append(months, "Listopad");
+    months = g_list_append(months, "Grudzień");
+
     gtk_combo_set_popdown_strings(GTK_COMBO(combo_months), months);
     gtk_box_pack_start(GTK_BOX(hbox_date), combo_months, 1, 1, 0);
     gtk_box_pack_start(GTK_BOX(hbox_bottom), hbox_spacing, 1, 1, 0);
