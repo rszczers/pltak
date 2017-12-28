@@ -252,7 +252,7 @@ static void create_sell_col_filter(GtkWidget* widget, JPK* jpk, TakConfig* confi
         data->name = title->title;
         check_sell = gtk_check_button_new_with_label(title->title);
         gtk_toggle_button_set_active(
-                GTK_TOGGLE_BUTTON (check_sell), 
+                GTK_TOGGLE_BUTTON (check_sell),
                 isElem(config->sellColumns, title->title));
         g_signal_connect(GTK_TOGGLE_BUTTON(check_sell), "clicked",
                         G_CALLBACK(sell_filter_callback), data);
@@ -272,7 +272,7 @@ static void create_pur_col_filter(GtkWidget* widget, JPK* jpk, TakConfig* config
         data->name = title->title;
         check_purchase = gtk_check_button_new_with_label(title->title);
         gtk_toggle_button_set_active(
-                GTK_TOGGLE_BUTTON (check_purchase), 
+                GTK_TOGGLE_BUTTON (check_purchase),
                 isElem(config->purchaseColumns, title->title));
         g_signal_connect(GTK_TOGGLE_BUTTON(check_purchase), "clicked",
                         G_CALLBACK(purchase_filter_callback), data);
@@ -281,25 +281,54 @@ static void create_pur_col_filter(GtkWidget* widget, JPK* jpk, TakConfig* config
     }
 }
 
+int comp(const void * elem1, const void * elem2) {
+    int f = *((int*)elem1);
+    int s = *((int*)elem2);
+    if (f > s) return  1;
+    if (f < s) return -1;
+    return 0;
+}
+
 static GtkWidget* draw_sell_spreadsheet(TakConfig* config, JPK* data) {
     JPKColumns* col = config->sellColumns;
     int length = 0;
+
     while (col != NULL) {
         length++;
         col = col->next;
     }
-	col = config->sellColumns;
 
+    col = config->sellColumns;
+    int whichCols[length]; // Zawiera numery kolumn do wyświetlenia w porządku występowania
+    JPKColumns* titles;    // w konfiguracji
+    int j;
+    for (int i = 0; i < length; ++i) {
+        j = 0;
+        titles = data->colNames;
+        while (titles != NULL) {
+            if (strcmp(col->title, titles->title) == 0) {
+                    whichCols[i] = j;
+            }
+            j++;
+            titles = titles->next;
+        }
+        col = col->next;
+    }
+
+    //Tę tablicę trzeba przesortować
+    qsort(whichCols, sizeof(whichCols)/sizeof(*whichCols), sizeof(*whichCols), comp);
+    //Na jej podstawie należy przefiltrować dane do tabeli.
     GtkWidget* table_sell = gtk_table_new(length + 1, data->soldCount + 1, FALSE);
     GtkWidget *entry, *button;
     gtk_table_set_homogeneous(GTK_TABLE(table_sell), FALSE);
     char* buffer = (char*)malloc(64);
+
+    col = config->sellColumns;
     for (int i = 0; i < length + 1; i++) {
         if (i > 0) {
             gtk_table_attach_defaults(GTK_TABLE(table_sell),
-                    gtk_label_new(col->title),
-                    i, i+1, 0, 1);
-			col = col->next;
+                        gtk_label_new(sell_d2m(data, 0, whichCols[i-1])),
+                        i, i+1, 0, 1);
         }
         for (int j = 1; j < data->soldCount + 1; j++) {
             if (i == 0) {
@@ -308,8 +337,8 @@ static GtkWidget* draw_sell_spreadsheet(TakConfig* config, JPK* data) {
                         button,
                         i, i+1, j, j+1);
             } else {
-                sprintf (buffer, "(%d,%d)", i, j);
-                entry = gtk_entry_new ();
+                sprintf(buffer, "%s", sell_d2m(data, j, whichCols[i-1]));
+                entry = gtk_entry_new();
                 gtk_entry_set_text (GTK_ENTRY(entry), buffer);
                 gtk_table_attach_defaults (GTK_TABLE(table_sell),
                         entry,

@@ -1,6 +1,91 @@
 #ifndef JPK_H_
 #define JPK_H_
 #include "parse.h"
+
+typedef enum {
+    KODFORMULARZA = 1,
+    KODSYSTEMOWY,
+    WERSJASCHEMY,
+    WARIANTFORMULARZA,
+    CELZLOZENIA,
+    DATAWYTWORZENIAJPK,
+    DATAOD,
+    DATADO,
+    DOMYSLNYKODWALUTY,
+    KODURZEDU,
+    NIP,
+    PELNANAZWA,
+    REGON,
+    KODKRAJU,
+    WOJEWODZTWO,
+    POWIAT,
+    GMINA,
+    ULICA,
+    NRDOMU,
+    NRLOKALU,
+    MIEJSCOWOSC,
+    KODPOCZTOWY,
+    POCZTA,
+    TYPSPRZEDAZY,
+    LPSPRZEDAZY,
+    NRKONTRAHENTA,
+    NAZWAKONTRAHENTA,
+    ADRESKONTRAHENTA,
+    DOWODSPRZEDAZY,
+    DATAWYSTAWIENIA,
+    DATASPRZEDAZY,
+    K_10,
+    K_11,
+    K_12,
+    K_13,
+    K_14,
+    K_15,
+    K_16,
+    K_17,
+    K_18,
+    K_19,
+    K_20,
+    K_21,
+    K_22,
+    K_23,
+    K_24,
+    K_25,
+    K_26,
+    K_27,
+    K_28,
+    K_29,
+    K_30,
+    K_31,
+    K_32,
+    K_33,
+    K_34,
+    K_35,
+    K_36,
+    K_37,
+    K_38,
+    K_39,
+    LICZBAWIERSZYSPRZEDAZY,
+    PODATEKNALEZNY,
+    TYPZAKUPU,
+    LPZAKUPU,
+    NRDOSTAWCY,
+    NAZWADOSTAWCY,
+    ADRESDOSTAWCY,
+    DOWODZAKUPU,
+    DATAZAKUPU,
+    DATAWPLYWU,
+    K_43,
+    K_44,
+    K_45,
+    K_46,
+    K_47,
+    K_48,
+    K_49,
+    K_50,
+    LICZBAWIERSZYZAKUPOW,
+    PODATEKNALICZONY
+} JPKCol;
+
 typedef struct sHeader {
     char* kodFormularza;
     char* kodSystemowy;
@@ -122,7 +207,7 @@ typedef struct {
     int purchaseCount;
     double purchaseTotal;
 } JPK;
-
+char* sell_d2m(JPK*, int, int);
 void rmColumn(JPKColumns*, char*);
 int isElem(JPKColumns*, char*);
 void addColumn(JPKColumns*, char*);
