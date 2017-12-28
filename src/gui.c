@@ -166,7 +166,7 @@ static void purchase_filter_callback(GtkWidget* widget, gpointer data) {
         addColumn(config->purchaseColumns, colName);
         saveConfig(config);
     } else {
-        rmColumn(config->purchaseColumns, colName);
+        rmColumn(&(config->purchaseColumns), colName);
         saveConfig(config);
     }
 }
@@ -794,27 +794,58 @@ static GtkWidget* create_box_bottom() {
     gtk_box_pack_start(GTK_BOX(hbox_bottom), radio_aim, 0, 1, 0);
 
     GtkWidget* hbox_date = gtk_hbox_new(0, 0);
-    GtkWidget* hbox_spacing = gtk_hbox_new(0, 0);
-    GtkWidget *combo_months = gtk_combo_new();
-    GList *months = NULL;
-    months = g_list_append(months, "Styczeń");
-    months = g_list_append(months, "Luty");
-    months = g_list_append(months, "Marzec");
-    months = g_list_append(months, "Kwiecień");
-    months = g_list_append(months, "Maj");
-    months = g_list_append(months, "Czerwiec");
-    months = g_list_append(months, "Lipiec");
-    months = g_list_append(months, "Sierpień");
-    months = g_list_append(months, "Wrzesień");
-    months = g_list_append(months, "Październik");
-    months = g_list_append(months, "Listopad");
-    months = g_list_append(months, "Grudzień");
+    GtkWidget* opt_menu = gtk_option_menu_new();
+    GtkWidget* menu = gtk_menu_new();
+    GtkWidget *item;
+    item = gtk_menu_item_new_with_label("Styczeń");
+    gtk_widget_show (item);
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+    item = gtk_menu_item_new_with_label("Luty");
+    gtk_widget_show (item);
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+    item = gtk_menu_item_new_with_label("Marzec");
+    gtk_widget_show (item);
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+    item = gtk_menu_item_new_with_label("Kwiecień");
+    gtk_widget_show (item);
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+    item = gtk_menu_item_new_with_label("Maj");
+    gtk_widget_show (item);
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+    item = gtk_menu_item_new_with_label("Czerwiec");
+    gtk_widget_show (item);
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+    item = gtk_menu_item_new_with_label("Lipiec");
+    gtk_widget_show (item);
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+    item = gtk_menu_item_new_with_label("Sierpień");
+    gtk_widget_show (item);
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+    item = gtk_menu_item_new_with_label("Wrzesień");
+    gtk_widget_show (item);
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+    item = gtk_menu_item_new_with_label("Październik");
+    gtk_widget_show (item);
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+    item = gtk_menu_item_new_with_label("Listopad");
+    gtk_widget_show (item);
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+    item = gtk_menu_item_new_with_label("Grudzień");
+    gtk_widget_show (item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 
-    gtk_combo_set_popdown_strings(GTK_COMBO(combo_months), months);
-    gtk_box_pack_start(GTK_BOX(hbox_date), combo_months, 1, 1, 0);
-    gtk_box_pack_start(GTK_BOX(hbox_bottom), hbox_spacing, 1, 1, 0);
+    gtk_option_menu_set_menu(GTK_OPTION_MENU(opt_menu), menu);
+
+    GtkWidget* hbox_space = gtk_hbox_new(0, 0);
+    gtk_box_pack_start(GTK_BOX(hbox_date), hbox_space, 1, 1, 0);
+    gtk_box_pack_start(GTK_BOX(hbox_date), opt_menu, 0, 0, 0);
+    gtk_widget_show(opt_menu);
     GtkWidget* entry_year = gtk_entry_new();
-    gtk_box_pack_start(GTK_BOX(hbox_date), entry_year, 1, 1, 0);
+    gtk_entry_set_alignment(GTK_ENTRY(entry_year), 1);
+    gtk_entry_set_max_length(GTK_ENTRY(entry_year), 4);
+    gtk_entry_set_text(GTK_ENTRY(entry_year), "2017");
+
+    gtk_box_pack_start(GTK_BOX(hbox_date), entry_year, 0, 0, 0);
     gtk_box_pack_start(GTK_BOX(hbox_bottom), hbox_date, 1, 1, 0);
     return hbox_bottom;
 }
