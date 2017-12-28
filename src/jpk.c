@@ -344,7 +344,7 @@ char* sell_d2m(JPK* data, int i, int j) {
     // 3<i<10
     // i = 64
     // 65<i<72
-    
+
     // to int
     // i=3
     // i=65
@@ -354,7 +354,7 @@ char* sell_d2m(JPK* data, int i, int j) {
         row = row->next;
     }
     JPKSold* col = row->val;
-    
+
     switch(j) {
         case TYPSPRZEDAZY:
             asprintf(&out, "%s", col->typSprzedazy);

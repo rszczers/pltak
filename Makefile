@@ -5,12 +5,12 @@ PROJECT_NAME=tak
 ARGS=
 
 all: main.o parse.o jpk.o tocsv.o gui.o config.o
-	$(CC) $(CFLAGS) -g $(BUILD_DIR)main.o $(BUILD_DIR)config.o $(BUILD_DIR)tocsv.o $(BUILD_DIR)jpk.o $(BUILD_DIR)parse.o $(BUILD_DIR)gui.o -o $(BUILD_DIR)$(PROJECT_NAME)
+	$(CC) $(CFLAGS) -g $(BUILD_DIR)main.o $(BUILD_DIR)config.o $(BUILD_DIR)tocsv.o $(BUILD_DIR)jpk.o $(BUILD_DIR)parse.o $(BUILD_DIR)gui.o $(BUILD_DIR)utils.o -o $(BUILD_DIR)$(PROJECT_NAME)
 
 main.o: ./src/main.c jpk.o tocsv.o gui.o
 	$(CC) -g -c ./src/main.c -o $(BUILD_DIR)$@
 
-gui.o: ./src/gui.c jpk.o config.o
+gui.o: ./src/gui.c jpk.o config.o utils.o
 	gcc -c -o $(BUILD_DIR)$@ ./src/gui.c $(CFLAGS)
 
 config.o: ./src/config.c jpk.o
@@ -24,6 +24,9 @@ jpk.o: ./src/jpk.c parse.o
 
 parse.o: ./src/parse.c
 	$(CC) -g -c ./src/parse.c -o $(BUILD_DIR)$@
+
+utils.o: ./src/utils.c
+	$(CC) -g -c ./src/utils.c -o $(BUILD_DIR)$@
 
 clean:
 	rm -f build/*.o

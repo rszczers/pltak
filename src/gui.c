@@ -8,6 +8,7 @@
 #include <ctype.h>
 #include "jpk.h"
 #include "config.h"
+#include "utils.h"
 
 typedef struct USNode {
     char* code;
@@ -337,7 +338,7 @@ static GtkWidget* draw_sell_spreadsheet(TakConfig* config, JPK* data) {
                         button,
                         i, i+1, j, j+1);
             } else {
-                sprintf(buffer, "%s", sell_d2m(data, j, whichCols[i-1]));
+                sprintf(buffer, "%s", sell_d2m(data, j, whichCols[i-1]+1));
                 entry = gtk_entry_new();
                 gtk_entry_set_text (GTK_ENTRY(entry), buffer);
                 gtk_table_attach_defaults (GTK_TABLE(table_sell),
@@ -790,6 +791,29 @@ static GtkWidget* create_box_bottom() {
          gtk_radio_button_get_group(
           GTK_RADIO_BUTTON(radio_aim_gr)), "Druga korekta");
     gtk_box_pack_start(GTK_BOX(hbox_bottom), radio_aim, 0, 1, 0);
+
+    GtkWidget* hbox_date = gtk_hbox_new(0, 0);
+    GtkWidget* hbox_spacing = gtk_hbox_new(0, 0);
+    GtkWidget *combo_months = gtk_combo_new();
+    GList *months = NULL;
+    months = g_list_append (months, "Styczeń");
+    months = g_list_append (months, "Luty");
+    months = g_list_append (months, "Marzec"); 
+    months = g_list_append (months, "Kwiecień");
+    months = g_list_append (months, "Maj");
+    months = g_list_append (months, "Czerwiec");
+    months = g_list_append (months, "Lipiec");
+    months = g_list_append (months, "Sierpień");
+    months = g_list_append (months, "Wrzesień");
+    months = g_list_append (months, "Październik");
+    months = g_list_append (months, "Listopad");
+    months = g_list_append (months, "Grudzień");
+    gtk_combo_set_popdown_strings(GTK_COMBO(combo_months), months);
+    gtk_box_pack_start(GTK_BOX(hbox_date), combo_months, 1, 1, 0);
+    gtk_box_pack_start(GTK_BOX(hbox_bottom), hbox_spacing, 1, 1, 0);
+    GtkWidget* entry_year = gtk_entry_new();
+    gtk_box_pack_start(GTK_BOX(hbox_date), entry_year, 1, 1, 0);
+    gtk_box_pack_start(GTK_BOX(hbox_bottom), hbox_date, 1, 1, 0);
     return hbox_bottom;
 }
 
