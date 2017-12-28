@@ -7,7 +7,7 @@ ARGS=
 
 all: rebuild_configdir main.o parse.o jpk.o tocsv.o gui.o config.o
 	cp ./data/us_codes.dat ~/.pltak/
-	$(CC) $(CFLAGS) -g $(BUILD_DIR)main.o $(BUILD_DIR)config.o $(BUILD_DIR)tocsv.o $(BUILD_DIR)jpk.o $(BUILD_DIR)parse.o $(BUILD_DIR)gui.o $(BUILD_DIR)utils.o -o $(BUILD_DIR)$(PROJECT_NAME)
+	$(CC) $(BUILD_DIR)main.o $(BUILD_DIR)config.o $(BUILD_DIR)tocsv.o $(BUILD_DIR)jpk.o $(BUILD_DIR)parse.o $(BUILD_DIR)gui.o $(BUILD_DIR)utils.o -o $(BUILD_DIR)$(PROJECT_NAME) $(CFLAGS) -g 
 
 rebuild_configdir:
 ifeq ($(wildcard $(BUILD_DIR)),)
@@ -17,7 +17,7 @@ ifeq ($(wildcard $(CONFIG_DIR)),)
 		mkdir $(CONFIG_DIR)
 endif
 
-main.o: ./src/main.c jpk.o tocsv.o gui.o parse.o
+main.o: ./src/main.c jpk.o tocsv.o gui.o
 	$(CC) -g -c ./src/main.c -o $(BUILD_DIR)$@
 
 gui.o: ./src/gui.c jpk.o config.o utils.o
