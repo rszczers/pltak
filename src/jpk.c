@@ -4,9 +4,9 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <regex.h>
-#include "parse.h"
 #include <assert.h>
-
+#include "parse.h"
+#include "utils.h"
 typedef enum {
     COLUMN_NAME = 1,
     HEADER,

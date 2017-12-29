@@ -282,14 +282,6 @@ static void create_pur_col_filter(GtkWidget* widget, JPK* jpk, TakConfig* config
     }
 }
 
-int comp(const void * elem1, const void * elem2) {
-    int f = *((int*)elem1);
-    int s = *((int*)elem2);
-    if (f > s) return  1;
-    if (f < s) return -1;
-    return 0;
-}
-
 static GtkWidget* draw_sell_spreadsheet(TakConfig* config, JPK* data) {
     JPKColumns* col = config->sellColumns;
     int length = 0;
@@ -778,7 +770,34 @@ static GtkWidget* create_notebooks(JPK* jpk, TakConfig* config) {
     create_profile_notebook(notebook, config);
     return notebook;
 }
+static GtkWidget* create_date_menu() {
+    GtkWidget* hbox_date = gtk_hbox_new(0, 0);
+    Date* date = getDate();
+    GtkWidget* opt_menu = gtk_option_menu_new();
+    GtkWidget* menu = gtk_menu_new();
+    char* months[12] = {"Styczeń", "Luty", "Marzec", "Kwiecień", "Maj",
+        "Czerwiec", "Lipiec", "Sierpień", "Wrzesień", "Październik",
+        "Listopad", "Grudzień"};
+    for (int i = 0; i < 12; ++i) {
+        GtkWidget* item = gtk_menu_item_new_with_label(
+                months[(getMonth(date) - 1 + i) % 12]);
+        gtk_widget_show(item);
+        gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+    }
+    GtkWidget* hbox_space = gtk_hbox_new(0, 0);
+    gtk_box_pack_start(GTK_BOX(hbox_date), hbox_space, 1, 1, 0);
+    gtk_option_menu_set_menu(GTK_OPTION_MENU(opt_menu), menu);
+    gtk_box_pack_start(GTK_BOX(hbox_date), opt_menu, 0, 0, 0);
+    gtk_widget_show(opt_menu);
 
+    GtkWidget* entry_year = gtk_entry_new();
+    gtk_entry_set_alignment(GTK_ENTRY(entry_year), 1);
+    gtk_entry_set_max_length(GTK_ENTRY(entry_year), 4);
+    gtk_entry_set_text(GTK_ENTRY(entry_year), date->year);
+    gtk_box_pack_start(GTK_BOX(hbox_date), entry_year, 0, 0, 0);
+
+    return hbox_date;
+}
 static GtkWidget* create_box_bottom() {
     GtkWidget* hbox_bottom = gtk_hbox_new(0, 15);
     GtkWidget* radio_aim_gr = gtk_radio_button_new_with_label(NULL,
@@ -793,60 +812,7 @@ static GtkWidget* create_box_bottom() {
           GTK_RADIO_BUTTON(radio_aim_gr)), "Druga korekta");
     gtk_box_pack_start(GTK_BOX(hbox_bottom), radio_aim, 0, 1, 0);
 
-    GtkWidget* hbox_date = gtk_hbox_new(0, 0);
-    GtkWidget* opt_menu = gtk_option_menu_new();
-    GtkWidget* menu = gtk_menu_new();
-    GtkWidget *item;
-    item = gtk_menu_item_new_with_label("Styczeń");
-    gtk_widget_show (item);
-    gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-    item = gtk_menu_item_new_with_label("Luty");
-    gtk_widget_show (item);
-    gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-    item = gtk_menu_item_new_with_label("Marzec");
-    gtk_widget_show (item);
-    gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-    item = gtk_menu_item_new_with_label("Kwiecień");
-    gtk_widget_show (item);
-    gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-    item = gtk_menu_item_new_with_label("Maj");
-    gtk_widget_show (item);
-    gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-    item = gtk_menu_item_new_with_label("Czerwiec");
-    gtk_widget_show (item);
-    gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-    item = gtk_menu_item_new_with_label("Lipiec");
-    gtk_widget_show (item);
-    gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-    item = gtk_menu_item_new_with_label("Sierpień");
-    gtk_widget_show (item);
-    gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-    item = gtk_menu_item_new_with_label("Wrzesień");
-    gtk_widget_show (item);
-    gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-    item = gtk_menu_item_new_with_label("Październik");
-    gtk_widget_show (item);
-    gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-    item = gtk_menu_item_new_with_label("Listopad");
-    gtk_widget_show (item);
-    gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-    item = gtk_menu_item_new_with_label("Grudzień");
-    gtk_widget_show (item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
-
-    gtk_option_menu_set_menu(GTK_OPTION_MENU(opt_menu), menu);
-
-    GtkWidget* hbox_space = gtk_hbox_new(0, 0);
-    gtk_box_pack_start(GTK_BOX(hbox_date), hbox_space, 1, 1, 0);
-    gtk_box_pack_start(GTK_BOX(hbox_date), opt_menu, 0, 0, 0);
-    gtk_widget_show(opt_menu);
-    GtkWidget* entry_year = gtk_entry_new();
-    gtk_entry_set_alignment(GTK_ENTRY(entry_year), 1);
-    gtk_entry_set_max_length(GTK_ENTRY(entry_year), 4);
-    gtk_entry_set_text(GTK_ENTRY(entry_year), "2017");
-
-    gtk_box_pack_start(GTK_BOX(hbox_date), entry_year, 0, 0, 0);
-    gtk_box_pack_start(GTK_BOX(hbox_bottom), hbox_date, 1, 1, 0);
+    gtk_box_pack_start(GTK_BOX(hbox_bottom), create_date_menu(), 1, 1, 0);
     return hbox_bottom;
 }
 
@@ -866,4 +832,3 @@ void drawGui(JPK* jpk) {
     gtk_widget_show_all(window);
     gtk_main();
 }
-
