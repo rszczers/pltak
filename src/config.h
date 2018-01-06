@@ -25,4 +25,5 @@ typedef struct {
 TakConfig* parseConfig();
 void saveConfig(TakConfig*);
 void printTakConfig(TakConfig*);
+void printTakCols(JPKColumns*); 
 #endif /* ifndef CONFIG_H_ */

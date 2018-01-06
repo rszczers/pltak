@@ -235,6 +235,7 @@ typedef struct ColNode {
 void addColumn(JPKColumns* col, char* title) {
     if (col->title == NULL && col->next == NULL) {
         col->title = title;
+        col->next = NULL;
     } else if (col->next == NULL) {
         JPKColumns* newNode = (JPKColumns*)malloc(sizeof(JPKColumns));
         newNode->title = title;
@@ -247,12 +248,16 @@ void addColumn(JPKColumns* col, char* title) {
 
 void rmColumn(JPKColumns** col, char* title) {
     JPKColumns* prev = (*col);
-    while (col != NULL) {
+    while (*col != NULL) {
         if (strcmp((*col)->title, title) == 0) {
-            if ((*col)->next != NULL) { // Jeśli są następniki
+            // Jeśli to czoło listy
+            if ((*col) == prev) (*col) = (*col)->next;
+            else if ((*col)->next != NULL) { // Jeśli są następniki
                 prev->next = (*col)->next;
             } else { // Jeśli element jest ostatni
+                // Jeśli to czoło listy
                 prev->next = NULL;
+                *col = NULL;
             }
             return;
         }

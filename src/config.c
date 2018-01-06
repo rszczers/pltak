@@ -42,7 +42,7 @@ TakConfig* parseConfig() {
     char *filename;
     asprintf(&filename, "%s/.pltak/config", homedir);
 
-    if (access(filename, R_OK | F_OK) != -1) {
+    if (access(filename, F_OK) == 0) {
         fp = fopen(filename, "r");
         char *token;
         while ((read = getline(&line, &len, fp)) != -1) {
@@ -289,13 +289,13 @@ void saveConfig(TakConfig* tak) {
 
 void printTakCols(JPKColumns* data) {
     while (data != NULL) {
-        printf("\t%s\n", data->title);
+        printf(" \t%s\n", data->title);
         data = data->next;
     }
 }
 
 void printTakConfig(TakConfig* takData) {
-    assert(takData->sellColumns != NULL);
+//    assert(takData->sellColumns != NULL);
     printf("Konfiguracja: %s,\n"
             "\t%s,\n"
             "\t%s,\n"
