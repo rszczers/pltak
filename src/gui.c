@@ -138,6 +138,19 @@ typedef struct {
     JPK* jpk;
 } ColFilter;
 
+typedef struct {
+    int i;
+    int j;
+    JPK* jpk;
+} JPKChange;
+
+static void sell_entry_callback(GtkWidget* widget, gpointer data) {
+    JPKChange* change = (JPKChange*)data;
+    char* input = (char*)gtk_entry_get_text(GTK_ENTRY(widget));
+    changeData(change->jpk, change->i, change->j, input);
+//    printSold(change->jpk);
+}
+
 static void waluta_callback(GtkWidget* widget, gpointer data) {
     TakConfig* config = (TakConfig*) data;
     config->DomyslnyKodWaluty = (char*)gtk_entry_get_text(GTK_ENTRY(widget));
@@ -322,16 +335,23 @@ static GtkWidget* draw_sell_spreadsheet(TakConfig* config, JPK* data) {
             } else {
                 sprintf(buffer, "%s", sell_d2m(data, j, whichCols[i-2]+1));
                 entry = gtk_entry_new();
+                JPKChange* change = (JPKChange*)malloc(sizeof(JPKChange));
+                change->i = j;
+                change->j = whichCols[i-2]+1;
+                change->jpk = data;
                 gtk_widget_set_size_request(entry, 50, -1);
-                gtk_entry_set_text (GTK_ENTRY(entry), buffer);
+                gtk_entry_set_text(GTK_ENTRY(entry), buffer);
                 gtk_table_attach_defaults (GTK_TABLE(table_sell),
                         entry,
                         i, i+1, j, j+1);
+                g_signal_connect(GTK_ENTRY(entry), "changed",
+                        G_CALLBACK(sell_entry_callback), change);
+
             }
         }
     }
     GdkColor color;
-    gdk_color_parse ("#A3BE8C", &color);
+    gdk_color_parse("#A3BE8C", &color);
     GtkWidget *button_add_row = gtk_button_new_with_label("+");
     gtk_widget_modify_bg(GTK_WIDGET(button_add_row), GTK_STATE_NORMAL, &color);
     gtk_table_attach_defaults(GTK_TABLE(table_sell), button_add_row, 0, 2, data->soldCount + 1, data->soldCount + 2);

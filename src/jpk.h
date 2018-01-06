@@ -207,6 +207,8 @@ typedef struct {
     int purchaseCount;
     double purchaseTotal;
 } JPK;
+
+JPK* changeData(JPK*, int, int, char*);
 char* sell_d2m(JPK*, int, int);
 void rmColumn(JPKColumns**, char*); 
 int isElem(JPKColumns*, char*);

@@ -333,6 +333,158 @@ JPKProfile* getProfile(tData* data) {
     return profile;
 }
 
+double m2d(char* cell) {
+    char *buffer = (char*)malloc(strlen(cell) + 1);
+    buffer = strdup(cell);
+    bool frac = false;
+
+    // Zamień przecinki z notacji europejskiej na kropki
+    for (char *p = buffer; *p != '\0'; ++p) {
+        if (*p == ',') {
+            *p = '.';
+            frac = true;
+        }
+    }
+
+    // Wyzeruj wszystkie cyfry od drugiego miejsca dziesiętnego
+    if (frac) {
+        char *p = &buffer[0];
+        while (*p != '.')
+            p++;
+        p = p + 3;
+        while (*p != '\0') {
+            *p = '0';
+            p++;
+        }
+    }
+
+    return strtod(buffer, NULL);
+}
+
+JPK* changeData(JPK* data, int i, int j, char* input) {
+    char *out = "";
+    //przejdz do i-tego wiersza
+    JPKSoldList *current = data->sold;
+    for (int k = 1; k < i; k++) {
+        current = current->next;
+    }
+
+    switch(j) {
+        case NRKONTRAHENTA:
+             asprintf(&current->val->nrKontrahenta, "%s", input);
+        break;
+        case NAZWAKONTRAHENTA:
+            asprintf(&current->val->nazwaKontrahenta, "%s", input);
+        break;
+        case ADRESKONTRAHENTA:
+            asprintf(&current->val->adresKontrahenta, "%s", input);
+        break;
+        case DOWODSPRZEDAZY:
+            asprintf(&current->val->dowodSprzedazy, "%s", input);
+        break;
+        case DATAWYSTAWIENIA:
+            asprintf(&current->val->dataWystawienia, "%s", input);
+        break;
+        case DATASPRZEDAZY:
+            asprintf(&current->val->dataSprzedazy, "%s", input);
+        break;
+        case LPSPRZEDAZY:
+            current->val->lpSprzedazy = atoi(input);
+        break;
+        case K_10:
+            current->val->k_10 = m2d(input);
+        break;
+        case K_11:
+            current->val->k_11 = m2d(input);
+        break;
+        case K_12:
+            current->val->k_12 = m2d(input);
+        break;
+        case K_13:
+            current->val->k_13 = m2d(input);
+        break;
+        case K_14:
+            current->val->k_14 = m2d(input);
+        break;
+        case K_15:
+            current->val->k_15 = m2d(input);
+        break;
+        case K_16:
+            current->val->k_16 = m2d(input);
+        break;
+        case K_17:
+            current->val->k_17 = m2d(input);
+        break;
+        case K_18:
+            current->val->k_18 = m2d(input);
+        break;
+        case K_19:
+            current->val->k_19 = m2d(input);
+        break;
+        case K_20:
+            current->val->k_20 = m2d(input);
+        break;
+        case K_21:
+            current->val->k_21 = m2d(input);
+        break;
+        case K_22:
+            current->val->k_22 = m2d(input);
+        break;
+        case K_23:
+            current->val->k_23 = m2d(input);
+        break;
+        case K_24:
+            current->val->k_24 = m2d(input);
+        break;
+        case K_25:
+            current->val->k_25 = m2d(input);
+        break;
+        case K_26:
+            current->val->k_26 = m2d(input);
+        break;
+        case K_27:
+            current->val->k_27 = m2d(input);
+        break;
+        case K_28:
+            current->val->k_28 = m2d(input);
+        break;
+        case K_29:
+            current->val->k_29 = m2d(input);
+        break;
+        case K_30:
+            current->val->k_30 = m2d(input);
+        break;
+        case K_31:
+            current->val->k_31 = m2d(input);
+        break;
+        case K_32:
+            current->val->k_32 = m2d(input);
+        break;
+        case K_33:
+            current->val->k_33 = m2d(input);
+        break;
+        case K_34:
+            current->val->k_34 = m2d(input);
+        break;
+        case K_35:
+            current->val->k_35 = m2d(input);
+        break;
+        case K_36:
+            current->val->k_36 = m2d(input);
+        break;
+        case K_37:
+            current->val->k_37 = m2d(input);
+        break;
+        case K_38:
+            current->val->k_38 = m2d(input);
+        break;
+        case K_39:
+            current->val->k_39 = m2d(input);
+        break;
+    }
+    return data;
+}
+
 char* sell_d2m(JPK* data, int i, int j) {
     char *out = "";
     if (data->sold != NULL) {
@@ -468,34 +620,6 @@ char* sell_d2m(JPK* data, int i, int j) {
         }
     }
     return out;
-}
-
-double m2d(char* cell) {
-    char *buffer = (char*)malloc(strlen(cell) + 1);
-    buffer = strdup(cell);
-    bool frac = false;
-
-    // Zamień przecinki z notacji europejskiej na kropki
-    for (char *p = buffer; *p != '\0'; ++p) {
-        if (*p == ',') {
-            *p = '.';
-            frac = true;
-        }
-    }
-
-    // Wyzeruj wszystkie cyfry od drugiego miejsca dziesiętnego
-    if (frac) {
-        char *p = &buffer[0];
-        while (*p != '.')
-            p++;
-        p = p + 3;
-        while (*p != '\0') {
-            *p = '0';
-            p++;
-        }
-    }
-
-    return strtod(buffer, NULL);
 }
 
 
