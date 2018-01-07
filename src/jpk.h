@@ -217,5 +217,7 @@ JPK* loadJPK(char*);
 void printSold(JPK*);
 void printPurchases(JPK*);
 double m2d(char*);
+void rmSellRow(JPK*, int);
+void addSellRow(JPK*);
 
 #endif // JPK_H_

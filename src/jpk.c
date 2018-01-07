@@ -7,6 +7,7 @@
 #include <assert.h>
 #include "parse.h"
 #include "utils.h"
+
 typedef enum {
     COLUMN_NAME = 1,
     HEADER,
@@ -361,129 +362,6 @@ double m2d(char* cell) {
     return strtod(buffer, NULL);
 }
 
-JPK* changeData(JPK* data, int i, int j, char* input) {
-    char *out = "";
-    //przejdz do i-tego wiersza
-    JPKSoldList *current = data->sold;
-    for (int k = 1; k < i; k++) {
-        current = current->next;
-    }
-
-    switch(j) {
-        case NRKONTRAHENTA:
-             asprintf(&current->val->nrKontrahenta, "%s", input);
-        break;
-        case NAZWAKONTRAHENTA:
-            asprintf(&current->val->nazwaKontrahenta, "%s", input);
-        break;
-        case ADRESKONTRAHENTA:
-            asprintf(&current->val->adresKontrahenta, "%s", input);
-        break;
-        case DOWODSPRZEDAZY:
-            asprintf(&current->val->dowodSprzedazy, "%s", input);
-        break;
-        case DATAWYSTAWIENIA:
-            asprintf(&current->val->dataWystawienia, "%s", input);
-        break;
-        case DATASPRZEDAZY:
-            asprintf(&current->val->dataSprzedazy, "%s", input);
-        break;
-        case LPSPRZEDAZY:
-            current->val->lpSprzedazy = atoi(input);
-        break;
-        case K_10:
-            current->val->k_10 = m2d(input);
-        break;
-        case K_11:
-            current->val->k_11 = m2d(input);
-        break;
-        case K_12:
-            current->val->k_12 = m2d(input);
-        break;
-        case K_13:
-            current->val->k_13 = m2d(input);
-        break;
-        case K_14:
-            current->val->k_14 = m2d(input);
-        break;
-        case K_15:
-            current->val->k_15 = m2d(input);
-        break;
-        case K_16:
-            current->val->k_16 = m2d(input);
-        break;
-        case K_17:
-            current->val->k_17 = m2d(input);
-        break;
-        case K_18:
-            current->val->k_18 = m2d(input);
-        break;
-        case K_19:
-            current->val->k_19 = m2d(input);
-        break;
-        case K_20:
-            current->val->k_20 = m2d(input);
-        break;
-        case K_21:
-            current->val->k_21 = m2d(input);
-        break;
-        case K_22:
-            current->val->k_22 = m2d(input);
-        break;
-        case K_23:
-            current->val->k_23 = m2d(input);
-        break;
-        case K_24:
-            current->val->k_24 = m2d(input);
-        break;
-        case K_25:
-            current->val->k_25 = m2d(input);
-        break;
-        case K_26:
-            current->val->k_26 = m2d(input);
-        break;
-        case K_27:
-            current->val->k_27 = m2d(input);
-        break;
-        case K_28:
-            current->val->k_28 = m2d(input);
-        break;
-        case K_29:
-            current->val->k_29 = m2d(input);
-        break;
-        case K_30:
-            current->val->k_30 = m2d(input);
-        break;
-        case K_31:
-            current->val->k_31 = m2d(input);
-        break;
-        case K_32:
-            current->val->k_32 = m2d(input);
-        break;
-        case K_33:
-            current->val->k_33 = m2d(input);
-        break;
-        case K_34:
-            current->val->k_34 = m2d(input);
-        break;
-        case K_35:
-            current->val->k_35 = m2d(input);
-        break;
-        case K_36:
-            current->val->k_36 = m2d(input);
-        break;
-        case K_37:
-            current->val->k_37 = m2d(input);
-        break;
-        case K_38:
-            current->val->k_38 = m2d(input);
-        break;
-        case K_39:
-            current->val->k_39 = m2d(input);
-        break;
-    }
-    return data;
-}
 
 char* sell_d2m(JPK* data, int i, int j) {
     char *out = "";
@@ -918,5 +796,210 @@ void printPurchases(JPK* jpk) {
         i++;
         row = row->next;
     }
+}
+
+void addSellRow(JPK* jpk) {
+    JPKSoldList* new = (JPKSoldList*)malloc(sizeof(JPKSoldList));
+    new->val = (JPKSold*)malloc(sizeof(JPKSold));
+    JPKSoldList* cur = jpk->sold;
+    JPKSoldList* prev = cur;
+    while (cur != NULL) {
+        prev = cur;
+        cur = cur->next;
+    }
+    new->val->typSprzedazy = "G";
+    new->val->adresKontrahenta = "";
+    Date* data = getDate();
+    asprintf(&new->val->dataSprzedazy, "%s-%s-%s", data->year, data->month, data->day);
+
+    asprintf(&new->val->dataWystawienia, "%s-%s-%s", data->year, data->month, data->day);
+    new->val->dowodSprzedazy = "";
+    new->val->k_10 = 0.0;
+    new->val->k_11 = 0.0;
+    new->val->k_12 = 0.0;
+    new->val->k_13 = 0.0;
+    new->val->k_14 = 0.0;
+    new->val->k_15 = 0.0;
+    new->val->k_16 = 0.0;
+    new->val->k_17 = 0.0;
+    new->val->k_18 = 0.0;
+    new->val->k_19 = 0.0;
+    new->val->k_20 = 0.0;
+    new->val->k_21 = 0.0;
+    new->val->k_22 = 0.0;
+    new->val->k_23 = 0.0;
+    new->val->k_24 = 0.0;
+    new->val->k_25 = 0.0;
+    new->val->k_26 = 0.0;
+    new->val->k_27 = 0.0;
+    new->val->k_28 = 0.0;
+    new->val->k_29 = 0.0;
+    new->val->k_30 = 0.0;
+    new->val->k_31 = 0.0;
+    new->val->k_32 = 0.0;
+    new->val->k_33 = 0.0;
+    new->val->k_34 = 0.0;
+    new->val->k_35 = 0.0;
+    new->val->k_36 = 0.0;
+    new->val->k_37 = 0.0;
+    new->val->k_38 = 0.0;
+    new->val->k_39 = 0.0;
+    new->val->lpSprzedazy = prev->val->lpSprzedazy + 1;
+    new->val->nazwaKontrahenta = "";
+    new->val->nrKontrahenta = "";
+    prev->next = new;
+    jpk->soldCount++;
+}
+
+void rmSellRow(JPK* jpk, int row) {
+    JPKSoldList* prev = jpk->sold;
+    JPKSoldList* cur = jpk->sold;
+    for (int i = 1; i < row; ++i) {
+         prev = cur;
+         cur = cur->next;
+    }
+
+    if (cur->next != NULL) {
+        if (row == 1) {
+            jpk->sold = jpk->sold->next;
+        } else {
+            prev->next = cur->next;
+        }
+    } else {
+        if (cur == prev) {
+            jpk->sold = NULL;
+        } else  {
+            prev->next = NULL;
+        }
+    }
+    jpk->soldCount = jpk->soldCount - 1;
+    jpk->soldTotal = evalTotalSold(jpk->sold);
+}
+
+JPK* changeData(JPK* data, int i, int j, char* input) {
+    char *out = "";
+    //przejdz do i-tego wiersza
+    JPKSoldList *current = data->sold;
+    for (int k = 1; k < i; k++) {
+        current = current->next;
+    }
+
+    switch(j) {
+        case NRKONTRAHENTA:
+             asprintf(&current->val->nrKontrahenta, "%s", input);
+        break;
+        case NAZWAKONTRAHENTA:
+            asprintf(&current->val->nazwaKontrahenta, "%s", input);
+        break;
+        case ADRESKONTRAHENTA:
+            asprintf(&current->val->adresKontrahenta, "%s", input);
+        break;
+        case DOWODSPRZEDAZY:
+            asprintf(&current->val->dowodSprzedazy, "%s", input);
+        break;
+        case DATAWYSTAWIENIA:
+            asprintf(&current->val->dataWystawienia, "%s", input);
+        break;
+        case DATASPRZEDAZY:
+            asprintf(&current->val->dataSprzedazy, "%s", input);
+        break;
+        case LPSPRZEDAZY:
+            current->val->lpSprzedazy = atoi(input);
+        break;
+        case K_10:
+            current->val->k_10 = m2d(input);
+        break;
+        case K_11:
+            current->val->k_11 = m2d(input);
+        break;
+        case K_12:
+            current->val->k_12 = m2d(input);
+        break;
+        case K_13:
+            current->val->k_13 = m2d(input);
+        break;
+        case K_14:
+            current->val->k_14 = m2d(input);
+        break;
+        case K_15:
+            current->val->k_15 = m2d(input);
+        break;
+        case K_16:
+            current->val->k_16 = m2d(input);
+        break;
+        case K_17:
+            current->val->k_17 = m2d(input);
+        break;
+        case K_18:
+            current->val->k_18 = m2d(input);
+        break;
+        case K_19:
+            current->val->k_19 = m2d(input);
+        break;
+        case K_20:
+            current->val->k_20 = m2d(input);
+        break;
+        case K_21:
+            current->val->k_21 = m2d(input);
+        break;
+        case K_22:
+            current->val->k_22 = m2d(input);
+        break;
+        case K_23:
+            current->val->k_23 = m2d(input);
+        break;
+        case K_24:
+            current->val->k_24 = m2d(input);
+        break;
+        case K_25:
+            current->val->k_25 = m2d(input);
+        break;
+        case K_26:
+            current->val->k_26 = m2d(input);
+        break;
+        case K_27:
+            current->val->k_27 = m2d(input);
+        break;
+        case K_28:
+            current->val->k_28 = m2d(input);
+        break;
+        case K_29:
+            current->val->k_29 = m2d(input);
+        break;
+        case K_30:
+            current->val->k_30 = m2d(input);
+        break;
+        case K_31:
+            current->val->k_31 = m2d(input);
+        break;
+        case K_32:
+            current->val->k_32 = m2d(input);
+        break;
+        case K_33:
+            current->val->k_33 = m2d(input);
+        break;
+        case K_34:
+            current->val->k_34 = m2d(input);
+        break;
+        case K_35:
+            current->val->k_35 = m2d(input);
+        break;
+        case K_36:
+            current->val->k_36 = m2d(input);
+        break;
+        case K_37:
+            current->val->k_37 = m2d(input);
+        break;
+        case K_38:
+            current->val->k_38 = m2d(input);
+        break;
+        case K_39:
+            current->val->k_39 = m2d(input);
+        break;
+    }
+
+    data->purchaseTotal = evalTotalPurchase(data->purchase);
+    data->soldTotal = evalTotalSold(data->sold);
+    return data;
 }
 
