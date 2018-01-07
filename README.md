@@ -1,6 +1,6 @@
 # PLTak
 
-Rozwijam tutaj prostą aplikację ułatwiającą edycję Jednolitych Plików Kontrolnych (JPK).
+W sporym pośpiechu rozwijam tutaj aplikację ułatwiającą edycję Jednolitych Plików Kontrolnych (JPK).
 
 ## Funkcjonalności
 * wprowadzenie PROSTEGO interfejsu użytkownika do ŁATWEJ edycji JPK,
