@@ -818,6 +818,7 @@ static GtkWidget* create_date_menu() {
     GtkWidget* hbox_date = gtk_hbox_new(0, 0);
     Date* date = getDate();
     GtkWidget* opt_menu = gtk_option_menu_new();
+    gtk_widget_set_size_request(opt_menu, 142, -1);
     GtkWidget* menu = gtk_menu_new();
     char* months[12] = {"Styczeń", "Luty", "Marzec", "Kwiecień", "Maj",
         "Czerwiec", "Lipiec", "Sierpień", "Wrzesień", "Październik",
@@ -836,13 +837,14 @@ static GtkWidget* create_date_menu() {
 
     GtkWidget* entry_year = gtk_entry_new();
 
-    gtk_widget_set_size_request(entry_year, 44, -1);
+    gtk_widget_set_size_request(entry_year, 42, -1);
     gtk_entry_set_alignment(GTK_ENTRY(entry_year), 1);
     gtk_entry_set_max_length(GTK_ENTRY(entry_year), 4);
     gtk_entry_set_text(GTK_ENTRY(entry_year), date->year);
     gtk_box_pack_start(GTK_BOX(hbox_date), entry_year, 0, 0, 0);
     return hbox_date;
 }
+
 static GtkWidget* create_box_bottom() {
     GtkWidget* hbox_bottom = gtk_hbox_new(0, 15);
     GtkWidget* radio_aim_gr = gtk_radio_button_new_with_label(NULL,
