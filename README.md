@@ -4,7 +4,7 @@ W sporym pośpiechu rozwijam tutaj aplikację ułatwiającą edycję Jednolitych
 
 ## Funkcjonalności
 * wprowadzenie PROSTEGO interfejsu użytkownika do ŁATWEJ edycji JPK,
-* importowanie danych z rejestrów prowadzonych w arkuszach kalkulacyjcnych **TODO** ,
+* **TODO**  importowanie danych z rejestrów prowadzonych w arkuszach kalkulacyjcnych ,
 * eksport danych do formatów csv i xml,
 
 ## Wygląd
