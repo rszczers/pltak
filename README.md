@@ -5,7 +5,7 @@ W sporym pośpiechu rozwijam tutaj aplikację ułatwiającą edycję Jednolitych
 ## Funkcjonalności
 * wprowadzenie PROSTEGO interfejsu użytkownika do ŁATWEJ edycji JPK,
 * **TODO**  importowanie danych z rejestrów prowadzonych w arkuszach kalkulacyjcnych,
-* eksport danych do formatów csv i xml,
+* eksport danych do formatów csv i xml.
 
 ## Wygląd
 ![alt tag](https://github.com/rszczers/pltak/blob/master/screen.png)
