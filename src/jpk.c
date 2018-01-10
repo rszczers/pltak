@@ -690,7 +690,7 @@ void printSold(JPK* jpk) {
                 "\t k_17: %.2lf, \n"
                 "\t k_18: %.2lf, \n"
                 "\t k_19: %.2lf, \n"
-                "\t k_20: %.4lf, \n"
+                "\t k_20: %.2lf, \n"
                 "\t k_21: %.2lf, \n"
                 "\t k_22: %.2lf, \n"
                 "\t k_23: %.2lf, \n"
@@ -801,18 +801,19 @@ void printPurchases(JPK* jpk) {
 void addSellRow(JPK* jpk) {
     JPKSoldList* new = (JPKSoldList*)malloc(sizeof(JPKSoldList));
     new->val = (JPKSold*)malloc(sizeof(JPKSold));
+    new->next = NULL;
     JPKSoldList* cur = jpk->sold;
     JPKSoldList* prev = cur;
     while (cur != NULL) {
         prev = cur;
         cur = cur->next;
     }
-    new->val->typSprzedazy = "G";
-    new->val->adresKontrahenta = "";
     Date* data = getDate();
     asprintf(&new->val->dataSprzedazy, "%s-%s-%s", data->year, data->month, data->day);
 
     asprintf(&new->val->dataWystawienia, "%s-%s-%s", data->year, data->month, data->day);
+    new->val->typSprzedazy = "G";
+    new->val->adresKontrahenta = "";
     new->val->dowodSprzedazy = "";
     new->val->k_10 = 0.0;
     new->val->k_11 = 0.0;

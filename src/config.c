@@ -29,6 +29,26 @@ typedef struct {
     JPKColumns* purchaseColumns;
 } TakConfig;
 
+TakConfig* getConfig(JPK* jpk) {
+    TakConfig* config = (TakConfig*)malloc(sizeof(TakConfig));
+    config->DomyslnyKodWaluty = jpk->header->domyslnyKodWaluty;
+    config->Gmina = jpk->profile->gmina;
+    config->KodKraju = jpk->profile->kodKraju;
+    config->KodPocztowy = jpk->profile->kodPocztowy;
+    config->KodUrzedu = jpk->header->kodUrzedu;
+    config->Miejscowosc = jpk->profile->miejscowosc;
+    config->NrDomu = jpk->profile->nrDomu;
+    config->NrLokalu = jpk->profile->nrLokalu;
+    config->NIP = jpk->profile->nip;
+    config->PelnaNazwa = jpk->profile->pelnaNazwa;
+    config->Poczta = jpk->profile->poczta;
+    config->Powiat = jpk->profile->powiat;
+    config->REGON = jpk->profile->regon;
+    config->Ulica = jpk->profile->ulica;
+    config->Wojewodztwo = jpk->profile->wojewodztwo;
+    return config;
+}
+
 TakConfig* parseConfig() {
     TakConfig* config = (TakConfig*)malloc(sizeof(TakConfig));
 

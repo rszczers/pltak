@@ -244,8 +244,8 @@ char* genPurchase(JPK* jpk) {
 
 void csvExport(char* filename, JPK* jpk) {
     char* csv;
-    char *oldLocale = setlocale(LC_NUMERIC, NULL);
-    setlocale(LC_NUMERIC, "");
+    char *oldLocale = setlocale(LC_NUMERIC, "");
+    setlocale(LC_NUMERIC, "pl_PL.utf8");
     asprintf(&csv, CATEGORIES ENDL "%s" "%s" "%s" "%s",
         genHeader(jpk),
         genProfile(jpk),

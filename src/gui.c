@@ -12,6 +12,13 @@
 
 GtkWidget *label_sum;
 
+// lista do cofania zmian danych
+typedef struct _JPKHistory {
+    JPK* data;
+    TakConfig cfg;
+    struct _JPKHistory* next;
+} JPKHistory;
+
 typedef struct USNode {
     char* code;
     char* name;
@@ -24,6 +31,7 @@ static void sell_filter_from_table_callback(GtkWidget*, gpointer);
 static void sell_rmrow_callback(GtkWidget*, gpointer);
 static void sell_entry_callback(GtkWidget*, gpointer);
 static void sell_addrow_callback(GtkWidget*, gpointer);
+static void importcsv_open_dialog(GtkWidget*, gpointer);
 
 void addUS(USList* list, char* code, char* name) {
     while (list->next != NULL) {
@@ -426,7 +434,7 @@ static GtkWidget* create_menu_bar() {
 
     menu_item = gtk_menu_item_new_with_label("Importuj csv");
     gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), menu_item);
-    g_signal_connect(menu_item, "activate", G_CALLBACK(open_dialog), NULL);
+    g_signal_connect(menu_item, "activate", G_CALLBACK(importcsv_open_dialog), menu_bar);
 
     menu_item = gtk_menu_item_new_with_label("Importuj xls");
     gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), menu_item);
@@ -869,7 +877,7 @@ void drawGui(JPK* jpk) {
     GtkWidget *window, *vbox;
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     g_signal_connect(window, "delete_event", G_CALLBACK(gtk_main_quit), NULL);
-
+    
     vbox = gtk_vbox_new(0, 0);
     gtk_box_pack_start(GTK_BOX(vbox), create_menu_bar(), 0, 0, 0);
     gtk_box_pack_start(GTK_BOX(vbox), create_notebooks(jpk, config), 1, 1, 0);
@@ -879,7 +887,6 @@ void drawGui(JPK* jpk) {
     gtk_widget_show_all(window);
     gtk_main();
 }
-
 
 static void sell_filter_from_table_callback(GtkWidget* widget, gpointer data) {
     ColFilter* t = (ColFilter*) data;
@@ -916,6 +923,7 @@ static void sell_filter_callback(GtkWidget* widget, gpointer data) {
         rmColumn(&(t->config->sellColumns), colName);
         saveConfig(t->config);
     }
+
     GtkWidget *window = gtk_widget_get_toplevel(widget);
     GtkWidget *root_box = widget->parent->parent->parent->parent->parent->parent;
     gtk_widget_destroy(root_box);
@@ -997,4 +1005,38 @@ static void sell_addrow_callback(GtkWidget* widget, gpointer data) {
     gtk_box_pack_start(GTK_BOX(vbox), create_box_bottom(), 0, 0, 0);
     gtk_container_add(GTK_CONTAINER(window), vbox);
     gtk_widget_show_all(window);
+}
+
+void importcsv_open_dialog(GtkWidget* widget, gpointer data) {
+    GtkWidget *dialog;
+    dialog = gtk_file_chooser_dialog_new("Wybierz plik", GTK_WINDOW(widget),
+            GTK_FILE_CHOOSER_ACTION_OPEN, GTK_STOCK_OK,
+            GTK_RESPONSE_OK, GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, NULL);
+    gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(dialog), g_get_home_dir());
+    gtk_widget_show_all(dialog);
+    gint resp = gtk_dialog_run(GTK_DIALOG(dialog));
+
+    if (resp == GTK_RESPONSE_OK) {
+        
+        JPK* jpk = loadJPK(g_filename_to_utf8(gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog)), -1, NULL, NULL, NULL));
+//        printf("%s\n", filename);
+         
+        TakConfig* config = getConfig(jpk); 
+        g_print("%s\n", (char*)gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog)));
+        GtkWidget* menu = GTK_WIDGET(data);
+        GtkWidget* root_box = menu->parent;
+        GtkWidget *window = gtk_widget_get_toplevel(menu);
+        
+        gtk_widget_destroy(root_box);
+        GtkWidget *vbox = gtk_vbox_new(0, 0);
+
+        gtk_box_pack_start(GTK_BOX(vbox), create_menu_bar(), 0, 0, 0);
+        gtk_box_pack_start(GTK_BOX(vbox), create_notebooks(jpk, config), 1, 1, 0);
+        gtk_box_pack_start(GTK_BOX(vbox), create_box_bottom(), 0, 0, 0);
+        gtk_container_add(GTK_CONTAINER(window), vbox);
+        gtk_widget_show_all(window); 
+    } else {
+        g_print("Naciśnięto anuluj\n");
+    }
+    gtk_widget_destroy(dialog);
 }

@@ -22,6 +22,7 @@ typedef struct {
     JPKColumns* purchaseColumns;
 } TakConfig;
 
+TakConfig* getConfig(JPK*);
 TakConfig* parseConfig();
 void saveConfig(TakConfig*);
 void printTakConfig(TakConfig*);

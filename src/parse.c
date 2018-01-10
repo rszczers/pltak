@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -14,39 +15,47 @@ typedef struct sData {
     struct sData *next;
 } tData;
 
+void showLast(tToken*); 
+
 void addData(tData *head, int rowNum, tToken *row) {
-    if (head->next == NULL) {
-        if (head->row == NULL) {
-            head->rowNum = rowNum;
-            head->row = row;
-        } else {
-            tData *newData = (tData*)malloc(sizeof(tData));
-            newData->rowNum = rowNum;
-            newData->row = row;
-            newData->next = NULL;
-            head->next = newData;
-        }
+    if (head == NULL) exit(EXIT_FAILURE);
+
+    tData* prev;
+    while (head != NULL) {
+        prev = head;
+        head = head->next;
+    }
+
+    if (prev->row == NULL) {
+        prev->rowNum = rowNum;
+        prev->row = row;
     } else {
-        addData(head->next, rowNum, row);
+        tData *newData = (tData*)malloc(sizeof(tData));
+        newData->rowNum = rowNum;
+        newData->row = row;
+        newData->next = NULL;
+        prev->next = newData;
     }
 }
 
 void addToken(tToken *head, int colNum, char *val) {
-    if (head->next == NULL) {
-        if (head->val == NULL) {
-            head->val = (char*)malloc(sizeof(char) * strlen(val) + 1);
-            strcpy(head->val, val);
-            head->colNum = colNum;
-        } else {
-            tToken *newToken = (tToken*)malloc(sizeof(tToken));
-            newToken->colNum = colNum;
-            newToken->val = (char*)malloc(sizeof(char) * strlen(val) + 1);
-            strcpy(newToken->val, val);
-            newToken->next = NULL;
-            head->next = newToken;
-        }
+    if (head == NULL) exit(EXIT_FAILURE);
+
+    tToken* prev;
+    while (head != NULL) {
+        prev = head;
+        head = head->next;
+    }
+
+    if (prev->val == NULL) { //list jest pusta
+        asprintf(&(prev->val), "%s", val);
+        prev->colNum = colNum;
     } else {
-        addToken(head->next, colNum, val);
+        tToken *newToken = (tToken*)malloc(sizeof(tToken));
+        newToken->colNum = colNum;
+        newToken->next = NULL;
+        newToken->val = val;
+        prev->next = newToken;
     }
 }
 
@@ -112,14 +121,15 @@ void showData(tData *currRow) {
     }
 }
 
-char* showLast(tToken *t) {
-    while(t->next != NULL) {
-        t = t->next;
+void showLast(tToken *t) {
+    if (t != NULL) {
+        printf("%d: %s\n", t->colNum, t->val);
+        tToken* b = t->next;
+        showLast(b);
     }
-    return t->val;
 }
 
-tData* parse(const char* filename) {
+tData* parse(char* filename) {
     FILE *fp;
     char *line = NULL;
     char *buffer = NULL;
@@ -127,14 +137,19 @@ tData* parse(const char* filename) {
     ssize_t read;
 
     fp = fopen(filename, "r");
-    if (fp == NULL)
+    if (fp == NULL) {
+        perror("Błąd. Nie można otworzyć pliku.\n");
         exit(EXIT_FAILURE);
-
+    } 
     tData *parsedData = malloc(sizeof(tData));
-
+    parsedData->row = NULL;
+    parsedData->next = NULL;
+    
     int rowNum = 1;
     while ((read = getline(&line, &len, fp)) != -1) {
         tToken *tokenizedRow = (tToken*)malloc(sizeof(tToken));
+        tokenizedRow->val = NULL;
+        tokenizedRow->next = NULL;
         char *token;
         int colNum = 1;
         char *p = line;
@@ -153,6 +168,7 @@ tData* parse(const char* filename) {
                     }
                 }
                 strncpy(token, p, k-p+1);
+                token[k-p+1] = '\0';
                 p = k;
                 addToken(tokenizedRow, colNum, token);
             } else if (*p == ';') {
@@ -163,6 +179,7 @@ tData* parse(const char* filename) {
                     k++;
                 }
                 strncpy(token, p, k-p);
+                token[k-p] = '\0';
                 p = k - 1;
                 if (strlen(token) > 0)
                     addToken(tokenizedRow, colNum, token);
@@ -173,6 +190,7 @@ tData* parse(const char* filename) {
         rowNum++;
     }
     fclose(fp);
+
     if (line)
         free(line);
     return parsedData;

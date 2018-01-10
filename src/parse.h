@@ -13,7 +13,7 @@ typedef struct sData {
     struct sData *next;
 } tData;
 
-tData* parse(const char* filename);
+tData* parse(char* filename);
 tToken* getRow(tData* data, int row);
 void showData(tData *currRow);
 char* getCell(tData* data, int row, int cal);
