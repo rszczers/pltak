@@ -991,6 +991,7 @@ static void sell_entry_callback(GtkWidget* widget, gpointer data) {
     char* input = (char*)gtk_entry_get_text(GTK_ENTRY(widget));
     changeData(change->jpk, change->i, change->j, input);
     refreshSellSum(change->jpk, change->tak);
+//    gtk_entry_set_text(GTK_ENTRY(widget), sell_d2m(change->jpk, change->i, change->j));
 }
 
 static void sell_addrow_callback(GtkWidget* widget, gpointer data) {

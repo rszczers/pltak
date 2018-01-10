@@ -342,7 +342,6 @@ double m2d(char* cell) {
     // Zamień przecinki z notacji europejskiej na kropki
     for (char *p = buffer; *p != '\0'; ++p) {
         if (*p == ',') {
-            *p = '.';
             frac = true;
         }
     }
@@ -350,16 +349,12 @@ double m2d(char* cell) {
     // Wyzeruj wszystkie cyfry od drugiego miejsca dziesiętnego
     if (frac) {
         char *p = &buffer[0];
-        while (*p != '.')
+        while (*p != ',')
             p++;
         p = p + 3;
-        while (*p != '\0') {
-            *p = '0';
-            p++;
-        }
+        *p = '\0';
     }
-
-    return strtod(buffer, NULL);
+    return atof(buffer);
 }
 
 
