@@ -37,7 +37,7 @@ static void sell_entry_callback(GtkWidget*, gpointer);
 static void sell_addrow_callback(GtkWidget*, gpointer);
 static void importcsv_open_dialog(GtkWidget*, gpointer);
 static void savecsv_dialog(GtkWidget*, gpointer);
-static void new_file_callback(GtkWidget*, gpointer);
+//static void new_file_callback(GtkWidget*, gpointer);
 
 void addUS(USList* list, char* code, char* name) {
     while (list->next != NULL) {
@@ -1059,7 +1059,7 @@ static void sell_entry_callback(GtkWidget* widget, gpointer data) {
 //    gtk_entry_set_text(GTK_ENTRY(widget), sell_d2m(change->jpk, change->i, change->j));
 }
 
-static void new_file_callback(GtkWidget* widget, gpointer data) {
+/*static void new_file_callback(GtkWidget* widget, gpointer data) {
         JPK* jpk = (JPK*)malloc(sizeof(JPK));
 
         TakConfig* config = getConfig(jpk);
@@ -1075,7 +1075,7 @@ static void new_file_callback(GtkWidget* widget, gpointer data) {
         gtk_box_pack_start(GTK_BOX(vbox), create_box_bottom(jpk), 0, 0, 0);
         gtk_container_add(GTK_CONTAINER(window), vbox);
         gtk_widget_show_all(window);
-}
+}*/
 
 static void sell_addrow_callback(GtkWidget* widget, gpointer data) {
     JPKChange* ch = (JPKChange*) data;
