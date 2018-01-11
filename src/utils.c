@@ -39,7 +39,7 @@ Date* getDate() {
 
     tm_info = localtime(&timer);
     strftime(temp_time, 9, "%X", tm_info);
-    strftime(date->day, 3, "%d", tm_info);
+    strftime(date->day, 3, "%D", tm_info);
     strftime(date->month, 3, "%m", tm_info);
     strftime(date->year, 5, "%Y", tm_info);
 

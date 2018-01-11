@@ -12,6 +12,9 @@
 #include "utils.h"
 
 GtkWidget *label_sum;
+GtkWidget *date_menu;
+GtkWidget *entry_year;
+int default_month;
 
 // lista do cofania zmian danych
 typedef struct _JPKHistory {
@@ -824,38 +827,92 @@ static GtkWidget* create_notebooks(JPK* jpk, TakConfig* config) {
     return notebook;
 }
 
-static GtkWidget* create_date_menu() {
+void month_callback(GtkWidget* widget, gpointer data) {
+    JPK* jpk = (JPK*)data;
+    char* label = (char*)gtk_menu_item_get_label(GTK_MENU_ITEM(widget));
+    char* months[12] = {"Styczeń", "Luty", "Marzec", "Kwiecień", "Maj",
+        "Czerwiec", "Lipiec", "Sierpień", "Wrzesień", "Październik",
+        "Listopad", "Grudzień"};
+
+    int month = 1;
+    while (strcmp(label, months[month-1]) != 0) ++month;
+
+    char* year = (char*)gtk_entry_get_text(GTK_ENTRY(entry_year));
+    char *start_date, *end_date;
+    if (month < 9) {
+        asprintf(&start_date, "%s-0%d-%s", year, month, "01");
+        asprintf(&end_date, "%s-0%d-%d", year, month, getLastDayOfMonth(month, atoi(year)));
+    } else  {
+        asprintf(&start_date, "%s-%d-%s", year, month, "01");
+        asprintf(&end_date, "%s-%d-%d", year, month, getLastDayOfMonth(month, atoi(year)));
+    }
+    default_month = month;
+    jpk->header->dataOd = start_date;
+    jpk->header->dataDo = end_date;
+}
+
+void year_callback(GtkWidget* widget, gpointer data) {
+    JPK* jpk = (JPK*)data;
+    char* year = (char*)gtk_entry_get_text(GTK_ENTRY(widget));
+    int month = default_month;
+
+    char *start_date, *end_date;
+    if (month < 9) {
+        asprintf(&start_date, "%s-0%d-%s", year, month, "01");
+        asprintf(&end_date, "%s-0%d-%d", year, month, getLastDayOfMonth(month, atoi(year)));
+    } else  {
+        asprintf(&start_date, "%s-%d-%s", year, month, "01");
+        asprintf(&end_date, "%s-%d-%d", year, month, getLastDayOfMonth(month, atoi(year)));
+    }
+
+//    entry_year = widget;
+    jpk->header->dataOd = start_date;
+    jpk->header->dataOd = start_date;
+    jpk->header->dataDo = end_date;
+}
+
+static GtkWidget* create_date_menu(JPK *jpk) {
     GtkWidget* hbox_date = gtk_hbox_new(0, 0);
     Date* date = getDate();
     GtkWidget* opt_menu = gtk_option_menu_new();
     gtk_widget_set_size_request(opt_menu, 142, -1);
-    GtkWidget* menu = gtk_menu_new();
+    date_menu = gtk_menu_new();
     char* months[12] = {"Styczeń", "Luty", "Marzec", "Kwiecień", "Maj",
         "Czerwiec", "Lipiec", "Sierpień", "Wrzesień", "Październik",
         "Listopad", "Grudzień"};
+
+    GtkWidget* item;
     for (int i = 0; i < 12; ++i) {
-        GtkWidget* item = gtk_menu_item_new_with_label(
+        item = gtk_menu_item_new_with_label(
                 months[(getMonth(date) - 1 + i) % 12]);
         gtk_widget_show(item);
-        gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+        gtk_menu_shell_append(GTK_MENU_SHELL(date_menu), item);
+        if (i == 0) {
+            gtk_menu_set_active(GTK_MENU(date_menu), i);
+            default_month = i + 1;
+        }
+        g_signal_connect(item, "activate", G_CALLBACK(month_callback), jpk);
     }
+
     GtkWidget* hbox_space = gtk_hbox_new(0, 0);
     gtk_box_pack_start(GTK_BOX(hbox_date), hbox_space, 1, 1, 0);
-    gtk_option_menu_set_menu(GTK_OPTION_MENU(opt_menu), menu);
+    gtk_option_menu_set_menu(GTK_OPTION_MENU(opt_menu), date_menu);
     gtk_box_pack_start(GTK_BOX(hbox_date), opt_menu, 0, 0, 0);
-    gtk_widget_show(opt_menu);
 
-    GtkWidget* entry_year = gtk_entry_new();
+    gtk_widget_show(opt_menu);
+    entry_year = gtk_entry_new();
 
     gtk_widget_set_size_request(entry_year, 42, -1);
     gtk_entry_set_alignment(GTK_ENTRY(entry_year), 1);
     gtk_entry_set_max_length(GTK_ENTRY(entry_year), 4);
     gtk_entry_set_text(GTK_ENTRY(entry_year), date->year);
     gtk_box_pack_start(GTK_BOX(hbox_date), entry_year, 0, 0, 0);
+    g_signal_connect(entry_year, "changed", G_CALLBACK(year_callback), jpk);
+
     return hbox_date;
 }
 
-static GtkWidget* create_box_bottom() {
+static GtkWidget* create_box_bottom(JPK* jpk) {
     GtkWidget* hbox_bottom = gtk_hbox_new(0, 15);
     GtkWidget* radio_aim_gr = gtk_radio_button_new_with_label(NULL,
             "Złożenie po raz pierwszy");
@@ -869,7 +926,7 @@ static GtkWidget* create_box_bottom() {
           GTK_RADIO_BUTTON(radio_aim_gr)), "Druga korekta");
     gtk_box_pack_start(GTK_BOX(hbox_bottom), radio_aim, 0, 1, 0);
 
-    gtk_box_pack_start(GTK_BOX(hbox_bottom), create_date_menu(), 1, 1, 0);
+    gtk_box_pack_start(GTK_BOX(hbox_bottom), create_date_menu(jpk), 1, 1, 0);
     return hbox_bottom;
 }
 
@@ -883,7 +940,7 @@ void drawGui(JPK* jpk) {
     vbox = gtk_vbox_new(0, 0);
     gtk_box_pack_start(GTK_BOX(vbox), create_menu_bar(jpk), 0, 0, 0);
     gtk_box_pack_start(GTK_BOX(vbox), create_notebooks(jpk, config), 1, 1, 0);
-    gtk_box_pack_start(GTK_BOX(vbox), create_box_bottom(), 0, 0, 0);
+    gtk_box_pack_start(GTK_BOX(vbox), create_box_bottom(jpk), 0, 0, 0);
     gtk_container_add(GTK_CONTAINER(window), vbox);
     gtk_widget_set_size_request(window, 800, 600);
     gtk_widget_show_all(window);
@@ -904,7 +961,7 @@ static void sell_filter_from_table_callback(GtkWidget* widget, gpointer data) {
 
     gtk_box_pack_start(GTK_BOX(vbox), create_menu_bar(t->jpk), 0, 0, 0);
     gtk_box_pack_start(GTK_BOX(vbox), create_notebooks(t->jpk, t->config), 1, 1, 0);
-    gtk_box_pack_start(GTK_BOX(vbox), create_box_bottom(), 0, 0, 0);
+    gtk_box_pack_start(GTK_BOX(vbox), create_box_bottom(t->jpk), 0, 0, 0);
     gtk_container_add(GTK_CONTAINER(window), vbox);
     gtk_widget_show_all(window);
 }
@@ -933,7 +990,7 @@ static void sell_filter_callback(GtkWidget* widget, gpointer data) {
 
     gtk_box_pack_start(GTK_BOX(vbox), create_menu_bar(t->jpk), 0, 0, 0);
     gtk_box_pack_start(GTK_BOX(vbox), create_notebooks(t->jpk, t->config), 1, 1, 0);
-    gtk_box_pack_start(GTK_BOX(vbox), create_box_bottom(), 0, 0, 0);
+    gtk_box_pack_start(GTK_BOX(vbox), create_box_bottom(t->jpk), 0, 0, 0);
     gtk_container_add(GTK_CONTAINER(window), vbox);
     gtk_widget_show_all(window);
 }
@@ -964,7 +1021,7 @@ static void purchase_filter_callback(GtkWidget* widget, gpointer data) {
     GtkWidget *notebook = create_notebooks(jpk, config);
     gtk_box_pack_start(GTK_BOX(vbox), create_menu_bar(t->jpk), 0, 0, 0);
     gtk_box_pack_start(GTK_BOX(vbox), notebook, 1, 1, 0);
-    gtk_box_pack_start(GTK_BOX(vbox), create_box_bottom(), 0, 0, 0);
+    gtk_box_pack_start(GTK_BOX(vbox), create_box_bottom(t->jpk), 0, 0, 0);
     gtk_container_add(GTK_CONTAINER(window), vbox);
     gtk_widget_show_all(window);
     gtk_notebook_set_current_page(GTK_NOTEBOOK(notebook), 1);
@@ -981,7 +1038,7 @@ static void sell_rmrow_callback(GtkWidget* widget, gpointer data) {
 
     gtk_box_pack_start(GTK_BOX(vbox), create_menu_bar(change->jpk), 0, 0, 0);
     gtk_box_pack_start(GTK_BOX(vbox), create_notebooks(change->jpk, change->tak), 1, 1, 0);
-    gtk_box_pack_start(GTK_BOX(vbox), create_box_bottom(), 0, 0, 0);
+    gtk_box_pack_start(GTK_BOX(vbox), create_box_bottom(change->jpk), 0, 0, 0);
     gtk_container_add(GTK_CONTAINER(window), vbox);
     gtk_widget_show_all(window);
 }
@@ -1005,7 +1062,7 @@ static void sell_addrow_callback(GtkWidget* widget, gpointer data) {
 
     gtk_box_pack_start(GTK_BOX(vbox), create_menu_bar(ch->jpk), 0, 0, 0);
     gtk_box_pack_start(GTK_BOX(vbox), create_notebooks(ch->jpk, ch->tak), 1, 1, 0);
-    gtk_box_pack_start(GTK_BOX(vbox), create_box_bottom(), 0, 0, 0);
+    gtk_box_pack_start(GTK_BOX(vbox), create_box_bottom(ch->jpk), 0, 0, 0);
     gtk_container_add(GTK_CONTAINER(window), vbox);
     gtk_widget_show_all(window);
 }
@@ -1032,7 +1089,7 @@ void importcsv_open_dialog(GtkWidget* widget, gpointer data) {
 
         gtk_box_pack_start(GTK_BOX(vbox), create_menu_bar(jpk), 0, 0, 0);
         gtk_box_pack_start(GTK_BOX(vbox), create_notebooks(jpk, config), 1, 1, 0);
-        gtk_box_pack_start(GTK_BOX(vbox), create_box_bottom(), 0, 0, 0);
+        gtk_box_pack_start(GTK_BOX(vbox), create_box_bottom(jpk), 0, 0, 0);
         gtk_container_add(GTK_CONTAINER(window), vbox);
         gtk_widget_show_all(window);
     } else {

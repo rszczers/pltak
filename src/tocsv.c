@@ -5,8 +5,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <locale.h>
 #include "jpk.h"
+#include "utils.h"
 
 #define ENDL "\r\n"
 #define SEP ";"
@@ -30,7 +30,8 @@ char* genHeader(JPK* jpk) {
             jpk->header->wersjaSchemy,
             jpk->header->wariantFormularza,
             jpk->header->celZlozenia,
-            jpk->header->dataWytworzeniaJPK,
+//            jpk->header->dataWytworzeniaJPK,
+            getDate()->timestamp,         
             jpk->header->dataOd,
             jpk->header->dataDo,
             jpk->header->domyslnyKodWaluty,
