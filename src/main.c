@@ -7,7 +7,7 @@
 int main(int argc, char *argv[])
 {
     setlocale(LC_NUMERIC, "pl_PL.utf8");
-    JPK* data = loadJPK("/home/fulgjon/Dokumenty/Tak/data/JPK_VAT_02.csv");
+    JPK* data = loadJPK("./data/JPK_VAT_02.csv");
     //csvExport("./data/test.csv", data);
     drawGui(data);
     //printTakConfig(parseConfig());
