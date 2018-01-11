@@ -422,7 +422,20 @@ static void save_dialog(GtkWidget *widget, gpointer data) {
     gtk_widget_destroy(dialog);
 }*/
 
-static void about_dialog(GtkWidget *widget, gpointer data) {}
+static void about_dialog(GtkWidget *widget, gpointer data) {
+    GtkWidget *dialog, *label;
+    dialog = gtk_dialog_new();
+    gtk_window_set_title(GTK_WINDOW(dialog), "O programie");
+    gtk_container_border_width(GTK_CONTAINER(dialog), 5);
+    label = gtk_label_new("O problemach i błędach proszę pisać na adres");
+    gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->vbox), label, TRUE, TRUE, 0);
+    label = gtk_label_new("<a href=\"mailto:rafal.szczerski@gmail.com\">rafal.szczerski@gmail.com</a>");
+    gtk_label_set_use_markup (GTK_LABEL (label), TRUE);
+    gtk_misc_set_padding(GTK_MISC(label), 10, 0);
+    gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->vbox), label, 0, 0, 10);
+    gtk_widget_show_all(dialog);
+    gtk_grab_add(dialog);
+}
 
 static GtkWidget* create_menu_bar(JPK* jpk) {
     GtkWidget* menu_bar = gtk_menu_bar_new();
