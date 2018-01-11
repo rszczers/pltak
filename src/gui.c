@@ -37,6 +37,7 @@ static void sell_entry_callback(GtkWidget*, gpointer);
 static void sell_addrow_callback(GtkWidget*, gpointer);
 static void importcsv_open_dialog(GtkWidget*, gpointer);
 static void savecsv_dialog(GtkWidget*, gpointer);
+static void new_file_callback(GtkWidget*, gpointer);
 
 void addUS(USList* list, char* code, char* name) {
     while (list->next != NULL) {
@@ -436,6 +437,13 @@ static GtkWidget* create_menu_bar(JPK* jpk) {
     menu_item = gtk_menu_item_new_with_label("Pomoc");
     gtk_menu_item_set_submenu(GTK_MENU_ITEM(menu_item), help_menu);
     gtk_menu_shell_append(GTK_MENU_SHELL(menu_bar), menu_item);
+
+//    menu_item = gtk_menu_item_new_with_label("Nowy");
+//    gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), menu_item);
+//    g_signal_connect(menu_item, "activate", G_CALLBACK(new_file_callback), menu_bar);
+
+    menu_item = gtk_separator_menu_item_new();
+    gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), menu_item);
 
     menu_item = gtk_menu_item_new_with_label("Importuj csv");
     gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), menu_item);
@@ -1051,6 +1059,24 @@ static void sell_entry_callback(GtkWidget* widget, gpointer data) {
 //    gtk_entry_set_text(GTK_ENTRY(widget), sell_d2m(change->jpk, change->i, change->j));
 }
 
+static void new_file_callback(GtkWidget* widget, gpointer data) {
+        JPK* jpk = (JPK*)malloc(sizeof(JPK));
+
+        TakConfig* config = getConfig(jpk);
+        GtkWidget* menu = GTK_WIDGET(data);
+        GtkWidget* root_box = menu->parent;
+        GtkWidget *window = gtk_widget_get_toplevel(menu);
+
+        gtk_widget_destroy(root_box);
+        GtkWidget *vbox = gtk_vbox_new(0, 0);
+
+        gtk_box_pack_start(GTK_BOX(vbox), create_menu_bar(jpk), 0, 0, 0);
+        gtk_box_pack_start(GTK_BOX(vbox), create_notebooks(jpk, config), 1, 1, 0);
+        gtk_box_pack_start(GTK_BOX(vbox), create_box_bottom(jpk), 0, 0, 0);
+        gtk_container_add(GTK_CONTAINER(window), vbox);
+        gtk_widget_show_all(window);
+}
+
 static void sell_addrow_callback(GtkWidget* widget, gpointer data) {
     JPKChange* ch = (JPKChange*) data;
     addSellRow(ch->jpk);
@@ -1114,3 +1140,4 @@ void savecsv_dialog(GtkWidget* widget, gpointer data) {
     }
     gtk_widget_destroy(dialog);
 }
+
