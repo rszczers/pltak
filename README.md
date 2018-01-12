@@ -2,6 +2,7 @@
 
 Rozwijam tutaj aplikację ułatwiającą edycję Jednolitych Plików Kontrolnych (JPK) dla mikroprzedsiębiorstw.
 ## Uruchomienie
+Tymczasowo, aby skompilować program należy uprzednio posiadać bibliotekę gtk2.0.
 ```
 git clone http://github.com/rszczers/pltak
 cd pltak && make
