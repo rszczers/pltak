@@ -1,6 +1,6 @@
 # PLTak
 
-Rozwijam tutaj aplikację ułatwiającą edycję Jednolitych Plików Kontrolnych (JPK) dla mikroprzedsiębiorstw.
+Rozwijam tutaj aplikację ułatwiającą mikroprzedsiębiorcom edycję Jednolitych Plików Kontrolnych (JPK_VAT).
 ## Uruchomienie
 Tymczasowo, aby skompilować program należy uprzednio posiadać bibliotekę gtk2.0.
 ```
