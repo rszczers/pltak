@@ -1065,6 +1065,10 @@ static GtkWidget* create_date_menu(JPK *jpk) {
         g_signal_connect(item, "activate", G_CALLBACK(month_callback), jpk);
     }
 
+    char* year;
+    if (getMonth(date) == 1) asprintf(&year, "%d", atoi(date->year) - 1); 
+    else asprintf(&year, "%d", atoi(date->year)); 
+
     GtkWidget* hbox_space = gtk_hbox_new(0, 0);
     gtk_box_pack_start(GTK_BOX(hbox_date), hbox_space, 1, 1, 0);
     gtk_option_menu_set_menu(GTK_OPTION_MENU(opt_menu), date_menu);
@@ -1078,7 +1082,7 @@ static GtkWidget* create_date_menu(JPK *jpk) {
     gtk_widget_set_size_request(entry_year, 42, -1);
     gtk_entry_set_alignment(GTK_ENTRY(entry_year), 1);
     gtk_entry_set_max_length(GTK_ENTRY(entry_year), 4);
-    gtk_entry_set_text(GTK_ENTRY(entry_year), date->year);
+    gtk_entry_set_text(GTK_ENTRY(entry_year), year);
     gtk_box_pack_start(GTK_BOX(hbox_date), entry_year, 0, 0, 0);
     g_signal_connect(entry_year, "changed", G_CALLBACK(year_callback), jpk);
 
