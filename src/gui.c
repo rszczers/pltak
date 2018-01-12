@@ -1,4 +1,4 @@
-#define _GNU_SOURCE
+#define _GNU_SOURCE */
 #include <gtk/gtk.h>
 #include <stdlib.h>
 #include <string.h>
@@ -1055,7 +1055,7 @@ static GtkWidget* create_date_menu(JPK *jpk) {
     GtkWidget* item;
     for (int i = 0; i < 12; ++i) {
         item = gtk_menu_item_new_with_label(
-                months[(getMonth(date) - 1 + i) % 12]);
+                months[(getMonth(date) + 12 - 2 + i) % 12]);
         gtk_widget_show(item);
         gtk_menu_shell_append(GTK_MENU_SHELL(date_menu), item);
         if (i == 0) {
@@ -1068,6 +1068,8 @@ static GtkWidget* create_date_menu(JPK *jpk) {
     GtkWidget* hbox_space = gtk_hbox_new(0, 0);
     gtk_box_pack_start(GTK_BOX(hbox_date), hbox_space, 1, 1, 0);
     gtk_option_menu_set_menu(GTK_OPTION_MENU(opt_menu), date_menu);
+    GtkWidget* label = gtk_label_new("Za: ");
+    gtk_box_pack_start(GTK_BOX(hbox_date), label, 0, 0, 0);
     gtk_box_pack_start(GTK_BOX(hbox_date), opt_menu, 0, 0, 0);
 
     gtk_widget_show(opt_menu);
@@ -1083,18 +1085,36 @@ static GtkWidget* create_date_menu(JPK *jpk) {
     return hbox_date;
 }
 
+static void aim_first_callback(GtkWidget* widget, gpointer data) {
+    JPK* jpk = (JPK*)data;
+    jpk->header->celZlozenia = 1; 
+}
+
+static void aim_second_callback(GtkWidget* widget, gpointer data) {
+    JPK* jpk = (JPK*)data;
+    jpk->header->celZlozenia = 2; 
+}
+
+static void aim_third_callback(GtkWidget* widget, gpointer data) {
+    JPK* jpk = (JPK*)data;
+    jpk->header->celZlozenia = 3; 
+}
+
 static GtkWidget* create_box_bottom(JPK* jpk) {
     GtkWidget* hbox_bottom = gtk_hbox_new(0, 15);
     GtkWidget* radio_aim_gr = gtk_radio_button_new_with_label(NULL,
             "Złożenie po raz pierwszy");
+    g_signal_connect(radio_aim_gr, "toggled", G_CALLBACK(aim_first_callback), jpk);
     gtk_box_pack_start(GTK_BOX(hbox_bottom), radio_aim_gr, 0, 1, 0);
     GtkWidget* radio_aim = gtk_radio_button_new_with_label(
          gtk_radio_button_get_group(
           GTK_RADIO_BUTTON(radio_aim_gr)), "Pierwsza korekta");
+    g_signal_connect(radio_aim_gr, "toggled", G_CALLBACK(aim_second_callback), jpk);
     gtk_box_pack_start(GTK_BOX(hbox_bottom), radio_aim, 0, 1, 0);
     radio_aim = gtk_radio_button_new_with_label(
          gtk_radio_button_get_group(
           GTK_RADIO_BUTTON(radio_aim_gr)), "Druga korekta");
+    g_signal_connect(radio_aim_gr, "toggled", G_CALLBACK(aim_third_callback), jpk);
     gtk_box_pack_start(GTK_BOX(hbox_bottom), radio_aim, 0, 1, 0);
 
     gtk_box_pack_start(GTK_BOX(hbox_bottom), create_date_menu(jpk), 1, 1, 0);
@@ -1329,7 +1349,6 @@ void importcsv_open_dialog(GtkWidget* widget, gpointer data) {
     gint resp = gtk_dialog_run(GTK_DIALOG(dialog));
 
     if (resp == GTK_RESPONSE_OK) {
-
         JPK* jpk = loadJPK(g_filename_to_utf8(gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog)), -1, NULL, NULL, NULL));
         TakConfig* config = getConfig(jpk);
         GtkWidget* menu = GTK_WIDGET(data);
@@ -1344,8 +1363,6 @@ void importcsv_open_dialog(GtkWidget* widget, gpointer data) {
         gtk_box_pack_start(GTK_BOX(vbox), create_box_bottom(jpk), 0, 0, 0);
         gtk_container_add(GTK_CONTAINER(window), vbox);
         gtk_widget_show_all(window);
-    } else {
-        g_print("Naciśnięto anuluj\n");
     }
     gtk_widget_destroy(dialog);
 }
@@ -1361,8 +1378,6 @@ void savecsv_dialog(GtkWidget* widget, gpointer data) {
     gint resp = gtk_dialog_run(GTK_DIALOG(dialog));
     if (resp == GTK_RESPONSE_ACCEPT) {
         csvExport((char*)g_filename_to_utf8(gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog)), -1, NULL, NULL, NULL), jpk);
-    } else {
-        g_print("Naciśnięto anuluj\n");
     }
     gtk_widget_destroy(dialog);
 }
