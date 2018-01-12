@@ -1,6 +1,12 @@
 # PLTak
 
 Rozwijam tutaj aplikację ułatwiającą edycję Jednolitych Plików Kontrolnych (JPK) dla mikroprzedsiębiorstw.
+## Uruchomienie
+```
+git clone http://github.com/rszczers/pltak
+cd pltak && make
+./build/tak
+```
 
 ## Funkcjonalności
 * wprowadzenie PROSTEGO interfejsu użytkownika do ŁATWEJ edycji JPK,
