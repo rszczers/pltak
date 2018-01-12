@@ -1,6 +1,6 @@
 # PLTak
 
-W sporym pośpiechu rozwijam tutaj aplikację ułatwiającą edycję Jednolitych Plików Kontrolnych (JPK) dla mikroprzedsiębiorstw.
+Rozwijam tutaj aplikację ułatwiającą edycję Jednolitych Plików Kontrolnych (JPK) dla mikroprzedsiębiorstw.
 
 ## Funkcjonalności
 * wprowadzenie PROSTEGO interfejsu użytkownika do ŁATWEJ edycji JPK,
