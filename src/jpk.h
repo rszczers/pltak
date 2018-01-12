@@ -208,7 +208,8 @@ typedef struct {
     double purchaseTotal;
 } JPK;
 
-JPK* changeData(JPK*, int, int, char*);
+JPK* changeSellData(JPK*, int, int, char*);
+JPK* changePurData(JPK*, int, int, char*);
 char* sell_d2m(JPK*, int, int);
 void rmColumn(JPKColumns**, char*); 
 int isElem(JPKColumns*, char*);
@@ -219,5 +220,8 @@ void printPurchases(JPK*);
 double m2d(char*);
 void rmSellRow(JPK*, int);
 void addSellRow(JPK*);
+void addPurchaseRow(JPK*);
+char* pur_d2m(JPK*, int, int); 
+void rmPurchaseRow(JPK*, int);
 
 #endif // JPK_H_

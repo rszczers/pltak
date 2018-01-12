@@ -8,6 +8,7 @@
 #include "parse.h"
 #include "utils.h"
 
+
 typedef enum {
     COLUMN_NAME = 1,
     HEADER,
@@ -289,6 +290,8 @@ typedef struct {
     double purchaseTotal;
 } JPK;
 
+void printPurchases(JPK*); 
+
 JPKColumns* getColumns(tData* data) {
     JPKColumns* cols = (JPKColumns*)malloc(sizeof(JPKColumns));
     cols->next = NULL;
@@ -489,6 +492,77 @@ char* sell_d2m(JPK* data, int i, int j) {
                 case K_39:
                     asprintf(&out, "%.2lf", col->k_39);
                 break;
+            }
+        }
+    }
+    return out;
+}
+
+char* pur_d2m(JPK* data, int i, int j) {
+    char *out = "";
+    if (data->purchase != NULL) {
+        if (i == 0) {
+            JPKColumns* category = data->colNames;
+            for (int k = 0; k < j; ++k) {
+                category = category->next;
+            }
+            out = category->title;
+        } else {
+            JPKPurchaseList* row = data->purchase;
+            for (int k = 0; k < i-1; ++k) {
+                row = row->next;
+            }
+            JPKPurchase* col = row->val;
+
+            switch(j) {
+                case TYPZAKUPU:
+                    asprintf(&out, "%s", col->typZakupu);  //char*
+                    break;
+                case LPZAKUPU:
+                    asprintf(&out, "%d", col->lpZakupu); //unsigned int
+                    break;
+                case NRDOSTAWCY:
+                    asprintf(&out, "%s", col->nrDostawcy); //char*
+                    break;
+                case NAZWADOSTAWCY:
+                    asprintf(&out, "%s", col->nazwaDostawcy); //char*
+                    break;
+                case ADRESDOSTAWCY:
+                    asprintf(&out, "%s", col->adresDostawcy); //char*
+                    break;
+                case DOWODZAKUPU:
+                    asprintf(&out, "%s", col->dowodZakupu); //char*
+                    break;
+                case DATAZAKUPU:
+                    asprintf(&out, "%s", col->dataZakupu); //char*
+                    break;
+                case DATAWPLYWU:
+                    asprintf(&out, "%s", col->dataWplywu); //char*
+                    break;
+                case K_43:
+                    asprintf(&out, "%.2lf", col->k_43); //double
+                    break;
+                case K_44:
+                    asprintf(&out, "%.2lf", col->k_44); //double
+                    break;
+                case K_45:
+                    asprintf(&out, "%.2lf", col->k_45); //double
+                    break;
+                case K_46:
+                    asprintf(&out, "%.2lf", col->k_46); //double
+                    break;
+                case K_47:
+                    asprintf(&out, "%.2lf", col->k_47); //double
+                    break;
+                case K_48:
+                    asprintf(&out, "%.2lf", col->k_48); //double
+                    break;
+                case K_49:
+                    asprintf(&out, "%.2lf", col->k_49); //double
+                    break;
+                case K_50:
+                    asprintf(&out, "%.2lf", col->k_50); //double
+                    break;
             }
         }
     }
@@ -847,6 +921,38 @@ void addSellRow(JPK* jpk) {
     jpk->soldCount++;
 }
 
+void addPurchaseRow(JPK* jpk) {
+    JPKPurchaseList* new = (JPKPurchaseList*)malloc(sizeof(JPKPurchaseList));
+    new->val = (JPKPurchase*)malloc(sizeof(JPKPurchase));
+    new->next = NULL;
+    JPKPurchaseList* cur = jpk->purchase;
+    JPKPurchaseList* prev = cur;
+    while (cur != NULL) {
+        prev = cur;
+        cur = cur->next;
+    }
+    Date* data = getDate();
+    asprintf(&new->val->dataZakupu, "%s-%s-%s", data->year, data->month, data->day);
+
+    asprintf(&new->val->dataWplywu, "%s-%s-%s", data->year, data->month, data->day);
+    new->val->typZakupu = "G";
+    new->val->nrDostawcy = "";
+    new->val->adresDostawcy = "";
+    new->val->nazwaDostawcy = "";
+    new->val->dowodZakupu = "";
+    new->val->k_43 = 0.0;
+    new->val->k_44 = 0.0;
+    new->val->k_45 = 0.0;
+    new->val->k_46 = 0.0;
+    new->val->k_47 = 0.0;
+    new->val->k_48 = 0.0;
+    new->val->k_49 = 0.0;
+    new->val->k_50 = 0.0;
+    new->val->lpZakupu = prev->val->lpZakupu + 1;
+    prev->next = new;
+    jpk->purchaseCount++;
+}
+
 void rmSellRow(JPK* jpk, int row) {
     JPKSoldList* prev = jpk->sold;
     JPKSoldList* cur = jpk->sold;
@@ -872,7 +978,32 @@ void rmSellRow(JPK* jpk, int row) {
     jpk->soldTotal = evalTotalSold(jpk->sold);
 }
 
-JPK* changeData(JPK* data, int i, int j, char* input) {
+void rmPurchaseRow(JPK* jpk, int row) {
+    JPKPurchaseList* prev = jpk->purchase;
+    JPKPurchaseList* cur = jpk->purchase;
+    for (int i = 1; i < row; ++i) {
+         prev = cur;
+         cur = cur->next;
+    }
+
+    if (cur->next != NULL) {
+        if (row == 1) {
+            jpk->purchase = jpk->purchase->next;
+        } else {
+            prev->next = cur->next;
+        }
+    } else {
+        if (cur == prev) {
+            jpk->sold = NULL;
+        } else  {
+            prev->next = NULL;
+        }
+    }
+    jpk->purchaseCount = jpk->purchaseCount - 1;
+    jpk->purchaseTotal = evalTotalPurchase(jpk->purchase);
+}
+
+JPK* changeSellData(JPK* data, int i, int j, char* input) {
     char *out = "";
     //przejdz do i-tego wiersza
     JPKSoldList *current = data->sold;
@@ -999,3 +1130,65 @@ JPK* changeData(JPK* data, int i, int j, char* input) {
     return data;
 }
 
+JPK* changePurData(JPK* data, int i, int j, char* input) {
+    char *out = "";
+    //przejdz do i-tego wiersza
+    JPKPurchaseList *current = data->purchase;
+    for (int k = 1; k < i; k++) {
+        current = current->next;
+    }
+
+    switch(j) {
+        case TYPZAKUPU:
+            asprintf(&(current->val->typZakupu), "%s", input);  //char*
+            break;
+        case LPZAKUPU:
+            current->val->lpZakupu = atoi(input); //unsigned int
+            break;
+        case NRDOSTAWCY:
+            asprintf(&(current->val->nrDostawcy), "%s", input); //char*
+            break;
+        case NAZWADOSTAWCY:
+            asprintf(&(current->val->nazwaDostawcy), "%s", input); //char*
+            break;
+        case ADRESDOSTAWCY:
+            asprintf(&(current->val->adresDostawcy), "%s", input); //char*
+            break;
+        case DOWODZAKUPU:
+            asprintf(&(current->val->dowodZakupu), "%s", input); //char*
+            break;
+        case DATAZAKUPU:
+            asprintf(&(current->val->dataZakupu), "%s", input); //char*
+            break;
+        case DATAWPLYWU:
+            asprintf(&(current->val->dataWplywu), "%s", input); //char*
+            break;
+        case K_43:
+            current->val->k_43 = m2d(input); //double
+            break;
+        case K_44:
+            current->val->k_44 = m2d(input); //double
+            break;
+        case K_45:
+            current->val->k_45 = m2d(input); //double
+            break;
+        case K_46:
+            current->val->k_46 = m2d(input); //double
+            break;
+        case K_47:
+            current->val->k_47 = m2d(input); //double
+            break;
+        case K_48:
+            current->val->k_48 = m2d(input); //double
+            break;
+        case K_49:
+            current->val->k_49 = m2d(input); //double
+            break;
+        case K_50:
+            current->val->k_50 = m2d(input); //double
+            break;
+    }
+
+    data->purchaseTotal = evalTotalPurchase(data->purchase);
+    return data;
+}
