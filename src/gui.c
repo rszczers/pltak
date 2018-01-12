@@ -1148,12 +1148,13 @@ static void pur_filter_from_table_callback(GtkWidget* widget, gpointer data) {
     GtkWidget *root_box = widget->parent->parent->parent->parent->parent->parent->parent->parent->parent->parent;
     gtk_widget_destroy(root_box);
     GtkWidget *vbox = gtk_vbox_new(0, 0);
-
+    GtkWidget* notebook = create_notebooks(t->jpk, t->config);
     gtk_box_pack_start(GTK_BOX(vbox), create_menu_bar(t->jpk), 0, 0, 0);
-    gtk_box_pack_start(GTK_BOX(vbox), create_notebooks(t->jpk, t->config), 1, 1, 0);
+    gtk_box_pack_start(GTK_BOX(vbox), notebook,1, 1, 0);
     gtk_box_pack_start(GTK_BOX(vbox), create_box_bottom(t->jpk), 0, 0, 0);
     gtk_container_add(GTK_CONTAINER(window), vbox);
     gtk_widget_show_all(window);
+    gtk_notebook_set_current_page(GTK_NOTEBOOK(notebook), 1);
 }
 
 static void sell_filter_callback(GtkWidget* widget, gpointer data) {

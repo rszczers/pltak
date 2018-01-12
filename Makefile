@@ -7,6 +7,7 @@ ARGS=
 
 all: rebuild_configdir main.o parse.o jpk.o tocsv.o gui.o config.o
 	cp ./data/us_codes.dat ~/.pltak/
+	cp ./data/JPK_VAT_02.csv ~/.pltak/
 	$(CC) $(BUILD_DIR)main.o $(BUILD_DIR)config.o $(BUILD_DIR)tocsv.o $(BUILD_DIR)jpk.o $(BUILD_DIR)parse.o $(BUILD_DIR)gui.o $(BUILD_DIR)utils.o -o $(BUILD_DIR)$(PROJECT_NAME) $(CFLAGS) -g 
 
 rebuild_configdir:
