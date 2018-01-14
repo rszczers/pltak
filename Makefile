@@ -12,7 +12,7 @@ all: rebuild_configdir main.o parse.o jpk.o tocsv.o gui.o config.o
 	rm ./data/KodyUrzedowSkarbowych_v3-0.xsd
 	cp ./data/us_codes.dat ~/.pltak/
 	rm ./data/us_codes.dat
-	cp ./data/JPK_VAT_02.csv ~/.pltak/
+	cp ./data/default.csv ~/.pltak/
 	$(CC) $(BUILD_DIR)main.o $(BUILD_DIR)config.o $(BUILD_DIR)tocsv.o $(BUILD_DIR)jpk.o $(BUILD_DIR)parse.o $(BUILD_DIR)gui.o $(BUILD_DIR)utils.o -o $(BUILD_DIR)$(PROJECT_NAME) $(CFLAGS) -g 
 
 rebuild_configdir:

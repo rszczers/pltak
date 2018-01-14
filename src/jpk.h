@@ -224,5 +224,5 @@ void addPurchaseRow(JPK*);
 char* pur_d2m(JPK*, int, int); 
 void rmPurchaseRow(JPK*, int);
 char* mf2human(char*);
-
+JPK* newJPK();
 #endif // JPK_H_

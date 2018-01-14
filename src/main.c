@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
     struct passwd *pw = getpwuid(getuid());
     const char *homeDir = pw->pw_dir;
     char *newFile;
-    asprintf(&newFile, "%s/.pltak/JPK_VAT_02.csv", homeDir);
+    asprintf(&newFile, "%s/.pltak/default.csv", homeDir);
 
     JPK* data = loadJPK(newFile);
     drawGui(data);

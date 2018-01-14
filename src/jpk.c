@@ -5,6 +5,10 @@
 #include <stdbool.h>
 #include <regex.h>
 #include <assert.h>
+#include <sys/types.h>
+#include <pwd.h>
+#include <ctype.h>
+#include <unistd.h>
 #include "parse.h"
 #include "utils.h"
 
@@ -1325,4 +1329,20 @@ char* mf2human(char* name) {
         out = "Razem kwota podatku naliczonego do odliczenia – suma kwot z elementów K_44, K_46, K_47, K_48, K_49 i K_50";
     }
     return out;
+}
+
+JPK* newJPK() {
+    struct passwd *pw = getpwuid(getuid());
+    const char *homeDir = pw->pw_dir;
+    char *newFile;
+    asprintf(&newFile, "%s/.pltak/default.csv", homeDir);
+    JPK* e = loadJPK(newFile);
+    Date* date = getDate();
+    char* timestamp; 
+    asprintf(&timestamp, "%s-%s-%s", date->year, date->month, date->day); 
+    e->purchase->val->dataZakupu = timestamp;
+    e->purchase->val->dataWplywu = timestamp;
+    e->sold->val->dataSprzedazy = timestamp; 
+    e->sold->val->dataWystawienia = timestamp;
+    return e;
 }
