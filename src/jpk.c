@@ -652,8 +652,6 @@ int countSells(tData* data) {
         c++;
         cur = cur->next;
     }
-
-    printf("sell: %d\n", c);
     return c;
 }
 
@@ -668,7 +666,6 @@ int countPurchases(tData* data) {
         c++;
         cur = cur->next;
     }
-    printf("pur: %d\n", c);
     return c;
 }
 
@@ -684,6 +681,7 @@ JPKSoldList* getSoldList(tData* parsedData, int soldCount) {
 
 JPKPurchaseList* getPurchaseList(tData* parsedData, int purchaseCount) {
     JPKPurchaseList* purchases = (JPKPurchaseList*)malloc(sizeof(JPKPurchaseList));
+    purchases->val = NULL;
     purchases->next = NULL;
     for (int i = PURCHASES; i < PURCHASES + purchaseCount ; ++i) {
         addPurchase(purchases, rowToPurchase(parsedData, i));
@@ -741,7 +739,7 @@ JPK* loadJPK(char *filename) {
     data->soldTotal = evalTotalSold(data->sold);
     data->purchase = getPurchaseList(parsedData, data->purchaseCount);
     data->purchaseTotal = evalTotalPurchase(data->purchase);
-
+    printPurchases(data);
     return data;
 }
 

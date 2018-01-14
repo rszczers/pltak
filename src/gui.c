@@ -171,7 +171,6 @@ typedef struct {
     TakConfig* tak;
 } JPKChange;
 
-
 static void waluta_callback(GtkWidget* widget, gpointer data) {
     TakConfig* config = (TakConfig*) data;
     config->DomyslnyKodWaluty = (char*)gtk_entry_get_text(GTK_ENTRY(widget));
@@ -338,9 +337,9 @@ static GtkWidget* draw_sell_spreadsheet(TakConfig* config, JPK* data) {
             gtk_widget_set_size_request(button, 20, 20);
             gtk_box_pack_start(GTK_BOX(hbox_title), button, 0, 0, 0);
 
-			char* aprop_lab = sell_d2m(data, 0, whichCols[i-2]);
-			GtkWidget* col_title_label = gtk_label_new(aprop_lab);
-			gtk_widget_set_tooltip_text (col_title_label, mf2human(aprop_lab));
+            char* aprop_lab = sell_d2m(data, 0, whichCols[i-2]);
+            GtkWidget* col_title_label = gtk_label_new(aprop_lab);
+            gtk_widget_set_tooltip_text (col_title_label, mf2human(aprop_lab));
 
             gtk_box_pack_start(GTK_BOX(hbox_title), col_title_label, 1, 1, 0);
             g_signal_connect(GTK_BUTTON(button), "clicked",
@@ -453,9 +452,9 @@ static GtkWidget* draw_pur_spreadsheet(TakConfig* config, JPK* data) {
             gtk_widget_set_size_request(button, 20, 20);
             gtk_box_pack_start(GTK_BOX(hbox_title), button, 0, 0, 0);
 
-			char* aprop_lab = pur_d2m(data, 0, whichCols[i-2]);
-			GtkWidget* col_title_label = gtk_label_new(aprop_lab);
-			gtk_widget_set_tooltip_text(col_title_label, mf2human(aprop_lab));
+            char* aprop_lab = pur_d2m(data, 0, whichCols[i-2]);
+            GtkWidget* col_title_label = gtk_label_new(aprop_lab);
+            gtk_widget_set_tooltip_text(col_title_label, mf2human(aprop_lab));
 
             gtk_box_pack_start(GTK_BOX(hbox_title), col_title_label, 1, 1, 0);
             g_signal_connect(GTK_BUTTON(button), "clicked",
