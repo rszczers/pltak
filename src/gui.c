@@ -762,6 +762,7 @@ static void create_profile_notebook(GtkWidget *notebook, TakConfig* config) {
     } else {
         gtk_entry_set_text(GTK_ENTRY(entry), config->DomyslnyKodWaluty);
     }
+    gtk_widget_set_size_request(entry, 400, 30);
     g_signal_connect(entry, "changed", G_CALLBACK(waluta_callback), config);
     gtk_table_attach_defaults(
             GTK_TABLE(table_profile),
@@ -1011,7 +1012,7 @@ static void create_profile_notebook(GtkWidget *notebook, TakConfig* config) {
             entry,
             1, 2, 14, 15);
 
-    gtk_box_pack_start(GTK_BOX(hbox_profile), table_profile, 1, 1, 0);
+    gtk_box_pack_start(GTK_BOX(hbox_profile), table_profile, 1, 0, 0);
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroll_profile),
             GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
     gtk_scrolled_window_add_with_viewport(
