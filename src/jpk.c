@@ -15,8 +15,9 @@ typedef enum {
     PROFILE_1,
     PROFILE_2,
     SELLS,
-    PURCHASES = 16
 } JPKRow;
+
+int PURCHASES;
 
 typedef enum {
     KODFORMULARZA = 1,
@@ -290,7 +291,7 @@ typedef struct {
     double purchaseTotal;
 } JPK;
 
-void printPurchases(JPK*); 
+void printPurchases(JPK*);
 
 JPKColumns* getColumns(tData* data) {
     JPKColumns* cols = (JPKColumns*)malloc(sizeof(JPKColumns));
@@ -643,25 +644,31 @@ JPKPurchase* rowToPurchase(tData* data, int row) {
 
 int countSells(tData* data) {
     int c = 0;
+    tData* cur = data;
     for (int i = 0; i < SELLS - 1; ++i) {
-        data = data->next;
+        cur = cur->next;
     }
-    while (data->next != NULL && data->row->val != NULL) {
+    while (cur != NULL && cur->row->colNum == TYPSPRZEDAZY) {
         c++;
-        data = data->next;
+        cur = cur->next;
     }
+
+    printf("sell: %d\n", c);
     return c;
 }
 
 int countPurchases(tData* data) {
     int c = 0;
+    tData* cur = data;
+    // Przewiń do 16-tego wiersza
     for (int i = 0; i < PURCHASES - 1; ++i) {
-        data = data->next;
+        cur = cur->next;
     }
-    while (data->next != NULL && strcmp(data->row->val, "G") == 0) {
+    while (cur != NULL && cur->row->colNum == TYPZAKUPU) {
         c++;
-        data = data->next;
+        cur = cur->next;
     }
+    printf("pur: %d\n", c);
     return c;
 }
 
@@ -728,6 +735,7 @@ JPK* loadJPK(char *filename) {
     // Te dwa musza być zdefiniowane wcześniej, bo
     // pozostałe funkcje uzywają tych pól
     data->soldCount = countSells(parsedData);
+    PURCHASES = SELLS + data->soldCount + 2;
     data->purchaseCount = countPurchases(parsedData);
     data->sold = getSoldList(parsedData, data->soldCount);
     data->soldTotal = evalTotalSold(data->sold);
@@ -872,7 +880,7 @@ void addSellRow(JPK* jpk) {
     new->val = (JPKSold*)malloc(sizeof(JPKSold));
     new->next = NULL;
     JPKSoldList* cur = jpk->sold;
-    JPKSoldList* prev = cur;
+    JPKSoldList* prev = NULL;
     while (cur != NULL) {
         prev = cur;
         cur = cur->next;
@@ -914,10 +922,17 @@ void addSellRow(JPK* jpk) {
     new->val->k_37 = 0.0;
     new->val->k_38 = 0.0;
     new->val->k_39 = 0.0;
-    new->val->lpSprzedazy = prev->val->lpSprzedazy + 1;
+    new->val->lpSprzedazy = prev == NULL ? 1 : prev->val->lpSprzedazy + 1;
     new->val->nazwaKontrahenta = "";
     new->val->nrKontrahenta = "";
-    prev->next = new;
+    if (prev != NULL)
+        prev->next = new;
+    else {
+        JPKSoldList* newSold = (JPKSoldList*)malloc(sizeof(JPKSoldList));
+        jpk->sold = newSold;
+        jpk->sold->next = NULL;
+        jpk->sold->val = new->val;
+    }
     jpk->soldCount++;
 }
 
@@ -926,14 +941,13 @@ void addPurchaseRow(JPK* jpk) {
     new->val = (JPKPurchase*)malloc(sizeof(JPKPurchase));
     new->next = NULL;
     JPKPurchaseList* cur = jpk->purchase;
-    JPKPurchaseList* prev = cur;
+    JPKPurchaseList* prev = NULL;
     while (cur != NULL) {
         prev = cur;
         cur = cur->next;
     }
     Date* data = getDate();
     asprintf(&new->val->dataZakupu, "%s-%s-%s", data->year, data->month, data->day);
-
     asprintf(&new->val->dataWplywu, "%s-%s-%s", data->year, data->month, data->day);
     new->val->typZakupu = "G";
     new->val->nrDostawcy = "";
@@ -948,8 +962,15 @@ void addPurchaseRow(JPK* jpk) {
     new->val->k_48 = 0.0;
     new->val->k_49 = 0.0;
     new->val->k_50 = 0.0;
-    new->val->lpZakupu = prev->val->lpZakupu + 1;
-    prev->next = new;
+    new->val->lpZakupu = prev == NULL ? 1 : prev->val->lpZakupu + 1;
+    if (prev != NULL)
+        prev->next = new;
+    else {
+        JPKPurchaseList* newPurch = (JPKPurchaseList*)malloc(sizeof(JPKPurchaseList));
+        jpk->purchase = newPurch;
+        jpk->purchase->next = NULL;
+        jpk->purchase->val = new->val;
+    }
     jpk->purchaseCount++;
 }
 
@@ -994,7 +1015,7 @@ void rmPurchaseRow(JPK* jpk, int row) {
         }
     } else {
         if (cur == prev) {
-            jpk->sold = NULL;
+            jpk->purchase = NULL;
         } else  {
             prev->next = NULL;
         }
@@ -1191,4 +1212,120 @@ JPK* changePurData(JPK* data, int i, int j, char* input) {
 
     data->purchaseTotal = evalTotalPurchase(data->purchase);
     return data;
+}
+
+char* mf2human(char* name) {
+    char* out;
+    if (strcmp("NrKontrahenta", name) == 0) {
+        out = "Numer, za pomocą którego kontrahent jest zidentyfikowany na potrzeby podatku lub podatku od wartości dodanej. W przypadkach, w których zgodnie z ustawą podanie numeru nie jest wymagane, należy wpisać \"brak\" ";
+    } else if (strcmp("NazwaKontrahenta", name) == 0) {
+        out = "Imię i nazwisko lub nazwa kontrahenta";
+    } else if (strcmp("AdresKontrahenta", name) == 0) {
+        out = "";
+    } else if (strcmp("DowodSprzedazy", name) == 0) {
+        out = "Numer dowodu sprzedaży";
+    } else if (strcmp("DataWystawienia", name) == 0) {
+        out = "Data wystawienia dowodu sprzedaży ";
+    } else if (strcmp("DataSprzedazy", name) == 0) {
+        out = "Data sprzedaży, o ile jest określona i różni się od daty wystawienia faktury. W przeciwnym przypadku – pole puste (pole opcjonalne)";
+    } else if (strcmp("K_10", name) == 0) {
+        out = "Kwota netto – Dostawa towarów oraz świadczenie usług na terytorium kraju, zwolnione od podatku (pole opcjonalne) ";
+    } else if (strcmp("K_11", name) == 0) {
+        out = "Kwota netto – Dostawa towarów oraz świadczenie usług poza terytorium kraju (pole opcjonalne) ";
+    } else if (strcmp("K_12", name) == 0) {
+        out = "Kwota netto – w tym świadczenie usług, o których mowa w art. 100 ust. 1 pkt 4 ustawy (pole opcjonalne)";
+    } else if (strcmp("K_13", name) == 0) {
+        out = "Kwota netto – Dostawa towarów oraz świadczenie usług na terytorium kraju, opodatkowane stawką 0% (pole opcjonalne)";
+    } else if (strcmp("K_14", name) == 0) {
+        out = "Kwota netto – w tym dostawa towarów, o której mowa w art. 129 ustawy (pole opcjonalne)";
+    } else if (strcmp("K_15", name) == 0) {
+        out = "Kwota netto – Dostawa towarów oraz świadczenie usług na terytorium kraju, opodatkowane stawką 5% (pole opcjonalne)";
+    } else if (strcmp("K_16", name) == 0) {
+        out = "Kwota podatku należnego – Dostawa towarów oraz świadczenie usług na terytorium kraju, opodatkowane stawką 5% (pole opcjonalne)";
+    } else if (strcmp("K_17", name) == 0) {
+        out = "Kwota netto – Dostawa towarów oraz świadczenie usług na terytorium kraju, opodatkowane stawką 7% albo 8% (pole opcjonalne)";
+    } else if (strcmp("K_18", name) == 0) {
+        out = "Kwota podatku należnego – Dostawa towarów oraz świadczenie usług na terytorium kraju, opodatkowane stawką 7% albo 8% (pole opcjonalne)";
+    } else if (strcmp("K_19", name) == 0) {
+        out = "Kwota netto – Dostawa towarów oraz świadczenie usług na terytorium kraju, opodatkowane stawką 22% albo 23% (pole opcjonalne)";
+    } else if (strcmp("K_20", name) == 0) {
+        out = "Kwota podatku należnego – Dostawa towarów oraz świadczenie usług na terytorium kraju, opodatkowane stawką 22% albo 23% (pole opcjonalne)";
+    } else if (strcmp("K_21", name) == 0) {
+        out = "Kwota netto – Wewnątrzwspólnotowa dostawa towarów (pole opcjonalne) ";
+    } else if (strcmp("K_22", name) == 0) {
+        out = "Kwota netto – Eksport towarów (pole opcjonalne)";
+    } else if (strcmp("K_23", name) == 0) {
+        out = "Kwota netto – Wewnątrzwspólnotowe nabycie towarów (pole opcjonalne)";
+    } else if (strcmp("K_24", name) == 0) {
+        out = "Kwota podatku należnego – Wewnątrzwspólnotowe nabycie towarów (pole opcjonalne)";
+    } else if (strcmp("K_25", name) == 0) {
+        out = "Kwota netto – Import towarów podlegający rozliczeniu zgodnie z art.  33a ustawy (pole opcjonalne)";
+    } else if (strcmp("K_26", name) == 0) {
+        out = "Kwota podatku należnego – Import towarów podlegający rozliczeniu zgodnie z art. 33a ustawy (pole opcjonalne)";
+    } else if (strcmp("K_27", name) == 0) {
+        out = "Kwota netto – Import usług z wyłączeniem usług nabywanych od podatników podatku od wartości dodanej, do których stosuje się art.  28b ustawy (pole opcjonalne)";
+    } else if (strcmp("K_28", name) == 0) {
+        out = "Kwota podatku należnego – Import usług z wyłączeniem usług nabywanych od podatników podatku od wartości dodanej, do których stosuje się art. 28b ustawy (pole opcjonalne)";
+    } else if (strcmp("K_29", name) == 0) {
+        out = "Kwota netto – Import usług nabywanych od podatników podatku od wartości dodanej, do których stosuje się art. 28b ustawy (pole opcjonalne)";
+    } else if (strcmp("K_30", name) == 0) {
+        out = "Kwota podatku należnego – Import usług nabywanych od podatników podatku od wartości dodanej, do których stosuje się art. 28b ustawy (pole opcjonalne)";
+    } else if (strcmp("K_31", name) == 0) {
+        out = "Kwota netto – Dostawa towarów oraz świadczenie usług, dla których podatnikiem jest nabywca zgodnie z art. 17 ust. 1 pkt 7 lub 8 ustawy (wypełnia dostawca) (pole opcjonalne)";
+    } else if (strcmp("K_32", name) == 0) {
+        out = "Kwota netto – Dostawa towarów, dla których podatnikiem jest nabywca zgodnie z art. 17 ust. 1 pkt 5 ustawy (wypełnia nabywca) (pole opcjonalne)";
+    } else if (strcmp("K_33", name) == 0) {
+        out = "Kwota podatku należnego – Dostawa towarów, dla których podatnikiem jest nabywca zgodnie z art. 17 ust. 1 pkt 5 ustawy (wypełnia nabywca) (pole opcjonalne)";
+    } else if (strcmp("K_34", name) == 0) {
+        out = "Kwota netto – Dostawa towarów oraz świadczenie usług, dla których podatnikiem jest nabywca zgodnie z art. 17 ust. 1 pkt 7 lub 8 ustawy (wypełnia nabywca) (pole opcjonalne)";
+    } else if (strcmp("K_35", name) == 0) {
+        out = "Kwota podatku należnego – Dostawa towarów oraz świadczenie usług, dla których podatnikiem jest nabywca zgodnie z art. 17 ust. 1 pkt 7 lub 8 ustawy (wypełnia nabywca) (pole opcjonalne)";
+    } else if (strcmp("K_36", name) == 0) {
+        out = "Kwota podatku należnego od towarów i usług objętych spisem z natury, o którym mowa w art. 14 ust. 5 ustawy (pole opcjonalne)";
+    } else if (strcmp("K_37", name) == 0) {
+        out = "Zwrot odliczonej lub zwróconej kwoty wydatkowanej na zakup kas rejestrujących, o którym mowa w art. 111 ust. 6 ustawy (pole opcjonalne)";
+    } else if (strcmp("K_38", name) == 0) {
+        out = "Kwota podatku należnego od wewnątrzwspólnotowego nabycia środków transportu, wykazanego w poz. 24, podlegająca wpłacie w terminie, o którym mowa w art. 103 ust. 3, w związku z ust. 4 ustawy (pole opcjonalne)";
+    } else if (strcmp("K_39", name) == 0) {
+        out = "Kwota podatku od wewnątrzwspólnotowego nabycia paliw silnikowych, podlegająca wpłacie w terminach, o których mowa w art. 103 ust. 5a i 5b ustawy (pole opcjonalne) ";
+    } else if (strcmp("LiczbaWierszySprzedazy", name) == 0) {
+        out = "Liczba wierszy ewidencji sprzedaży, w okresie którego dotyczy JPK";
+    } else if (strcmp("PodatekNalezny", name) == 0) {
+        out = "Podatek należny wg ewidencji sprzedaży w okresie, którego dotyczy JPK – suma kwot z elementów K_16, K_18, K_20, K_24, K_26, K_28, K_30, K_33, K_35, K_36 i K_37 pomniejszona o kwotę z elementów K_38 i K_39";
+    } else if (strcmp("typZakupu", name) == 0) {
+        out = "Atrybut oznaczający tabelę – we wszystkich wierszach tabeli przyjmuje wartość tekstową dużej litery „G” – grupa";
+    } else if (strcmp("LpZakupu", name) == 0) {
+        out = "Lp. wiersza ewidencji zakupu VAT";
+    } else if (strcmp("NrDostawcy", name) == 0) {
+        out = "Numer, za pomocą którego dostawca (kontrahent) jest zidentyfikowany na potrzeby podatku lub podatku od wartości dodanej";
+    } else if (strcmp("NazwaDostawcy", name) == 0) {
+        out = "Imię i nazwisko lub nazwa dostawcy (kontrahenta)";
+    } else if (strcmp("AdresDostawcy", name) == 0) {
+        out = "Adres dostawcy (kontrahenta)";
+    } else if (strcmp("DowodZakupu", name) == 0) {
+        out = "Numer dowodu zakupu";
+    } else if (strcmp("DataZakupu", name) == 0) {
+        out = "Data wystawienia dowodu zakupu ";
+    } else if (strcmp("DataWplywu", name) == 0) {
+        out = "Data wpływu dowodu zakupu (pole opcjonalne)";
+    } else if (strcmp("K_43", name) == 0) {
+        out = "Kwota netto – Nabycie towarów i usług zaliczanych u podatnika do środków trwałych (pole opcjonalne)";
+    } else if (strcmp("K_44", name) == 0) {
+        out = "Kwota podatku naliczonego – Nabycie towarów i usług zaliczanych u podatnika do środków trwałych (pole opcjonalne)";
+    } else if (strcmp("K_45", name) == 0) {
+        out = "Kwota netto – Nabycie towarów i usług pozostałych (pole opcjonalne).\nKomentarz: 23%, 8%, zw, 0%.";
+    } else if (strcmp("K_46", name) == 0) {
+        out = "Kwota podatku naliczonego – Nabycie towarów i usług pozostałych (pole opcjonalne).\nKomentarz: 23%, 8%, zw, 0%.";
+    } else if (strcmp("K_47", name) == 0) {
+        out = "Korekta podatku naliczonego od nabycia środków trwałych (pole opcjonalne)";
+    } else if (strcmp("K_48", name) == 0) {
+        out = "Korekta podatku naliczonego od pozostałych nabyć (pole opcjonalne)";
+    } else if (strcmp("K_49", name) == 0) {
+        out = "Korekta podatku naliczonego, o której mowa w art. 89b ust. 1 ustawy (pole opcjonalne)";
+    } else if (strcmp("K_50", name) == 0) {
+        out = "Korekta podatku naliczonego, o której mowa w art. 89b ust. 4 ustawy (pole opcjonalne) ";
+    } else if (strcmp("PodatekNaliczony", name) == 0) {
+        out = "Razem kwota podatku naliczonego do odliczenia – suma kwot z elementów K_44, K_46, K_47, K_48, K_49 i K_50";
+    }
+    return out;
 }

@@ -6,7 +6,7 @@ CONFIG_DIR=~/.pltak
 ARGS=
 
 all: rebuild_configdir main.o parse.o jpk.o tocsv.o gui.o config.o
-	pip3 install xmltodict
+#	pip3 install xmltodict
 	wget -P ./data/ http://www.e-deklaracje.mf.gov.pl/Repozytorium/Slowniki/KodyUrzedowSkarbowych_v3-0.xsd
 	python3 ./src/convert.py ./data/KodyUrzedowSkarbowych_v3-0.xsd ./data/us_codes.dat
 	rm ./data/KodyUrzedowSkarbowych_v3-0.xsd

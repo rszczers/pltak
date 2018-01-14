@@ -254,6 +254,7 @@ static void create_sell_col_filter(GtkWidget* widget, JPK* jpk, TakConfig* confi
         data->name = title->title;
         data->jpk = jpk;
         check_sell = gtk_check_button_new_with_label(title->title);
+        gtk_widget_set_tooltip_text(check_sell, mf2human(title->title));
         gtk_toggle_button_set_active(
                 GTK_TOGGLE_BUTTON (check_sell),
                 isElem(config->sellColumns, title->title));
@@ -275,6 +276,7 @@ static void create_pur_col_filter(GtkWidget* widget, JPK* jpk, TakConfig* config
         data->name = title->title;
         data->jpk = jpk;
         check_purchase = gtk_check_button_new_with_label(title->title);
+        gtk_widget_set_tooltip_text(check_purchase, mf2human(title->title));
         gtk_toggle_button_set_active(
                 GTK_TOGGLE_BUTTON (check_purchase),
                 isElem(config->purchaseColumns, title->title));
@@ -328,13 +330,19 @@ static GtkWidget* draw_sell_spreadsheet(TakConfig* config, JPK* data) {
         if (i > 1) {
             hbox_title = gtk_hbox_new(0, 0);
             button = gtk_button_new_with_label("×");
+            gtk_widget_set_tooltip_text(GTK_WIDGET(button), "Ukryj kolumnę");
             ColFilter* filter = (ColFilter*)malloc(sizeof(ColFilter));
             filter->config = config;
             filter->name = sell_d2m(data, 0, whichCols[i-2]);
             filter->jpk = data;
             gtk_widget_set_size_request(button, 20, 20);
             gtk_box_pack_start(GTK_BOX(hbox_title), button, 0, 0, 0);
-            gtk_box_pack_start(GTK_BOX(hbox_title), gtk_label_new(sell_d2m(data, 0, whichCols[i-2])), 1, 1, 0);
+
+			char* aprop_lab = sell_d2m(data, 0, whichCols[i-2]);
+			GtkWidget* col_title_label = gtk_label_new(aprop_lab);
+			gtk_widget_set_tooltip_text (col_title_label, mf2human(aprop_lab));
+
+            gtk_box_pack_start(GTK_BOX(hbox_title), col_title_label, 1, 1, 0);
             g_signal_connect(GTK_BUTTON(button), "clicked",
                             G_CALLBACK(sell_filter_from_table_callback), filter);
             gtk_table_attach_defaults(GTK_TABLE(table_sell), hbox_title, i, i+1, 0, 1);
@@ -348,6 +356,7 @@ static GtkWidget* draw_sell_spreadsheet(TakConfig* config, JPK* data) {
             } else if (i == 1) {
                 hbox = gtk_hbox_new(0, 0);
                 button = gtk_button_new_with_label("×");
+                gtk_widget_set_tooltip_text(GTK_WIDGET(button), "Usuń wiersz");
                 change = (JPKChange*)malloc(sizeof(JPKChange));
                 change->i = j;
                 change->jpk = data;
@@ -374,7 +383,6 @@ static GtkWidget* draw_sell_spreadsheet(TakConfig* config, JPK* data) {
                         i, i+1, j, j+1);
                 g_signal_connect(GTK_ENTRY(entry), "changed",
                         G_CALLBACK(sell_entry_callback), change);
-
             }
         }
     }
@@ -382,6 +390,7 @@ static GtkWidget* draw_sell_spreadsheet(TakConfig* config, JPK* data) {
     gdk_color_parse("#A3BE8C", &color);
     GtkWidget *button_add_row = gtk_button_new_with_label("+");
     gtk_widget_modify_bg(GTK_WIDGET(button_add_row), GTK_STATE_NORMAL, &color);
+    gtk_widget_set_tooltip_text(GTK_WIDGET(button_add_row), "Dodaj wiersz");
     gtk_table_attach_defaults(GTK_TABLE(table_sell), button_add_row, 0, 2, data->soldCount + 1, data->soldCount + 2);
 
     change = (JPKChange*)malloc(sizeof(JPKChange));
@@ -436,13 +445,19 @@ static GtkWidget* draw_pur_spreadsheet(TakConfig* config, JPK* data) {
         if (i > 1) {
             hbox_title = gtk_hbox_new(0, 0);
             button = gtk_button_new_with_label("×");
+            gtk_widget_set_tooltip_text(GTK_WIDGET(button), "Ukryj kolumnę");
             ColFilter* filter = (ColFilter*)malloc(sizeof(ColFilter));
             filter->config = config;
             filter->name = pur_d2m(data, 0, whichCols[i-2]);
             filter->jpk = data;
             gtk_widget_set_size_request(button, 20, 20);
             gtk_box_pack_start(GTK_BOX(hbox_title), button, 0, 0, 0);
-            gtk_box_pack_start(GTK_BOX(hbox_title), gtk_label_new(pur_d2m(data, 0, whichCols[i-2])), 1, 1, 0);
+
+			char* aprop_lab = pur_d2m(data, 0, whichCols[i-2]);
+			GtkWidget* col_title_label = gtk_label_new(aprop_lab);
+			gtk_widget_set_tooltip_text(col_title_label, mf2human(aprop_lab));
+
+            gtk_box_pack_start(GTK_BOX(hbox_title), col_title_label, 1, 1, 0);
             g_signal_connect(GTK_BUTTON(button), "clicked",
                             G_CALLBACK(pur_filter_from_table_callback), filter);
             gtk_table_attach_defaults(GTK_TABLE(table_pur), hbox_title, i, i+1, 0, 1);
@@ -456,6 +471,7 @@ static GtkWidget* draw_pur_spreadsheet(TakConfig* config, JPK* data) {
             } else if (i == 1) {
                 hbox = gtk_hbox_new(0, 0);
                 button = gtk_button_new_with_label("×");
+                gtk_widget_set_tooltip_text(GTK_WIDGET(button), "Usuń wiersz");
                 change = (JPKChange*)malloc(sizeof(JPKChange));
                 change->i = j;
                 change->jpk = data;
@@ -482,7 +498,6 @@ static GtkWidget* draw_pur_spreadsheet(TakConfig* config, JPK* data) {
                         i, i+1, j, j+1);
                 g_signal_connect(GTK_ENTRY(entry), "changed",
                         G_CALLBACK(pur_entry_callback), change);
-
             }
         }
     }
@@ -490,6 +505,7 @@ static GtkWidget* draw_pur_spreadsheet(TakConfig* config, JPK* data) {
     gdk_color_parse("#A3BE8C", &color);
     GtkWidget *button_add_row = gtk_button_new_with_label("+");
     gtk_widget_modify_bg(GTK_WIDGET(button_add_row), GTK_STATE_NORMAL, &color);
+    gtk_widget_set_tooltip_text(GTK_WIDGET(button_add_row), "Dodaj wiersz");
     gtk_table_attach_defaults(GTK_TABLE(table_pur), button_add_row, 0, 2, data->purchaseCount + 1, data->purchaseCount + 2);
 
     change = (JPKChange*)malloc(sizeof(JPKChange));
@@ -640,6 +656,7 @@ static void create_sell_notebook(GtkWidget *notebook, JPK* jpk, TakConfig* confi
     char* buffer;
     asprintf(&buffer, "%s: %.2lf %s", "Podatek należny", jpk->soldTotal, config->DomyslnyKodWaluty);
     label_sell_sum = gtk_label_new(buffer);
+    gtk_widget_set_tooltip_text(label_sell_sum, mf2human("PodatekNalezny"));
     GtkWidget *hbox_space = gtk_hbox_new(0, 0);
     GtkWidget *hbox = gtk_hbox_new(0, 0);
     gtk_box_pack_start(GTK_BOX(hbox), table_sell, 0, 0, 0);
@@ -679,6 +696,7 @@ static void create_purchase_notebook(GtkWidget *notebook, JPK* jpk, TakConfig* c
     char* buffer;
     asprintf(&buffer, "%s: %.2lf %s", "Podatek naliczony", jpk->purchaseTotal, config->DomyslnyKodWaluty);
     label_pur_sum = gtk_label_new(buffer);
+    gtk_widget_set_tooltip_text(label_sell_sum, mf2human("PodatekNaliczony"));
     GtkWidget *hbox_space = gtk_hbox_new(0, 0);
     GtkWidget *hbox = gtk_hbox_new(0, 0);
     gtk_box_pack_start(GTK_BOX(hbox), table_pur, 0, 0, 0);
@@ -1066,8 +1084,8 @@ static GtkWidget* create_date_menu(JPK *jpk) {
     }
 
     char* year;
-    if (getMonth(date) == 1) asprintf(&year, "%d", atoi(date->year) - 1); 
-    else asprintf(&year, "%d", atoi(date->year)); 
+    if (getMonth(date) == 1) asprintf(&year, "%d", atoi(date->year) - 1);
+    else asprintf(&year, "%d", atoi(date->year));
 
     GtkWidget* hbox_space = gtk_hbox_new(0, 0);
     gtk_box_pack_start(GTK_BOX(hbox_date), hbox_space, 1, 1, 0);
@@ -1091,17 +1109,17 @@ static GtkWidget* create_date_menu(JPK *jpk) {
 
 static void aim_first_callback(GtkWidget* widget, gpointer data) {
     JPK* jpk = (JPK*)data;
-    jpk->header->celZlozenia = 1; 
+    jpk->header->celZlozenia = 1;
 }
 
 static void aim_second_callback(GtkWidget* widget, gpointer data) {
     JPK* jpk = (JPK*)data;
-    jpk->header->celZlozenia = 2; 
+    jpk->header->celZlozenia = 2;
 }
 
 static void aim_third_callback(GtkWidget* widget, gpointer data) {
     JPK* jpk = (JPK*)data;
-    jpk->header->celZlozenia = 3; 
+    jpk->header->celZlozenia = 3;
 }
 
 static GtkWidget* create_box_bottom(JPK* jpk) {
@@ -1334,7 +1352,7 @@ static void pur_addrow_callback(GtkWidget* widget, gpointer data) {
     GtkWidget *root_box = widget->parent->parent->parent->parent->parent->parent->parent->parent->parent;
     gtk_widget_destroy(root_box);
     GtkWidget *vbox = gtk_vbox_new(0, 0);
-    GtkWidget* notebook = create_notebooks(ch->jpk, ch->tak); 
+    GtkWidget* notebook = create_notebooks(ch->jpk, ch->tak);
     gtk_box_pack_start(GTK_BOX(vbox), create_menu_bar(ch->jpk), 0, 0, 0);
     gtk_box_pack_start(GTK_BOX(vbox), notebook, 1, 1, 0);
     gtk_box_pack_start(GTK_BOX(vbox), create_box_bottom(ch->jpk), 0, 0, 0);

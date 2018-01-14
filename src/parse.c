@@ -193,5 +193,6 @@ tData* parse(char* filename) {
 
     if (line)
         free(line);
+//    showData(parsedData); 
     return parsedData;
 }
