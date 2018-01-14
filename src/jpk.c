@@ -739,7 +739,6 @@ JPK* loadJPK(char *filename) {
     data->soldTotal = evalTotalSold(data->sold);
     data->purchase = getPurchaseList(parsedData, data->purchaseCount);
     data->purchaseTotal = evalTotalPurchase(data->purchase);
-    printPurchases(data);
     return data;
 }
 
