@@ -722,7 +722,7 @@ static void create_purchase_notebook(GtkWidget *notebook, JPK* jpk, TakConfig* c
     char* buffer;
     asprintf(&buffer, "%s: %.2lf %s", "Podatek naliczony", jpk->purchaseTotal, config->DomyslnyKodWaluty);
     label_pur_sum = gtk_label_new(buffer);
-    gtk_widget_set_tooltip_text(label_sell_sum, mf2human("PodatekNaliczony"));
+    gtk_widget_set_tooltip_text(label_pur_sum, mf2human("PodatekNaliczony"));
     GtkWidget *hbox_space = gtk_hbox_new(0, 0);
     GtkWidget *hbox = gtk_hbox_new(0, 0);
     gtk_box_pack_start(GTK_BOX(hbox), table_pur, 0, 0, 0);
