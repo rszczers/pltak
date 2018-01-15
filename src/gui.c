@@ -1139,17 +1139,24 @@ static GtkWidget* create_box_bottom(JPK* jpk) {
     GtkWidget* hbox_bottom = gtk_hbox_new(0, 15);
     GtkWidget* radio_aim_gr = gtk_radio_button_new_with_label(NULL,
             "Złożenie po raz pierwszy");
+    if (jpk->header->celZlozenia == 1)
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_aim_gr), 1);
     g_signal_connect(radio_aim_gr, "toggled", G_CALLBACK(aim_first_callback), jpk);
     gtk_box_pack_start(GTK_BOX(hbox_bottom), radio_aim_gr, 0, 1, 0);
-    GtkWidget* radio_aim = gtk_radio_button_new_with_label(
-         gtk_radio_button_get_group(
+
+    GtkWidget* radio_aim = gtk_radio_button_new_with_label(gtk_radio_button_get_group(
           GTK_RADIO_BUTTON(radio_aim_gr)), "Pierwsza korekta");
+    if (jpk->header->celZlozenia == 2)
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_aim), 1);
     g_signal_connect(radio_aim_gr, "toggled", G_CALLBACK(aim_second_callback), jpk);
     gtk_box_pack_start(GTK_BOX(hbox_bottom), radio_aim, 0, 1, 0);
-    radio_aim = gtk_radio_button_new_with_label(
-         gtk_radio_button_get_group(
+
+    radio_aim = gtk_radio_button_new_with_label(gtk_radio_button_get_group(
           GTK_RADIO_BUTTON(radio_aim_gr)), "Druga korekta");
+    if (jpk->header->celZlozenia == 3)
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_aim), 1);
     g_signal_connect(radio_aim_gr, "toggled", G_CALLBACK(aim_third_callback), jpk);
+
     gtk_box_pack_start(GTK_BOX(hbox_bottom), radio_aim, 0, 1, 0);
 
     gtk_box_pack_start(GTK_BOX(hbox_bottom), create_date_menu(jpk), 1, 1, 0);
