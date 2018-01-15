@@ -4,19 +4,12 @@
 #include <pwd.h>
 #include <unistd.h>
 #include "jpk.h"
-#include "tocsv.h"
 #include "gui.h"
 
 int main(int argc, char *argv[])
 {
     setlocale(LC_NUMERIC, "pl_PL.utf8");
-
-    struct passwd *pw = getpwuid(getuid());
-    const char *homeDir = pw->pw_dir;
-    char *newFile;
-    asprintf(&newFile, "%s/.pltak/default.csv", homeDir);
-
-    JPK* data = loadJPK(newFile);
+    JPK* data = newJPK();
     drawGui(data);
     return 0;
 }

@@ -134,14 +134,19 @@ static void uscode_callback(GtkWidget* entry, gpointer data) {
     GtkWidget* newCombo = gtk_combo_new();
     // Dodaj kody wg. filtra
     USList* codes = loadUSCodes();
-
+    
+    int changes = 0;
     while (codes != NULL) {
         if (strstr(codes->name, filter) != NULL) {
             char* s;
             asprintf(&s, "%s, %s", codes->code, codes->name);
             cbitems = g_list_append(cbitems, s);
+            changes++;
         }
         codes = codes->next;
+    }
+    if (changes == 0) {
+        cbitems = g_list_append(cbitems, "Nie znaleziono wzorca.");
     }
     char* head = (char*) cbitems->data;
     gtk_combo_set_popdown_strings(GTK_COMBO(newCombo), cbitems);
@@ -1089,18 +1094,12 @@ void year_callback(GtkWidget* widget, gpointer data) {
 
 static GtkWidget* create_date_menu(JPK *jpk) {
     GtkWidget* hbox_date = gtk_hbox_new(0, 0);
-    Date* date = getDate();
     GtkWidget* opt_menu = gtk_option_menu_new();
     gtk_widget_set_size_request(opt_menu, 142, -1);
     date_menu = gtk_menu_new();
-    char* months[12] = {"Styczeń", "Luty", "Marzec", "Kwiecień", "Maj",
-        "Czerwiec", "Lipiec", "Sierpień", "Wrzesień", "Październik",
-        "Listopad", "Grudzień"};
-
     GtkWidget* item;
     for (int i = 0; i < 12; ++i) {
-        item = gtk_menu_item_new_with_label(
-                months[(getMonth(date) + 12 - 2 + i) % 12]);
+        item = gtk_menu_item_new_with_label(getMonthName(getJPKMonth(jpk) + i));
         gtk_widget_show(item);
         gtk_menu_shell_append(GTK_MENU_SHELL(date_menu), item);
         if (i == 0) {
@@ -1110,9 +1109,10 @@ static GtkWidget* create_date_menu(JPK *jpk) {
         g_signal_connect(item, "activate", G_CALLBACK(month_callback), jpk);
     }
 
-    char* year;
-    if (getMonth(date) == 1) asprintf(&year, "%d", atoi(date->year) - 1);
-    else asprintf(&year, "%d", atoi(date->year));
+    char* year = getJPKYear(jpk);
+    
+    //if (getMonth(date) == 1) asprintf(&year, "%d", atoi(date->year) - 1);
+    //else asprintf(&year, "%d", atoi(date->year));
 
     GtkWidget* hbox_space = gtk_hbox_new(0, 0);
     gtk_box_pack_start(GTK_BOX(hbox_date), hbox_space, 1, 1, 0);

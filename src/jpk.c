@@ -1337,12 +1337,61 @@ JPK* newJPK() {
     char *newFile;
     asprintf(&newFile, "%s/.pltak/default.csv", homeDir);
     JPK* e = loadJPK(newFile);
+    
     Date* date = getDate();
-    char* timestamp; 
-    asprintf(&timestamp, "%s-%s-%s", date->year, date->month, date->day); 
+    
+    char* year;
+    char* month;
+    if (getMonth(date) == 1) {
+        asprintf(&year, "%d", atoi(date->year) - 1);
+        asprintf(&month, "12");
+    } else { 
+        asprintf(&year, "%d", atoi(date->year));
+        month = date->month;
+    }
+
+    int month_i;
+    if (month[0] == '0') month_i = month[1] - '0';
+    else month_i = atoi(month);
+
+    char* timestamp;
+    char* timestamp_start; 
+    char* timestamp_end; 
+
+    asprintf(&timestamp, "%s-%s-%s", date->year, date->month, date->day);
+    asprintf(&timestamp_start, "%s-%s-%s", year, month, "1"); 
+    asprintf(&timestamp_end, "%s-%s-%d", year, month, getLastDayOfMonth(month_i, atoi(year))); 
+  
+    e->header->dataWytworzeniaJPK = date->timestamp; 
+    e->header->dataOd = timestamp_start;
+    e->header->dataDo = timestamp_end;
     e->purchase->val->dataZakupu = timestamp;
     e->purchase->val->dataWplywu = timestamp;
     e->sold->val->dataSprzedazy = timestamp; 
     e->sold->val->dataWystawienia = timestamp;
     return e;
+}
+
+int getJPKMonth(JPK* jpk) {
+    char* t = strdup(jpk->header->dataOd);
+    strtok(t, "-");
+    char* month = strtok(NULL, "-");
+
+    int m;
+    char tmp[3];
+    if (month[0] == '0') {
+        m = month[1] - '0';
+    } else {
+        tmp[0] = month[0];
+        tmp[1] = month[1];
+        tmp[2] = '\0';
+        m = atoi(tmp);
+    }
+    return m;
+}
+
+char* getJPKYear(JPK* jpk) {
+    char* t = strdup(jpk->header->dataOd);
+    char* out = strtok(t, "-");
+    return out;
 }

@@ -58,3 +58,10 @@ int getMonth(Date* date) {
     }
     return month;
 }
+
+char* getMonthName(int month) {
+    char* months[12] = {"Styczeń", "Luty", "Marzec", "Kwiecień", "Maj",
+        "Czerwiec", "Lipiec", "Sierpień", "Wrzesień", "Październik",
+        "Listopad", "Grudzień"};
+    return months[(month - 1) % 12];
+}

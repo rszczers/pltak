@@ -225,4 +225,7 @@ char* pur_d2m(JPK*, int, int);
 void rmPurchaseRow(JPK*, int);
 char* mf2human(char*);
 JPK* newJPK();
+int getJPKMonth(JPK*);
+char* getJPKYear(JPK*);
+
 #endif // JPK_H_

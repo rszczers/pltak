@@ -12,4 +12,6 @@ Date* getDate();
 int getMonth(Date*);
 int getLastDayOfMonth(int, int);
 int comp(const void*, const void*);
+char* getMonthName(int);
+
 #endif /* ifndef UTILS_H_ */

@@ -1,8 +1,14 @@
 # PLTak
 
 Rozwijam tutaj aplikację ułatwiającą mikroprzedsiębiorcom edycję Jednolitych Plików Kontrolnych (JPK_VAT).
+
+## Zależności
+* gtk+2.0
+* pkg-config
+* python3
+* pip3
+
 ## Uruchomienie
-Tymczasowo, aby skompilować program należy uprzednio posiadać bibliotekę gtk2.0.
 ```
 git clone http://github.com/rszczers/pltak
 cd pltak && make
