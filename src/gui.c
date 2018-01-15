@@ -575,15 +575,21 @@ static GtkWidget* create_menu_bar(JPK* jpk, GtkWidget* window) {
     GtkAccelGroup *accel_group = gtk_accel_group_new();
     gtk_window_add_accel_group(GTK_WINDOW(window), accel_group);
 
-    menu_item = gtk_menu_item_new_with_label("Rejestr");
+    menu_item = gtk_image_menu_item_new_with_label("Rejestr");
+    GtkWidget *img = gtk_image_new_from_stock(GTK_STOCK_FILE, GTK_ICON_SIZE_MENU);
+    gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item), img);
     gtk_menu_item_set_submenu(GTK_MENU_ITEM(menu_item), file_menu);
     gtk_menu_shell_append(GTK_MENU_SHELL(menu_bar), menu_item);
 
-    menu_item = gtk_menu_item_new_with_label("Pomoc");
+    menu_item = gtk_image_menu_item_new_with_label("Pomoc");
+    img = gtk_image_new_from_stock(GTK_STOCK_HELP, GTK_ICON_SIZE_MENU);
+    gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item), img);
     gtk_menu_item_set_submenu(GTK_MENU_ITEM(menu_item), help_menu);
     gtk_menu_shell_append(GTK_MENU_SHELL(menu_bar), menu_item);
 
-    menu_item = gtk_menu_item_new_with_label("Nowy");
+    menu_item = gtk_image_menu_item_new_with_label("Nowy");
+    img = gtk_image_new_from_stock(GTK_STOCK_NEW, GTK_ICON_SIZE_MENU);
+    gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item), img);
     gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), menu_item);
     g_signal_connect(menu_item, "activate", G_CALLBACK(new_file_callback), menu_bar);
     gtk_widget_add_accelerator(menu_item, "activate", accel_group, 
@@ -593,7 +599,9 @@ static GtkWidget* create_menu_bar(JPK* jpk, GtkWidget* window) {
     gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), menu_item);
 
 
-    menu_item = gtk_menu_item_new_with_label("Otwórz");
+    menu_item = gtk_image_menu_item_new_with_label("Otwórz");
+    img = gtk_image_new_from_stock(GTK_STOCK_OPEN, GTK_ICON_SIZE_MENU);
+    gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item), img);
     gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), menu_item);
     g_signal_connect(menu_item, "activate", G_CALLBACK(importcsv_open_dialog), menu_bar);
     gtk_widget_add_accelerator(menu_item, "activate", accel_group, 
@@ -610,7 +618,9 @@ static GtkWidget* create_menu_bar(JPK* jpk, GtkWidget* window) {
     menu_item = gtk_separator_menu_item_new();
     gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), menu_item);
 
-    menu_item = gtk_menu_item_new_with_label("Zapisz");
+    menu_item = gtk_image_menu_item_new_with_label("Zapisz");
+    img = gtk_image_new_from_stock(GTK_STOCK_SAVE, GTK_ICON_SIZE_MENU);
+    gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item), img);
     gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), menu_item);
     g_signal_connect(menu_item, "activate", G_CALLBACK(savecsv_dialog), jpk);
     gtk_widget_add_accelerator(menu_item, "activate", accel_group, 
@@ -623,13 +633,17 @@ static GtkWidget* create_menu_bar(JPK* jpk, GtkWidget* window) {
     menu_item = gtk_separator_menu_item_new();
     gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), menu_item);
 
-    menu_item = gtk_menu_item_new_with_label("Wyjście");
+    menu_item = gtk_image_menu_item_new_with_label("Wyjście");
+    img = gtk_image_new_from_stock(GTK_STOCK_QUIT, GTK_ICON_SIZE_MENU);
+    gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item), img);
     gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), menu_item);
     g_signal_connect(menu_item, "activate", G_CALLBACK(gtk_main_quit), NULL);
     gtk_widget_add_accelerator(menu_item, "activate", accel_group, 
             0x071, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE); 
 
-    menu_item = gtk_menu_item_new_with_label("O programie");
+    menu_item = gtk_image_menu_item_new_with_label("O programie");
+    img = gtk_image_new_from_stock(GTK_STOCK_ABOUT, GTK_ICON_SIZE_MENU);
+    gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item), img);
     gtk_menu_shell_append(GTK_MENU_SHELL(help_menu), menu_item);
     g_signal_connect(menu_item, "activate", G_CALLBACK(about_dialog), NULL);
     return menu_bar;
