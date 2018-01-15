@@ -1,4 +1,4 @@
-#define _GNU_SOURCE */
+#define _GNU_SOURCE
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
 #include <stdlib.h>
