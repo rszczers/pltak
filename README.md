@@ -12,7 +12,8 @@ Rozwijam tutaj aplikację ułatwiającą mikroprzedsiębiorcom edycję Jednolity
 ```
 git clone http://github.com/rszczers/pltak
 cd pltak && make
-./build/tak
+sudo make install
+pltak
 ```
 
 ## Funkcjonalności
