@@ -23,3 +23,6 @@ pltak
 
 ## Wygląd
 ![alt tag](https://github.com/rszczers/pltak/blob/master/screen.png)
+
+## Licencja
+BSD3
