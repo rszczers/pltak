@@ -1,4 +1,4 @@
-# PLTak
+# ![Ikona PLTak](https://raw.githubusercontent.com/rszczers/pltak/master/data/icons/24x24/apps/pltak.png) PLTak
 
 Rozwijam tutaj aplikację ułatwiającą mikroprzedsiębiorcom edycję Jednolitych Plików Kontrolnych (JPK_VAT).
 
