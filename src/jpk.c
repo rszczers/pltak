@@ -1337,15 +1337,15 @@ JPK* newJPK() {
     char *newFile;
     asprintf(&newFile, "%s/.pltak/default.csv", homeDir);
     JPK* e = loadJPK(newFile);
-    
+
     Date* date = getDate();
-    
+
     char* year;
     char* month;
     if (getMonth(date) == 1) {
         asprintf(&year, "%d", atoi(date->year) - 1);
         asprintf(&month, "12");
-    } else { 
+    } else {
         asprintf(&year, "%d", atoi(date->year));
         month = date->month;
     }
@@ -1355,19 +1355,19 @@ JPK* newJPK() {
     else month_i = atoi(month);
 
     char* timestamp;
-    char* timestamp_start; 
-    char* timestamp_end; 
+    char* timestamp_start;
+    char* timestamp_end;
 
     asprintf(&timestamp, "%s-%s-%s", date->year, date->month, date->day);
-    asprintf(&timestamp_start, "%s-%s-%s", year, month, "1"); 
-    asprintf(&timestamp_end, "%s-%s-%d", year, month, getLastDayOfMonth(month_i, atoi(year))); 
-  
-    e->header->dataWytworzeniaJPK = date->timestamp; 
+    asprintf(&timestamp_start, "%s-%s-%s", year, month, "1");
+    asprintf(&timestamp_end, "%s-%s-%d", year, month, getLastDayOfMonth(month_i, atoi(year)));
+
+    e->header->dataWytworzeniaJPK = date->timestamp;
     e->header->dataOd = timestamp_start;
     e->header->dataDo = timestamp_end;
     e->purchase->val->dataZakupu = timestamp;
     e->purchase->val->dataWplywu = timestamp;
-    e->sold->val->dataSprzedazy = timestamp; 
+    e->sold->val->dataSprzedazy = timestamp;
     e->sold->val->dataWystawienia = timestamp;
     return e;
 }
@@ -1393,5 +1393,189 @@ int getJPKMonth(JPK* jpk) {
 char* getJPKYear(JPK* jpk) {
     char* t = strdup(jpk->header->dataOd);
     char* out = strtok(t, "-");
+    return out;
+}
+
+char* cutDecimals(char* in) {
+    char *s = in;
+    while (*in != '\0') {
+        if (*in == ',') {
+            char* p = in;
+            int dec_len = 0;
+            while (*in != '\0') {
+                in++;
+                dec_len++;
+            }
+            if (dec_len > 2) *(p + 3) = '\0';
+        }
+        in++;
+    }
+    return s;
+}
+
+char* sanitizeSellEntry(int i, int j, char* input) {
+    char* out;
+    switch(j) {
+        case NRKONTRAHENTA:
+            out = input;
+        break;
+        case NAZWAKONTRAHENTA:
+            out = input;
+        break;
+        case ADRESKONTRAHENTA:
+            out = input;
+        break;
+        case DOWODSPRZEDAZY:
+            out = input;
+        break;
+        case DATAWYSTAWIENIA:
+            out = input;
+        break;
+        case DATASPRZEDAZY:
+            out = input;
+        break;
+        case LPSPRZEDAZY:
+            out = input;
+        break;
+        case K_10:
+            out = cutDecimals(input);
+        break;
+        case K_11:
+            out = cutDecimals(input);
+        break;
+        case K_12:
+            out = cutDecimals(input);
+        break;
+        case K_13:
+            out = cutDecimals(input);
+        break;
+        case K_14:
+            out = cutDecimals(input);
+        break;
+        case K_15:
+            out = cutDecimals(input);
+        break;
+        case K_16:
+            out = cutDecimals(input);
+        break;
+        case K_17:
+            out = cutDecimals(input);
+        break;
+        case K_18:
+            out = cutDecimals(input);
+        break;
+        case K_19:
+            out = cutDecimals(input);
+        break;
+        case K_20:
+            out = cutDecimals(input);
+        break;
+        case K_21:
+            out = cutDecimals(input);
+        break;
+        case K_22:
+            out = cutDecimals(input);
+        break;
+        case K_23:
+            out = cutDecimals(input);
+        break;
+        case K_24:
+            out = cutDecimals(input);
+        break;
+        case K_25:
+            out = cutDecimals(input);
+        break;
+        case K_26:
+            out = cutDecimals(input);
+        break;
+        case K_27:
+            out = cutDecimals(input);
+        break;
+        case K_28:
+            out = cutDecimals(input);
+        break;
+        case K_29:
+            out = cutDecimals(input);
+        break;
+        case K_30:
+            out = cutDecimals(input);
+        break;
+        case K_31:
+            out = cutDecimals(input);
+        break;
+        case K_32:
+            out = cutDecimals(input);
+        break;
+        case K_33:
+            out = cutDecimals(input);
+        break;
+        case K_34:
+            out = cutDecimals(input);
+        break;
+        case K_35:
+            out = cutDecimals(input);
+        break;
+        case K_36:
+            out = cutDecimals(input);
+        break;
+        case K_37:
+            out = cutDecimals(input);
+        break;
+        case K_38:
+            out = cutDecimals(input);
+        break;
+        case K_39:
+            out = cutDecimals(input);
+        break;
+    }
+    return out;
+}
+
+char* sanitizePurchaseEntry(int i, int j, char* input) {
+    char *out;
+    switch (i) {
+        case NRDOSTAWCY:
+            out = input;
+        break;
+        case NAZWADOSTAWCY:
+            out = input;
+        break;
+        case ADRESDOSTAWCY:
+            out = input;
+        break;
+        case DOWODZAKUPU:
+            out = input;
+        break;
+        case DATAZAKUPU:
+            out = input;
+        break;
+        case DATAWPLYWU:
+            out = input;
+        break;
+        case K_43:
+            out = cutDecimals(input);
+        break;
+        case K_44:
+            out = cutDecimals(input);
+        break;
+        case K_45:
+            out = cutDecimals(input);
+        break;
+        case K_46:
+            out = cutDecimals(input);
+        break;
+        case K_47:
+            out = cutDecimals(input);
+        break;
+        case K_48:
+            out = cutDecimals(input);
+        break;
+        case K_49:
+            out = cutDecimals(input);
+        break;
+        case K_50:
+            out = cutDecimals(input);
+        break;
+    }
     return out;
 }

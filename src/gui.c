@@ -1331,10 +1331,14 @@ static void pur_rmrow_callback(GtkWidget* widget, gpointer data) {
 
 static void sell_entry_callback(GtkWidget* widget, gpointer data) {
     JPKChange* change = (JPKChange*)data;
+//    char* input = sanitizeSellEntry(change->i, change->j, 
+//            (char*)gtk_entry_get_text(GTK_ENTRY(widget)));
     char* input = (char*)gtk_entry_get_text(GTK_ENTRY(widget));
     changeSellData(change->jpk, change->i, change->j, input);
     refreshSellSum(change->jpk, change->tak);
-//    gtk_entry_set_text(GTK_ENTRY(widget), sell_d2m(change->jpk, change->i, change->j));
+//    g_signal_handlers_block_by_func(GTK_ENTRY(widget), G_CALLBACK(sell_entry_callback), data);
+//    gtk_entry_set_text(GTK_ENTRY(widget), input);
+//    g_signal_handlers_unblock_by_func(GTK_ENTRY(widget), G_CALLBACK(sell_entry_callback), data);
 }
 
 static void pur_entry_callback(GtkWidget* widget, gpointer data) {

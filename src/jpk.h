@@ -227,5 +227,8 @@ char* mf2human(char*);
 JPK* newJPK();
 int getJPKMonth(JPK*);
 char* getJPKYear(JPK*);
+char* sanitizeSellEntry(int, int, char*);
+char* sanitizePurchaseEntry(int, int, char*);
+
 
 #endif // JPK_H_
