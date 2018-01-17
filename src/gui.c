@@ -39,8 +39,10 @@ static void sell_filter_from_table_callback(GtkWidget*, gpointer);
 static void pur_filter_from_table_callback(GtkWidget*, gpointer);
 static void sell_rmrow_callback(GtkWidget*, gpointer);
 static void pur_rmrow_callback(GtkWidget*, gpointer);
-static void sell_entry_insert_callback(GtkEntry*,const gchar*, gint, gint*, gpointer);
-static void sell_entry_delete_callback(GtkEntry*, const gchar*, gint, gint*, gpointer);
+//static void sell_entry_insert_callback(GtkEntry*,const gchar*, gint, gint*, gpointer);
+//static void sell_entry_delete_callback(GtkEntry*, const gchar*, gint, gint*, gpointer);
+
+static void sell_entry_callback(GtkWidget*, gpointer);
 static void pur_entry_callback(GtkWidget*, gpointer);
 static void sell_addrow_callback(GtkWidget*, gpointer);
 static void pur_addrow_callback(GtkWidget*, gpointer);
@@ -443,8 +445,8 @@ static GtkWidget* draw_sell_spreadsheet(TakConfig* config, JPK* data) {
                 gtk_table_attach_defaults (GTK_TABLE(table_sell),
                         entry,
                         i, i+1, j, j+1);
-                g_signal_connect(GTK_ENTRY(entry), "insert_text",
-                        G_CALLBACK(sell_entry_insert_callback), change);
+                g_signal_connect(GTK_ENTRY(entry), "changed",
+                        G_CALLBACK(sell_entry_callback), change);
 //                g_signal_connect(GTK_ENTRY(entry), "delete_text",
 //                        G_CALLBACK(sell_entry_delete_callback), change);
             }
@@ -1392,7 +1394,7 @@ static void pur_rmrow_callback(GtkWidget* widget, gpointer data) {
     gtk_widget_show_all(window);
     gtk_notebook_set_current_page(GTK_NOTEBOOK(notebook), 1);
 }
-
+/*
 static void sell_entry_insert_callback(GtkEntry* widget,
                                        const gchar *text,
                                        gint length,
@@ -1452,7 +1454,15 @@ static void sell_entry_delete_callback(GtkEntry* widget,
     g_signal_handlers_unblock_by_func(G_OBJECT(entry), G_CALLBACK(sell_entry_delete_callback), data);
     g_signal_stop_emission_by_name(G_OBJECT(entry), "delete_text");
 }
+*/
 
+static void sell_entry_callback(GtkWidget* widget, gpointer data) {
+    JPKChange* change = (JPKChange*)data;
+    char* input = (char*)gtk_entry_get_text(GTK_ENTRY(widget));
+    changeSellData(change->jpk, change->i, change->j, input);
+    refreshSellSum(change->jpk, change->tak);
+//    gtk_entry_set_text(GTK_ENTRY(widget), sell_d2m(change->jpk, change->i, change->j));
+}
 
 static void pur_entry_callback(GtkWidget* widget, gpointer data) {
     JPKChange* change = (JPKChange*)data;
