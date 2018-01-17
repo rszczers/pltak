@@ -39,7 +39,8 @@ static void sell_filter_from_table_callback(GtkWidget*, gpointer);
 static void pur_filter_from_table_callback(GtkWidget*, gpointer);
 static void sell_rmrow_callback(GtkWidget*, gpointer);
 static void pur_rmrow_callback(GtkWidget*, gpointer);
-static void sell_entry_callback(GtkWidget*, gpointer);
+static void sell_entry_insert_callback(GtkEntry*,const gchar*, gint, gint*, gpointer);
+static void sell_entry_delete_callback(GtkEntry*, const gchar*, gint, gint*, gpointer);
 static void pur_entry_callback(GtkWidget*, gpointer);
 static void sell_addrow_callback(GtkWidget*, gpointer);
 static void pur_addrow_callback(GtkWidget*, gpointer);
@@ -134,7 +135,7 @@ static void uscode_callback(GtkWidget* entry, gpointer data) {
     GtkWidget* newCombo = gtk_combo_new();
     // Dodaj kody wg. filtra
     USList* codes = loadUSCodes();
-    
+
     int changes = 0;
     while (codes != NULL) {
         if (strstr(codes->name, filter) != NULL) {
@@ -386,8 +387,10 @@ static GtkWidget* draw_sell_spreadsheet(TakConfig* config, JPK* data) {
                 gtk_table_attach_defaults (GTK_TABLE(table_sell),
                         entry,
                         i, i+1, j, j+1);
-                g_signal_connect(GTK_ENTRY(entry), "changed",
-                        G_CALLBACK(sell_entry_callback), change);
+                g_signal_connect(GTK_ENTRY(entry), "insert_text",
+                        G_CALLBACK(sell_entry_insert_callback), change);
+//                g_signal_connect(GTK_ENTRY(entry), "delete_text",
+//                        G_CALLBACK(sell_entry_delete_callback), change);
             }
         }
     }
@@ -597,8 +600,8 @@ static GtkWidget* create_menu_bar(JPK* jpk, GtkWidget* window) {
     gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item), img);
     gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), menu_item);
     g_signal_connect(menu_item, "activate", G_CALLBACK(new_file_callback), menu_bar);
-    gtk_widget_add_accelerator(menu_item, "activate", accel_group, 
-            0x06e, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE); 
+    gtk_widget_add_accelerator(menu_item, "activate", accel_group,
+            0x06e, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
     menu_item = gtk_separator_menu_item_new();
     gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), menu_item);
@@ -609,8 +612,8 @@ static GtkWidget* create_menu_bar(JPK* jpk, GtkWidget* window) {
     gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item), img);
     gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), menu_item);
     g_signal_connect(menu_item, "activate", G_CALLBACK(importcsv_open_dialog), menu_bar);
-    gtk_widget_add_accelerator(menu_item, "activate", accel_group, 
-            0x06f, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE); 
+    gtk_widget_add_accelerator(menu_item, "activate", accel_group,
+            0x06f, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
 //    menu_item = gtk_menu_item_new_with_label("Importuj xls");
 //    gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), menu_item);
@@ -628,8 +631,8 @@ static GtkWidget* create_menu_bar(JPK* jpk, GtkWidget* window) {
     gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item), img);
     gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), menu_item);
     g_signal_connect(menu_item, "activate", G_CALLBACK(savecsv_dialog), jpk);
-    gtk_widget_add_accelerator(menu_item, "activate", accel_group, 
-            0x073, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE); 
+    gtk_widget_add_accelerator(menu_item, "activate", accel_group,
+            0x073, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
 //    menu_item = gtk_menu_item_new_with_label("Eksportuj xml");
 //    gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), menu_item);
@@ -643,8 +646,8 @@ static GtkWidget* create_menu_bar(JPK* jpk, GtkWidget* window) {
     gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item), img);
     gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), menu_item);
     g_signal_connect(menu_item, "activate", G_CALLBACK(gtk_main_quit), NULL);
-    gtk_widget_add_accelerator(menu_item, "activate", accel_group, 
-            0x071, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE); 
+    gtk_widget_add_accelerator(menu_item, "activate", accel_group,
+            0x071, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
     menu_item = gtk_image_menu_item_new_with_label("O programie");
     img = gtk_image_new_from_stock(GTK_STOCK_ABOUT, GTK_ICON_SIZE_MENU);
@@ -1110,7 +1113,7 @@ static GtkWidget* create_date_menu(JPK *jpk) {
     }
 
     char* year = getJPKYear(jpk);
-    
+
     //if (getMonth(date) == 1) asprintf(&year, "%d", atoi(date->year) - 1);
     //else asprintf(&year, "%d", atoi(date->year));
 
@@ -1329,17 +1332,66 @@ static void pur_rmrow_callback(GtkWidget* widget, gpointer data) {
     gtk_notebook_set_current_page(GTK_NOTEBOOK(notebook), 1);
 }
 
-static void sell_entry_callback(GtkWidget* widget, gpointer data) {
+static void sell_entry_insert_callback(GtkEntry* widget,
+                                       const gchar *text,
+                                       gint length,
+                                       gint *position,
+                                       gpointer data) {
+    GtkEditable* entry = GTK_EDITABLE(widget);
     JPKChange* change = (JPKChange*)data;
-//    char* input = sanitizeSellEntry(change->i, change->j, 
-//            (char*)gtk_entry_get_text(GTK_ENTRY(widget)));
-    char* input = (char*)gtk_entry_get_text(GTK_ENTRY(widget));
-    changeSellData(change->jpk, change->i, change->j, input);
+    char* entry_data = (char*)gtk_editable_get_chars(entry, 0, -1);
+
+    char *p = (char*)text;
+    while (*p != '\0') {
+        if (*p == ';') text = "";
+        p++;
+    }
+
+    char* in = (char*)text;
+    int in_len = strlen(text);
+    int old_len = strlen(entry_data);
+    int new_len = old_len + in_len;
+    int offset = *position;
+
+    char* buffer = (char*)malloc(new_len + 1);
+    memcpy(buffer, entry_data, offset);
+    memcpy(buffer + offset, in, in_len);
+    memcpy(buffer + offset + in_len, entry_data + offset, old_len - offset);
+    buffer[new_len] = '\0';
+
+    char* safe_input = sanitizeSellEntry(change->i, change->j, buffer);
+    int safe_len = strlen(safe_input);
+    changeSellData(change->jpk, change->i, change->j, safe_input);
     refreshSellSum(change->jpk, change->tak);
-//    g_signal_handlers_block_by_func(GTK_ENTRY(widget), G_CALLBACK(sell_entry_callback), data);
-//    gtk_entry_set_text(GTK_ENTRY(widget), input);
-//    g_signal_handlers_unblock_by_func(GTK_ENTRY(widget), G_CALLBACK(sell_entry_callback), data);
+
+    g_signal_handlers_block_by_func(G_OBJECT(entry), G_CALLBACK(sell_entry_insert_callback), data);
+    gtk_editable_delete_text(entry, 0, -1);
+    gtk_editable_insert_text(entry, safe_input, safe_len, position);
+    g_signal_handlers_unblock_by_func(G_OBJECT(entry), G_CALLBACK(sell_entry_insert_callback), data);
+    g_signal_stop_emission_by_name(G_OBJECT(entry), "insert_text");
+    g_free(buffer);
 }
+
+static void sell_entry_delete_callback(GtkEntry* widget,
+                                       const gchar *text,
+                                       gint length,
+                                       gint *position,
+                                       gpointer data) {
+    GtkEditable* entry = GTK_EDITABLE(widget);
+    JPKChange* change = (JPKChange*)data;
+    gchar* entry_data = gtk_editable_get_chars(entry, 0, -1);
+    char* safe_input = sanitizeSellEntry(change->i, change->j, entry_data);
+
+    changeSellData(change->jpk, change->i, change->j, safe_input);
+    refreshSellSum(change->jpk, change->tak);
+    g_signal_handlers_block_by_func(G_OBJECT(entry), G_CALLBACK(sell_entry_delete_callback), data);
+    gtk_editable_delete_text(entry, 0, -1);
+    gint new_position = gtk_editable_get_position(entry);
+    gtk_editable_insert_text(entry, safe_input, strlen(safe_input), &new_position);
+    g_signal_handlers_unblock_by_func(G_OBJECT(entry), G_CALLBACK(sell_entry_delete_callback), data);
+    g_signal_stop_emission_by_name(G_OBJECT(entry), "delete_text");
+}
+
 
 static void pur_entry_callback(GtkWidget* widget, gpointer data) {
     JPKChange* change = (JPKChange*)data;

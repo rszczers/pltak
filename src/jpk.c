@@ -1407,6 +1407,7 @@ char* cutDecimals(char* in) {
                 dec_len++;
             }
             if (dec_len > 2) *(p + 3) = '\0';
+            break;
         }
         in++;
     }
