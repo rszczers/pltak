@@ -10,7 +10,7 @@ CONFIG_DIR=~/.pltak
 ARGS=
 PREFIX=/usr/local
 
-all: configuration kodyurzedow pltak
+all: configuration pltak
 
 install: pltak 
 	install -m 0755 $(BUILD_DIR)pltak $(PREFIX)/bin
