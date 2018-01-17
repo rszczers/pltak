@@ -179,73 +179,129 @@ typedef struct {
 } JPKChange;
 
 static void waluta_callback(GtkWidget* widget, gpointer data) {
-    TakConfig* config = (TakConfig*) data;
-    config->DomyslnyKodWaluty = (char*)gtk_entry_get_text(GTK_ENTRY(widget));
+    JPKChange* ch = (JPKChange*)data;
+    TakConfig* config = ch->tak;
+    JPK* jpk = ch->jpk;
+    char* input = strdup((char*)gtk_entry_get_text(GTK_ENTRY(widget)));
+    config->DomyslnyKodWaluty = input;
+    jpk->header->domyslnyKodWaluty = input;
     saveConfig(config);
 }
 static void nip_callback(GtkWidget* widget, gpointer data) {
-    TakConfig* config = (TakConfig*) data;
-    config->NIP = (char*)gtk_entry_get_text(GTK_ENTRY(widget));
+    JPKChange* ch = (JPKChange*)data;
+    TakConfig* config = ch->tak;
+    JPK* jpk = ch->jpk;
+    char* input = strdup((char*)gtk_entry_get_text(GTK_ENTRY(widget)));
+    config->NIP = input;
+    jpk->profile->nip = input;
     saveConfig(config);
 }
 static void pelnanazwa_callback(GtkWidget* widget, gpointer data) {
-    TakConfig* config = (TakConfig*) data;
-    config->PelnaNazwa = (char*)gtk_entry_get_text(GTK_ENTRY(widget));
+    JPKChange* ch = (JPKChange*)data;
+    TakConfig* config = ch->tak;
+    JPK* jpk = ch->jpk;
+    char* input = strdup((char*)gtk_entry_get_text(GTK_ENTRY(widget)));
+    config->PelnaNazwa = input;
+    jpk->profile->pelnaNazwa = input; 
     saveConfig(config);
 }
 static void regon_callback(GtkWidget* widget, gpointer data) {
-    TakConfig* config = (TakConfig*) data;
-    config->REGON = (char*)gtk_entry_get_text(GTK_ENTRY(widget));
+    JPKChange* ch = (JPKChange*)data;
+    TakConfig* config = ch->tak;
+    JPK* jpk = ch->jpk;
+    char* input = strdup((char*)gtk_entry_get_text(GTK_ENTRY(widget)));
+    config->REGON = input;
+    jpk->profile->regon = input;
     saveConfig(config);
 }
 static void kraj_callback(GtkWidget* widget, gpointer data) {
-    TakConfig* config = (TakConfig*) data;
-    config->KodKraju = (char*)gtk_entry_get_text(GTK_ENTRY(widget));
+    JPKChange* ch = (JPKChange*)data;
+    TakConfig* config = ch->tak;
+    JPK* jpk = ch->jpk;
+    char* input = strdup((char*)gtk_entry_get_text(GTK_ENTRY(widget)));
+    config->KodKraju = input;
+    jpk->profile->kodKraju = input;
     saveConfig(config);
 }
 static void wojewodztwo_callback(GtkWidget* widget, gpointer data) {
-    TakConfig* config = (TakConfig*) data;
-    config->Wojewodztwo = (char*)gtk_entry_get_text(GTK_ENTRY(widget));
+    JPKChange* ch = (JPKChange*)data;
+    TakConfig* config = ch->tak;
+    JPK* jpk = ch->jpk;
+    char* input = strdup((char*)gtk_entry_get_text(GTK_ENTRY(widget)));
+    config->Wojewodztwo = input;
+    jpk->profile->wojewodztwo = input;
     saveConfig(config);
 }
 static void powiat_callback(GtkWidget* widget, gpointer data) {
-    TakConfig* config = (TakConfig*) data;
-    config->Powiat = (char*)gtk_entry_get_text(GTK_ENTRY(widget));
+    JPKChange* ch = (JPKChange*)data;
+    TakConfig* config = ch->tak;
+    JPK* jpk = ch->jpk;
+    char* input = strdup((char*)gtk_entry_get_text(GTK_ENTRY(widget)));
+    config->Powiat = input;
+    jpk->profile->powiat = input;
     saveConfig(config);
 }
 static void gmina_callback(GtkWidget* widget, gpointer data) {
-    TakConfig* config = (TakConfig*) data;
-    config->Gmina = (char*)gtk_entry_get_text(GTK_ENTRY(widget));
+    JPKChange* ch = (JPKChange*)data;
+    TakConfig* config = ch->tak;
+    JPK* jpk = ch->jpk;
+    char* input = strdup((char*)gtk_entry_get_text(GTK_ENTRY(widget)));
+    config->Gmina = input;
+    jpk->profile->gmina = input;
     saveConfig(config);
 }
 static void ulica_callback(GtkWidget* widget, gpointer data) {
-    TakConfig* config = (TakConfig*) data;
-    config->Ulica = (char*)gtk_entry_get_text(GTK_ENTRY(widget));
+    JPKChange* ch = (JPKChange*)data;
+    TakConfig* config = ch->tak;
+    JPK* jpk = ch->jpk;
+    char* input = strdup((char*)gtk_entry_get_text(GTK_ENTRY(widget)));
+    config->Ulica = input;
+    jpk->profile->ulica = input;
     saveConfig(config);
 }
 static void nrdomu_callback(GtkWidget* widget, gpointer data) {
-    TakConfig* config = (TakConfig*) data;
-    config->NrDomu = (char*)gtk_entry_get_text(GTK_ENTRY(widget));
+    JPKChange* ch = (JPKChange*)data;
+    TakConfig* config = ch->tak;
+    JPK* jpk = ch->jpk;
+    char* input = strdup((char*)gtk_entry_get_text(GTK_ENTRY(widget)));
+    config->NrDomu = input;
+    jpk->profile->nrDomu = input;
     saveConfig(config);
 }
 static void nrlokalu_callback(GtkWidget* widget, gpointer data) {
-    TakConfig* config = (TakConfig*) data;
-    config->NrLokalu = (char*)gtk_entry_get_text(GTK_ENTRY(widget));
+    JPKChange* ch = (JPKChange*)data;
+    TakConfig* config = ch->tak;
+    JPK* jpk = ch->jpk;
+    char* input = strdup((char*)gtk_entry_get_text(GTK_ENTRY(widget)));
+    config->NrLokalu = input;
+    jpk->profile->nrDomu = input;
     saveConfig(config);
 }
 static void miejscowosc_callback(GtkWidget* widget, gpointer data) {
-    TakConfig* config = (TakConfig*) data;
-    config->Miejscowosc = (char*)gtk_entry_get_text(GTK_ENTRY(widget));
+    JPKChange* ch = (JPKChange*)data;
+    TakConfig* config = ch->tak;
+    JPK* jpk = ch->jpk;
+    char* input = strdup((char*)gtk_entry_get_text(GTK_ENTRY(widget)));
+    config->Miejscowosc = input;
+    jpk->profile->miejscowosc = input;
     saveConfig(config);
 }
 static void kodpocztowy_callback(GtkWidget* widget, gpointer data) {
-    TakConfig* config = (TakConfig*) data;
-    config->KodPocztowy = (char*)gtk_entry_get_text(GTK_ENTRY(widget));
+    JPKChange* ch = (JPKChange*)data;
+    TakConfig* config = ch->tak;
+    JPK* jpk = ch->jpk;
+    char* input = strdup((char*)gtk_entry_get_text(GTK_ENTRY(widget)));
+    config->KodPocztowy = input;
+    jpk->profile->kodPocztowy = input;
     saveConfig(config);
 }
 static void poczta_callback(GtkWidget* widget, gpointer data) {
-    TakConfig* config = (TakConfig*) data;
-    config->Poczta = (char*)gtk_entry_get_text(GTK_ENTRY(widget));
+    JPKChange* ch = (JPKChange*)data;
+    TakConfig* config = ch->tak;
+    JPK* jpk = ch->jpk;
+    char* input = strdup((char*)gtk_entry_get_text(GTK_ENTRY(widget)));
+    config->Poczta = input;
+    jpk->profile->poczta = input;
     saveConfig(config);
 }
 
@@ -764,7 +820,7 @@ static void create_purchase_notebook(GtkWidget *notebook, JPK* jpk, TakConfig* c
     gtk_notebook_append_page(GTK_NOTEBOOK(notebook), hbox_purchase, label_tab);*/
 }
 
-static void create_profile_notebook(GtkWidget *notebook, TakConfig* config) {
+static void create_profile_notebook(GtkWidget *notebook, JPK* jpk, TakConfig* config) {
     GtkWidget *hbox_profile = gtk_hbox_new(0, 0);
     GtkWidget* scroll_profile = gtk_scrolled_window_new(NULL, NULL);
     GtkWidget *label_tab = gtk_label_new("Firma");
@@ -772,6 +828,10 @@ static void create_profile_notebook(GtkWidget *notebook, TakConfig* config) {
     GtkWidget* table_profile = gtk_table_new(10, 2, FALSE);
     gtk_table_set_col_spacings (GTK_TABLE(table_profile), 20);
     GtkWidget *entry;
+
+    JPKChange* change = (JPKChange*)malloc(sizeof(JPKChange));
+    change->jpk = jpk;
+    change->tak = config; 
 
     label_profile = gtk_label_new("Waluta");
     gtk_table_attach_defaults(
@@ -785,7 +845,7 @@ static void create_profile_notebook(GtkWidget *notebook, TakConfig* config) {
         gtk_entry_set_text(GTK_ENTRY(entry), config->DomyslnyKodWaluty);
     }
     gtk_widget_set_size_request(entry, 400, 30);
-    g_signal_connect(entry, "changed", G_CALLBACK(waluta_callback), config);
+    g_signal_connect(entry, "changed", G_CALLBACK(waluta_callback), change);
     gtk_table_attach_defaults(
             GTK_TABLE(table_profile),
             entry,
@@ -824,7 +884,7 @@ static void create_profile_notebook(GtkWidget *notebook, TakConfig* config) {
     } else {
         gtk_entry_set_text(GTK_ENTRY(entry), config->NIP);
     }
-    g_signal_connect(entry, "changed", G_CALLBACK(nip_callback), config);
+    g_signal_connect(entry, "changed", G_CALLBACK(nip_callback), change);
     gtk_table_attach_defaults(
             GTK_TABLE(table_profile),
             entry,
@@ -841,7 +901,7 @@ static void create_profile_notebook(GtkWidget *notebook, TakConfig* config) {
     } else {
         gtk_entry_set_text(GTK_ENTRY(entry), config->PelnaNazwa);
     }
-    g_signal_connect(entry, "changed", G_CALLBACK(pelnanazwa_callback), config);
+    g_signal_connect(entry, "changed", G_CALLBACK(pelnanazwa_callback), change);
     gtk_table_attach_defaults(
             GTK_TABLE(table_profile),
             entry,
@@ -858,7 +918,7 @@ static void create_profile_notebook(GtkWidget *notebook, TakConfig* config) {
     } else {
         gtk_entry_set_text(GTK_ENTRY(entry), config->REGON);
     }
-    g_signal_connect(entry, "changed", G_CALLBACK(regon_callback), config);
+    g_signal_connect(entry, "changed", G_CALLBACK(regon_callback), change);
     gtk_table_attach_defaults(
             GTK_TABLE(table_profile),
             entry,
@@ -875,7 +935,7 @@ static void create_profile_notebook(GtkWidget *notebook, TakConfig* config) {
     } else {
         gtk_entry_set_text(GTK_ENTRY(entry), config->KodKraju);
     }
-    g_signal_connect(entry, "changed", G_CALLBACK(kraj_callback), config);
+    g_signal_connect(entry, "changed", G_CALLBACK(kraj_callback), change);
     gtk_table_attach_defaults(
             GTK_TABLE(table_profile),
             entry,
@@ -892,7 +952,7 @@ static void create_profile_notebook(GtkWidget *notebook, TakConfig* config) {
     } else {
         gtk_entry_set_text(GTK_ENTRY(entry), config->Wojewodztwo);
     }
-    g_signal_connect(entry, "changed", G_CALLBACK(wojewodztwo_callback), config);
+    g_signal_connect(entry, "changed", G_CALLBACK(wojewodztwo_callback), change);
     gtk_table_attach_defaults(
             GTK_TABLE(table_profile),
             entry,
@@ -909,7 +969,7 @@ static void create_profile_notebook(GtkWidget *notebook, TakConfig* config) {
     } else {
         gtk_entry_set_text(GTK_ENTRY(entry), config->Powiat);
     }
-    g_signal_connect(entry, "changed", G_CALLBACK(powiat_callback), config);
+    g_signal_connect(entry, "changed", G_CALLBACK(powiat_callback), change);
     gtk_table_attach_defaults(
             GTK_TABLE(table_profile),
             entry,
@@ -926,7 +986,7 @@ static void create_profile_notebook(GtkWidget *notebook, TakConfig* config) {
     } else {
         gtk_entry_set_text(GTK_ENTRY(entry), config->Gmina);
     }
-    g_signal_connect(entry, "changed", G_CALLBACK(gmina_callback), config);
+    g_signal_connect(entry, "changed", G_CALLBACK(gmina_callback), change);
     gtk_table_attach_defaults(
             GTK_TABLE(table_profile),
             entry,
@@ -943,7 +1003,7 @@ static void create_profile_notebook(GtkWidget *notebook, TakConfig* config) {
     } else {
         gtk_entry_set_text(GTK_ENTRY(entry), config->Ulica);
     }
-    g_signal_connect(entry, "changed", G_CALLBACK(ulica_callback), config);
+    g_signal_connect(entry, "changed", G_CALLBACK(ulica_callback), change);
     gtk_table_attach_defaults(
             GTK_TABLE(table_profile),
             entry,
@@ -960,7 +1020,7 @@ static void create_profile_notebook(GtkWidget *notebook, TakConfig* config) {
     } else {
         gtk_entry_set_text(GTK_ENTRY(entry), config->NrDomu);
     }
-    g_signal_connect(entry, "changed", G_CALLBACK(nrdomu_callback), config);
+    g_signal_connect(entry, "changed", G_CALLBACK(nrdomu_callback), change);
     gtk_table_attach_defaults(
             GTK_TABLE(table_profile),
             entry,
@@ -977,7 +1037,7 @@ static void create_profile_notebook(GtkWidget *notebook, TakConfig* config) {
     } else {
         gtk_entry_set_text(GTK_ENTRY(entry), config->NrLokalu);
     }
-    g_signal_connect(entry, "changed", G_CALLBACK(nrlokalu_callback), config);
+    g_signal_connect(entry, "changed", G_CALLBACK(nrlokalu_callback), change);
     gtk_table_attach_defaults(
             GTK_TABLE(table_profile),
             entry,
@@ -994,7 +1054,7 @@ static void create_profile_notebook(GtkWidget *notebook, TakConfig* config) {
     } else {
         gtk_entry_set_text(GTK_ENTRY(entry), config->Miejscowosc);
     }
-    g_signal_connect(entry, "changed", G_CALLBACK(miejscowosc_callback), config);
+    g_signal_connect(entry, "changed", G_CALLBACK(miejscowosc_callback), change);
     gtk_table_attach_defaults(
             GTK_TABLE(table_profile),
             entry,
@@ -1011,7 +1071,7 @@ static void create_profile_notebook(GtkWidget *notebook, TakConfig* config) {
     } else {
         gtk_entry_set_text(GTK_ENTRY(entry), config->KodPocztowy);
     }
-    g_signal_connect(entry, "changed", G_CALLBACK(kodpocztowy_callback), config);
+    g_signal_connect(entry, "changed", G_CALLBACK(kodpocztowy_callback), change);
     gtk_table_attach_defaults(
             GTK_TABLE(table_profile),
             entry,
@@ -1028,7 +1088,7 @@ static void create_profile_notebook(GtkWidget *notebook, TakConfig* config) {
     } else {
         gtk_entry_set_text(GTK_ENTRY(entry), config->Poczta);
     }
-    g_signal_connect(entry, "changed", G_CALLBACK(poczta_callback), config);
+    g_signal_connect(entry, "changed", G_CALLBACK(poczta_callback), change);
     gtk_table_attach_defaults(
             GTK_TABLE(table_profile),
             entry,
@@ -1044,10 +1104,11 @@ static void create_profile_notebook(GtkWidget *notebook, TakConfig* config) {
 
 static GtkWidget* create_notebooks(JPK* jpk, TakConfig* config) {
     GtkWidget *notebook = gtk_notebook_new();
+
     gtk_notebook_set_tab_pos(GTK_NOTEBOOK(notebook), GTK_POS_TOP);
     create_sell_notebook(notebook, jpk, config);
     create_purchase_notebook(notebook, jpk, config);
-    create_profile_notebook(notebook, config);
+    create_profile_notebook(notebook, jpk, config);
     return notebook;
 }
 
@@ -1252,7 +1313,7 @@ static void sell_filter_callback(GtkWidget* widget, gpointer data) {
         rmColumn(&(t->config->sellColumns), colName);
         saveConfig(t->config);
     }
-
+    
     GtkWidget *window = gtk_widget_get_toplevel(widget);
     GtkWidget *root_box = widget->parent->parent->parent->parent->parent->parent;
     gtk_widget_destroy(root_box);

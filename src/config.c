@@ -29,6 +29,7 @@ typedef struct {
     JPKColumns* purchaseColumns;
 } TakConfig;
 
+void printTakConfig(TakConfig*);
 
 TakConfig* parseConfig() {
     TakConfig* config = (TakConfig*)malloc(sizeof(TakConfig));
