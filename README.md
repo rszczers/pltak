@@ -1,4 +1,4 @@
-# PLTak
+# ![Ikona PLTak](https://raw.githubusercontent.com/rszczers/pltak/master/data/icons/24x24/apps/pltak.png) PLTak
 
 Rozwijam tutaj aplikację ułatwiającą mikroprzedsiębiorcom edycję Jednolitych Plików Kontrolnych (JPK_VAT).
 
@@ -12,7 +12,8 @@ Rozwijam tutaj aplikację ułatwiającą mikroprzedsiębiorcom edycję Jednolity
 ```
 git clone http://github.com/rszczers/pltak
 cd pltak && make
-./build/tak
+sudo make install
+pltak
 ```
 
 ## Funkcjonalności
@@ -22,3 +23,6 @@ cd pltak && make
 
 ## Wygląd
 ![alt tag](https://github.com/rszczers/pltak/blob/master/screen.png)
+
+## Licencja
+[BSD3](https://raw.githubusercontent.com/rszczers/pltak/master/LICENSE)
