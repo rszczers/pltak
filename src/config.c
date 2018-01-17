@@ -352,3 +352,21 @@ TakConfig* getConfig(JPK* jpk) {
     return config;
 }
 
+JPK* configToJPK(JPK* jpk, TakConfig* tak) {
+    jpk->profile->gmina = tak->Gmina;
+    jpk->profile->kodKraju = tak->KodKraju;
+    jpk->profile->kodPocztowy = tak->KodPocztowy;
+    jpk->profile->miejscowosc = tak->Miejscowosc;
+    jpk->profile->nip = tak->NIP;
+    jpk->profile->nrDomu = tak->NrDomu;
+    jpk->profile->nrLokalu = tak->NrLokalu;
+    jpk->profile->pelnaNazwa = tak->PelnaNazwa;
+    jpk->profile->poczta = tak->Poczta;
+    jpk->profile->powiat = tak->Powiat;
+    jpk->profile->regon = tak->REGON;
+    jpk->profile->ulica = tak->Ulica;
+    jpk->profile->wojewodztwo = tak->Wojewodztwo;
+    jpk->header->domyslnyKodWaluty = tak->DomyslnyKodWaluty;
+    jpk->header->kodUrzedu = tak->KodUrzedu;
+    return jpk;
+}

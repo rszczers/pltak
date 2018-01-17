@@ -27,4 +27,6 @@ TakConfig* parseConfig();
 void saveConfig(TakConfig*);
 void printTakConfig(TakConfig*);
 void printTakCols(JPKColumns*); 
+JPK* configToJPK(JPK*, TakConfig*);
+
 #endif /* ifndef CONFIG_H_ */
