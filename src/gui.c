@@ -14,6 +14,7 @@
 #include "history.h"
 
 #define HISTORY_OPEN_FILENAME "open.dat"
+static int isLoaded = 0;
 
 GtkWidget *label_sell_sum;
 GtkWidget *label_pur_sum;
@@ -653,6 +654,7 @@ static void about_dialog(GtkWidget *widget, gpointer data) {
 }
 
 static GtkWidget* create_menu_bar(JPK* jpk, TakConfig* config, GtkWidget* window) {
+    open_history = loadHistory(HISTORY_OPEN_FILENAME);
     GtkWidget* menu_bar = gtk_menu_bar_new();
     GtkWidget* file_menu = gtk_menu_new();
     GtkWidget* help_menu = gtk_menu_new();
@@ -708,7 +710,7 @@ static GtkWidget* create_menu_bar(JPK* jpk, TakConfig* config, GtkWidget* window
     change->jpk = jpk;
     
     History* cur = open_history;
-    if (cur != NULL && !history_isEmpty(cur)) {
+    if (isLoaded && cur != NULL) {
         menu_item = gtk_image_menu_item_new_with_label("Zapisz");
         img = gtk_image_new_from_stock(GTK_STOCK_SAVE, GTK_ICON_SIZE_MENU);
         gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item), img);
@@ -1569,21 +1571,22 @@ static void pur_entry_callback(GtkWidget* widget, gpointer data) {
 //    gtk_entry_set_text(GTK_ENTRY(widget), sell_d2m(change->jpk, change->i, change->j));
 }
 static void new_file_callback(GtkWidget* widget, gpointer data) {
-        JPK* jpk = newJPK();
+    isLoaded = 0;
+    JPK* jpk = newJPK();
 
-        TakConfig* config = getConfig(jpk);
-        GtkWidget* menu = GTK_WIDGET(data);
-        GtkWidget* root_box = menu->parent;
-        GtkWidget *window = gtk_widget_get_toplevel(menu);
+    TakConfig* config = getConfig(jpk);
+    GtkWidget* menu = GTK_WIDGET(data);
+    GtkWidget* root_box = menu->parent;
+    GtkWidget *window = gtk_widget_get_toplevel(menu);
 
-        gtk_widget_destroy(root_box);
-        GtkWidget *vbox = gtk_vbox_new(0, 0);
+    gtk_widget_destroy(root_box);
+    GtkWidget *vbox = gtk_vbox_new(0, 0);
 
-        gtk_box_pack_start(GTK_BOX(vbox), create_menu_bar(jpk, config, window), 0, 0, 0);
-        gtk_box_pack_start(GTK_BOX(vbox), create_notebooks(jpk, config), 1, 1, 0);
-        gtk_box_pack_start(GTK_BOX(vbox), create_box_bottom(jpk), 0, 0, 0);
-        gtk_container_add(GTK_CONTAINER(window), vbox);
-        gtk_widget_show_all(window);
+    gtk_box_pack_start(GTK_BOX(vbox), create_menu_bar(jpk, config, window), 0, 0, 0);
+    gtk_box_pack_start(GTK_BOX(vbox), create_notebooks(jpk, config), 1, 1, 0);
+    gtk_box_pack_start(GTK_BOX(vbox), create_box_bottom(jpk), 0, 0, 0);
+    gtk_container_add(GTK_CONTAINER(window), vbox);
+    gtk_widget_show_all(window);
 }
 
 static void sell_addrow_callback(GtkWidget* widget, gpointer data) {
@@ -1629,6 +1632,7 @@ void importcsv_open_dialog(GtkWidget* widget, gpointer data) {
     gint resp = gtk_dialog_run(GTK_DIALOG(dialog));
 
     if (resp == GTK_RESPONSE_OK) {
+        isLoaded = 1;
         char* path = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
         //char* filename = g_path_get_basename(path);
         JPK* jpk = loadJPK(path);
@@ -1654,6 +1658,7 @@ void importcsv_open_dialog(GtkWidget* widget, gpointer data) {
 }
 
 void importcsv_lastopen_dialog(GtkWidget* widget, gpointer data) {
+    isLoaded = 1;
     OpenCallbackData* ocd = (OpenCallbackData*)data;
     char* path = strdup(ocd->data);
     JPK* jpk = loadJPK(path);
