@@ -706,15 +706,17 @@ static GtkWidget* create_menu_bar(JPK* jpk, TakConfig* config, GtkWidget* window
     JPKChange *change = (JPKChange*)malloc(sizeof(JPKChange));
     change->tak = config;
     change->jpk = jpk;
-
-    menu_item = gtk_image_menu_item_new_with_label("Zapisz");
-    img = gtk_image_new_from_stock(GTK_STOCK_SAVE, GTK_ICON_SIZE_MENU);
-    gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item), img);
-    gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), menu_item);
-    g_signal_connect(menu_item, "activate", G_CALLBACK(savecsv_dialog), change);
-    gtk_widget_add_accelerator(menu_item, "activate", accel_group,
-            0x073, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-
+    
+    History* cur = open_history;
+    if (cur != NULL && !history_isEmpty(cur)) {
+        menu_item = gtk_image_menu_item_new_with_label("Zapisz");
+        img = gtk_image_new_from_stock(GTK_STOCK_SAVE, GTK_ICON_SIZE_MENU);
+        gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item), img);
+        gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), menu_item);
+        g_signal_connect(menu_item, "activate", G_CALLBACK(savecsv_dialog), change);
+        gtk_widget_add_accelerator(menu_item, "activate", accel_group,
+                0x073, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+    }
     menu_item = gtk_image_menu_item_new_with_label("Zapisz jako");
     img = gtk_image_new_from_stock(GTK_STOCK_SAVE, GTK_ICON_SIZE_MENU);
     gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item), img);
@@ -725,7 +727,6 @@ static GtkWidget* create_menu_bar(JPK* jpk, TakConfig* config, GtkWidget* window
 
 
 
-    History* cur = open_history;
     if (cur != NULL && !history_isEmpty(cur)) {
         OpenCallbackData* ocd = (OpenCallbackData*)malloc(sizeof(OpenCallbackData));
         ocd->config = config;
