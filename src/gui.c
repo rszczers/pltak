@@ -655,6 +655,7 @@ static void about_dialog(GtkWidget *widget, gpointer data) {
 
 static GtkWidget* create_menu_bar(JPK* jpk, TakConfig* config, GtkWidget* window) {
     open_history = loadHistory(HISTORY_OPEN_FILENAME);
+
     GtkWidget* menu_bar = gtk_menu_bar_new();
     GtkWidget* file_menu = gtk_menu_new();
     GtkWidget* help_menu = gtk_menu_new();
@@ -719,15 +720,14 @@ static GtkWidget* create_menu_bar(JPK* jpk, TakConfig* config, GtkWidget* window
         gtk_widget_add_accelerator(menu_item, "activate", accel_group,
                 0x073, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
     }
+
     menu_item = gtk_image_menu_item_new_with_label("Zapisz jako");
-    img = gtk_image_new_from_stock(GTK_STOCK_SAVE, GTK_ICON_SIZE_MENU);
+    img = gtk_image_new_from_stock(GTK_STOCK_SAVE_AS, GTK_ICON_SIZE_MENU);
     gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item), img);
     gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), menu_item);
     g_signal_connect(menu_item, "activate", G_CALLBACK(savecsv_as_dialog), change);
-    gtk_widget_add_accelerator(menu_item, "activate", accel_group,
+    if (!isLoaded) gtk_widget_add_accelerator(menu_item, "activate", accel_group,
             0x073, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-
-
 
     if (cur != NULL && !history_isEmpty(cur)) {
         OpenCallbackData* ocd = (OpenCallbackData*)malloc(sizeof(OpenCallbackData));
@@ -739,7 +739,9 @@ static GtkWidget* create_menu_bar(JPK* jpk, TakConfig* config, GtkWidget* window
         gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), menu_item);
 
         ocd->data = strdup(cur->path); 
-        menu_item = gtk_menu_item_new_with_label(g_path_get_basename(cur->path));
+        menu_item = gtk_image_menu_item_new_with_label(g_path_get_basename(cur->path));
+        img = gtk_image_new_from_stock(GTK_STOCK_EDIT, GTK_ICON_SIZE_MENU);
+        gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item), img);
         gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), menu_item);
         g_signal_connect(menu_item, "activate", G_CALLBACK(importcsv_lastopen_dialog), ocd);
         cur = cur->next;
@@ -751,7 +753,9 @@ static GtkWidget* create_menu_bar(JPK* jpk, TakConfig* config, GtkWidget* window
         ocd->parent = menu_bar;
         ocd->data = strdup(cur->path); 
 
-        menu_item = gtk_menu_item_new_with_label(g_path_get_basename(cur->path));
+        menu_item = gtk_image_menu_item_new_with_label(g_path_get_basename(cur->path));
+        img = gtk_image_new_from_stock(GTK_STOCK_EDIT, GTK_ICON_SIZE_MENU);
+        gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item), img);
         gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), menu_item);
         g_signal_connect(menu_item, "activate", G_CALLBACK(importcsv_lastopen_dialog), ocd);
         cur = cur->next;
@@ -763,7 +767,9 @@ static GtkWidget* create_menu_bar(JPK* jpk, TakConfig* config, GtkWidget* window
         ocd->parent = menu_bar;
         ocd->data = strdup(cur->path); 
 
-        menu_item = gtk_menu_item_new_with_label(g_path_get_basename(cur->path));
+        menu_item = gtk_image_menu_item_new_with_label(g_path_get_basename(cur->path));
+        img = gtk_image_new_from_stock(GTK_STOCK_EDIT, GTK_ICON_SIZE_MENU);
+        gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item), img);
         gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), menu_item);
         g_signal_connect(menu_item, "activate", G_CALLBACK(importcsv_lastopen_dialog), ocd);
         cur = cur->next;
@@ -775,7 +781,9 @@ static GtkWidget* create_menu_bar(JPK* jpk, TakConfig* config, GtkWidget* window
         ocd->parent = menu_bar;
         ocd->data = strdup(cur->path); 
 
-        menu_item = gtk_menu_item_new_with_label(g_path_get_basename(cur->path));
+        menu_item = gtk_image_menu_item_new_with_label(g_path_get_basename(cur->path));
+        img = gtk_image_new_from_stock(GTK_STOCK_EDIT, GTK_ICON_SIZE_MENU);
+        gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item), img);
         gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), menu_item);
         g_signal_connect(menu_item, "activate", G_CALLBACK(importcsv_lastopen_dialog), ocd);
         cur = cur->next;
@@ -787,7 +795,9 @@ static GtkWidget* create_menu_bar(JPK* jpk, TakConfig* config, GtkWidget* window
         ocd->parent = menu_bar;
         ocd->data = strdup(cur->path); 
 
-        menu_item = gtk_menu_item_new_with_label(g_path_get_basename(cur->path));
+        menu_item = gtk_image_menu_item_new_with_label(g_path_get_basename(cur->path));
+        img = gtk_image_new_from_stock(GTK_STOCK_EDIT, GTK_ICON_SIZE_MENU);
+        gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item), img);
         gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), menu_item);
         g_signal_connect(menu_item, "activate", G_CALLBACK(importcsv_lastopen_dialog), ocd);
     }

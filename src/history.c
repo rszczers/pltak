@@ -74,12 +74,14 @@ void saveHistory(History* h, char* type) {
     asprintf(&filename, "%s/.pltak/%s", homedir, type);
     FILE * file = fopen(filename, "wb");
     if (file != NULL) {
-        while (h != NULL) {
+        int count = 0;
+        while (h != NULL && count < CONSTR) {
             char* out;
             if (h->next != NULL) asprintf(&out, "%s\n", h->path);
             else asprintf(&out, "%s", h->path);
             fputs(out, file);            
             h = h->next;
+            count++;
         }
         fclose(file);
     }
