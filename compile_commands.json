@@ -33,5 +33,10 @@
         "command": "cc -c -g -o ./build/main.o ./src/main.c",
         "directory": "/home/fulgjon/Dokumenty/Tak",
         "file": "/home/fulgjon/Dokumenty/Tak/src/main.c"
+    },
+    {
+        "command": "cc -c -g -o ./build/history.o ./src/history.c",
+        "directory": "/home/fulgjon/Dokumenty/Tak",
+        "file": "/home/fulgjon/Dokumenty/Tak/src/history.c"
     }
 ]

@@ -1,0 +1,11 @@
+Zdarzenie,Opis pola,Pozycja,Status końcowy,Status końcowy (opis),Opis problemu
+
+R,JPK_Naglowek_DataWytworzeniaJPK,,ERROR,Weryfikacja zakończona błędem,"Błąd w polu DataWytworzeniaJPK. Data wytworzenia pliku (2017-02-17T09:30:47) nie może być mniejsza od wersji aplikacji (2017-04-01T00:00:00)."
+R,JPK_Podmiot1_IdentyfikatorPodmiotu_REGON,,WARNING,Weryfikacja zakończona ostrzeżeniem,"Ostrzeżenie w polu REGON. Numer Rejestru Gospodarki Narodowej (REGON 123456789) nie jest prawidłowy. [123456789]"
+R,JPK_ZakupWiersz_NrDostawcy,,ERROR,Weryfikacja zakończona błędem,"Błąd w polu NrDostawcy. Numer identyfikacyjny (ExtendedNIP TREWQ) nie jest zgodny z Dziennikiem Urzędowym Unii Europejskiej (2016/C 481/08). [TREWQ]"
+R,JPK_ZakupWiersz_NrDostawcy,,ERROR,Weryfikacja zakończona błędem,"Błąd w polu NrDostawcy. Numer identyfikacyjny (ExtendedNIP UYTREW) nie jest zgodny z Dziennikiem Urzędowym Unii Europejskiej (2016/C 481/08). [UYTREW]"
+R,JPK_ZakupWiersz_NrDostawcy,,ERROR,Weryfikacja zakończona błędem,"Błąd w polu NrDostawcy. Numer identyfikacyjny (ExtendedNIP KJHGFDS) nie jest zgodny z Dziennikiem Urzędowym Unii Europejskiej (2016/C 481/08). [KJHGFDS]"
+R,JPK_ZakupWiersz_NrDostawcy,,ERROR,Weryfikacja zakończona błędem,"Błąd w polu NrDostawcy. Numer identyfikacyjny (ExtendedNIP LKJHGFDS) nie jest zgodny z Dziennikiem Urzędowym Unii Europejskiej (2016/C 481/08). [LKJHGFDS]"
+R,JPK_ZakupWiersz_NrDostawcy,,ERROR,Weryfikacja zakończona błędem,"Błąd w polu NrDostawcy. Numer identyfikacyjny (ExtendedNIP LKJHGFDEEE) nie jest zgodny z Dziennikiem Urzędowym Unii Europejskiej (2016/C 481/08). [LKJHGFDEEE]"
+R,JPK_ZakupWiersz_NrDostawcy,,ERROR,Weryfikacja zakończona błędem,"Błąd w polu NrDostawcy. Numer identyfikacyjny (ExtendedNIP IUYTGV C ) nie jest zgodny z Dziennikiem Urzędowym Unii Europejskiej (2016/C 481/08). [IUYTGV C ]"
+R,JPK_ZakupWiersz_NrDostawcy,,ERROR,Weryfikacja zakończona błędem,"Błąd w polu NrDostawcy. Numer identyfikacyjny (ExtendedNIP POIUYTRFCV) nie jest zgodny z Dziennikiem Urzędowym Unii Europejskiej (2016/C 481/08). [POIUYTRFCV]"

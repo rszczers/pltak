@@ -12,13 +12,13 @@ PREFIX=/usr/local
 
 all: configuration pltak
 
-install: pltak 
+install: pltak
 	install -m 0755 $(BUILD_DIR)pltak $(PREFIX)/bin
-	cp -r ./data/icons/* /usr/share/icons/hicolor  
+	cp -r ./data/icons/* /usr/share/icons/hicolor
 	cp ./data/pltak.desktop /usr/share/applications/
 
-pltak: main.o parse.o jpk.o tocsv.o gui.o config.o
-	$(CC) $(BUILD_DIR)main.o $(BUILD_DIR)config.o $(BUILD_DIR)tocsv.o $(BUILD_DIR)jpk.o $(BUILD_DIR)parse.o $(BUILD_DIR)gui.o $(BUILD_DIR)utils.o -o $(BUILD_DIR)$(PROJECT_NAME) $(CFLAGS) -g 
+pltak: main.o parse.o jpk.o tocsv.o gui.o config.o history.o
+	$(CC) $(BUILD_DIR)main.o $(BUILD_DIR)config.o $(BUILD_DIR)tocsv.o $(BUILD_DIR)jpk.o $(BUILD_DIR)parse.o $(BUILD_DIR)gui.o $(BUILD_DIR)utils.o $(BUILD_DIR)history.o -o $(BUILD_DIR)$(PROJECT_NAME) $(CFLAGS) -g
 
 configuration: rebuild_configdir kodyurzedow
 	cp ./data/default.csv ~/.pltak/
@@ -34,7 +34,7 @@ endif
 	rm ./data/us_codes.dat
 
 xmltodict_pkg:
-ifndef PIP 
+ifndef PIP
 	$(error "Proszę zainstalować pip3.")
 endif
 	pip3 install xmltodict
@@ -67,6 +67,9 @@ parse.o: ./src/parse.c
 
 utils.o: ./src/utils.c
 	$(CC) -g -c ./src/utils.c -o $(BUILD_DIR)$@
+
+history.o: ./src/history.c
+	$(CC) -g -c ./src/history.c -o $(BUILD_DIR)$@
 
 clean:
 	rm -f build/*.o

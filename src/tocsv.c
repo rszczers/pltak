@@ -16,10 +16,7 @@ char* genHeader(JPK* jpk) {
     const char* tail = ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;";
     char* header;
     char kodUrzedu[5];
-    kodUrzedu[0] = jpk->header->kodUrzedu[0];
-    kodUrzedu[1] = jpk->header->kodUrzedu[1];
-    kodUrzedu[2] = jpk->header->kodUrzedu[2];
-    kodUrzedu[3] = jpk->header->kodUrzedu[3];
+    strncpy(kodUrzedu, jpk->header->kodUrzedu, 4);
     kodUrzedu[4] = '\0';
     asprintf(&header, "%s" SEP
             "%s" SEP

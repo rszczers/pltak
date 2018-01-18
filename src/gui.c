@@ -11,11 +11,17 @@
 #include "jpk.h"
 #include "config.h"
 #include "utils.h"
+#include "history.h"
+
+#define HISTORY_SAVE_FILENAME "save.dat"
+#define HISTORY_OPEN_FILENAME "open.dat"
 
 GtkWidget *label_sell_sum;
 GtkWidget *label_pur_sum;
 GtkWidget *date_menu;
 GtkWidget *entry_year;
+History* open_history;
+History* save_history;
 
 int current_notebook;
 int default_month;
@@ -47,8 +53,10 @@ static void pur_entry_callback(GtkWidget*, gpointer);
 static void sell_addrow_callback(GtkWidget*, gpointer);
 static void pur_addrow_callback(GtkWidget*, gpointer);
 static void importcsv_open_dialog(GtkWidget*, gpointer);
+static void savecsv_as_dialog(GtkWidget*, gpointer);
 static void savecsv_dialog(GtkWidget*, gpointer);
 static void new_file_callback(GtkWidget*, gpointer);
+void importcsv_lastopen_dialog(GtkWidget*, gpointer);
 
 void addUS(USList* list, char* code, char* name) {
     while (list->next != NULL) {
@@ -113,6 +121,7 @@ typedef struct _Completion {
     GtkWidget* table;
     GtkWidget* combo;
     TakConfig* config;
+    JPK* jpk;
 } Completion;
 
 /**
@@ -124,10 +133,10 @@ static void uscode_callback(GtkWidget* entry, gpointer data) {
     Completion* compl = (Completion*) data;
     GtkWidget* table = compl->table;
     GtkWidget* combo = compl->combo;
+    JPK* jpk = compl->jpk;
     TakConfig* config = compl->config;
 
-    char* filter;
-    asprintf(&filter, "%s", (char *)gtk_entry_get_text(GTK_ENTRY(entry)));
+    char* filter = strdup((char *)gtk_entry_get_text(GTK_ENTRY(entry)));
     for (int i = 0; i < strlen(filter); ++i) {
        filter[i] = toupper(filter[i]);
     }
@@ -160,12 +169,25 @@ static void uscode_callback(GtkWidget* entry, gpointer data) {
     Completion* newData = (Completion*)malloc(sizeof(Completion));
     config->KodUrzedu = head;
     saveConfig(config);
+
+    jpk->header->kodUrzedu = (char*)malloc(5);
+    strncpy(jpk->header->kodUrzedu, head, 4);
+    jpk->header->kodUrzedu[4] = '\0';
+
+    newData->jpk = jpk;
     newData->combo = newCombo;
     newData->table = table;
     newData->config = config;
     g_signal_connect(GTK_ENTRY(GTK_COMBO(newCombo)->entry), "activate", G_CALLBACK(uscode_callback), newData);
 //    g_signal_connect(GTK_COMBO(newCombo), "activate", G_CALLBACK(uscode_callback), newData);
 }
+
+typedef struct {
+    char* data;
+    TakConfig *config;
+    JPK* jpk;
+    GtkWidget* parent;
+} OpenCallbackData;
 
 typedef struct {
     char *name;
@@ -204,7 +226,7 @@ static void pelnanazwa_callback(GtkWidget* widget, gpointer data) {
     JPK* jpk = ch->jpk;
     char* input = strdup((char*)gtk_entry_get_text(GTK_ENTRY(widget)));
     config->PelnaNazwa = input;
-    jpk->profile->pelnaNazwa = input; 
+    jpk->profile->pelnaNazwa = input;
     saveConfig(config);
 }
 static void regon_callback(GtkWidget* widget, gpointer data) {
@@ -633,6 +655,9 @@ static void about_dialog(GtkWidget *widget, gpointer data) {
 }
 
 static GtkWidget* create_menu_bar(JPK* jpk, TakConfig* config, GtkWidget* window) {
+    open_history = loadHistory(HISTORY_OPEN_FILENAME);
+    //save_history = loadHistory(HISTORY_SAVE_FILENAME);
+
     GtkWidget* menu_bar = gtk_menu_bar_new();
     GtkWidget* file_menu = gtk_menu_new();
     GtkWidget* help_menu = gtk_menu_new();
@@ -664,7 +689,6 @@ static GtkWidget* create_menu_bar(JPK* jpk, TakConfig* config, GtkWidget* window
     menu_item = gtk_separator_menu_item_new();
     gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), menu_item);
 
-
     menu_item = gtk_image_menu_item_new_with_label("Otwórz");
     img = gtk_image_new_from_stock(GTK_STOCK_OPEN, GTK_ICON_SIZE_MENU);
     gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item), img);
@@ -683,10 +707,10 @@ static GtkWidget* create_menu_bar(JPK* jpk, TakConfig* config, GtkWidget* window
 
     menu_item = gtk_separator_menu_item_new();
     gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), menu_item);
-    
+
     JPKChange *change = (JPKChange*)malloc(sizeof(JPKChange));
-    change->tak = config; 
-    change->jpk = jpk; 
+    change->tak = config;
+    change->jpk = jpk;
 
     menu_item = gtk_image_menu_item_new_with_label("Zapisz");
     img = gtk_image_new_from_stock(GTK_STOCK_SAVE, GTK_ICON_SIZE_MENU);
@@ -696,10 +720,80 @@ static GtkWidget* create_menu_bar(JPK* jpk, TakConfig* config, GtkWidget* window
     gtk_widget_add_accelerator(menu_item, "activate", accel_group,
             0x073, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
-//    menu_item = gtk_menu_item_new_with_label("Eksportuj xml");
-//    gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), menu_item);
-//    g_signal_connect(menu_item, "activate", G_CALLBACK(save_dialog), jpk);
+    menu_item = gtk_image_menu_item_new_with_label("Zapisz jako");
+    img = gtk_image_new_from_stock(GTK_STOCK_SAVE, GTK_ICON_SIZE_MENU);
+    gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item), img);
+    gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), menu_item);
+    g_signal_connect(menu_item, "activate", G_CALLBACK(savecsv_as_dialog), change);
+    gtk_widget_add_accelerator(menu_item, "activate", accel_group,
+            0x073, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
+
+
+    History* cur = open_history;
+    if (cur != NULL && !history_isEmpty(cur)) {
+        OpenCallbackData* ocd = (OpenCallbackData*)malloc(sizeof(OpenCallbackData));
+        ocd->config = config;
+        ocd->jpk = jpk;
+        ocd->parent = menu_bar;
+        menu_item = gtk_separator_menu_item_new();
+
+        gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), menu_item);
+
+        ocd->data = strdup(cur->path); 
+        menu_item = gtk_menu_item_new_with_label(g_path_get_basename(cur->path));
+        gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), menu_item);
+        g_signal_connect(menu_item, "activate", G_CALLBACK(importcsv_lastopen_dialog), ocd);
+        cur = cur->next;
+    }
+    if (cur != NULL && !history_isEmpty(cur)) {    
+        OpenCallbackData* ocd = (OpenCallbackData*)malloc(sizeof(OpenCallbackData));
+        ocd->config = config;
+        ocd->jpk = jpk;
+        ocd->parent = menu_bar;
+        ocd->data = strdup(cur->path); 
+
+        menu_item = gtk_menu_item_new_with_label(g_path_get_basename(cur->path));
+        gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), menu_item);
+        g_signal_connect(menu_item, "activate", G_CALLBACK(importcsv_lastopen_dialog), ocd);
+        cur = cur->next;
+    }
+    if (cur != NULL && !history_isEmpty(cur)) {    
+        OpenCallbackData* ocd = (OpenCallbackData*)malloc(sizeof(OpenCallbackData));
+        ocd->config = config;
+        ocd->jpk = jpk;
+        ocd->parent = menu_bar;
+        ocd->data = strdup(cur->path); 
+
+        menu_item = gtk_menu_item_new_with_label(g_path_get_basename(cur->path));
+        gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), menu_item);
+        g_signal_connect(menu_item, "activate", G_CALLBACK(importcsv_lastopen_dialog), ocd);
+        cur = cur->next;
+    }
+    if (cur != NULL && !history_isEmpty(cur)) {    
+        OpenCallbackData* ocd = (OpenCallbackData*)malloc(sizeof(OpenCallbackData));
+        ocd->config = config;
+        ocd->jpk = jpk;
+        ocd->parent = menu_bar;
+        ocd->data = strdup(cur->path); 
+
+        menu_item = gtk_menu_item_new_with_label(g_path_get_basename(cur->path));
+        gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), menu_item);
+        g_signal_connect(menu_item, "activate", G_CALLBACK(importcsv_lastopen_dialog), ocd);
+        cur = cur->next;
+    }
+    if (cur != NULL && !history_isEmpty(cur)) {    
+        OpenCallbackData* ocd = (OpenCallbackData*)malloc(sizeof(OpenCallbackData));
+        ocd->config = config;
+        ocd->jpk = jpk;
+        ocd->parent = menu_bar;
+        ocd->data = strdup(cur->path); 
+
+        menu_item = gtk_menu_item_new_with_label(g_path_get_basename(cur->path));
+        gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), menu_item);
+        g_signal_connect(menu_item, "activate", G_CALLBACK(importcsv_lastopen_dialog), ocd);
+    }
+    
     menu_item = gtk_separator_menu_item_new();
     gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), menu_item);
 
@@ -837,7 +931,7 @@ static void create_profile_notebook(GtkWidget *notebook, JPK* jpk, TakConfig* co
 
     JPKChange* change = (JPKChange*)malloc(sizeof(JPKChange));
     change->jpk = jpk;
-    change->tak = config; 
+    change->tak = config;
 
     label_profile = gtk_label_new("Waluta");
     gtk_table_attach_defaults(
@@ -870,6 +964,7 @@ static void create_profile_notebook(GtkWidget *notebook, JPK* jpk, TakConfig* co
     compl->combo = combo;
     compl->table = table_profile;
     compl->config = config;
+    compl->jpk = jpk;
     if (config->KodUrzedu == NULL) {
         gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(combo)->entry), "");
     } else {
@@ -1249,6 +1344,9 @@ static GtkWidget* create_box_bottom(JPK* jpk) {
 
 void drawGui(JPK* jpk) {
     TakConfig* config = parseConfig();
+    open_history = loadHistory(HISTORY_OPEN_FILENAME);
+    //save_history = loadHistory(HISTORY_SAVE_FILENAME);
+
     gtk_init(NULL, NULL);
     GtkWidget *window, *vbox;
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
@@ -1319,7 +1417,7 @@ static void sell_filter_callback(GtkWidget* widget, gpointer data) {
         rmColumn(&(t->config->sellColumns), colName);
         saveConfig(t->config);
     }
-    
+
     GtkWidget *window = gtk_widget_get_toplevel(widget);
     GtkWidget *root_box = widget->parent->parent->parent->parent->parent->parent;
     gtk_widget_destroy(root_box);
@@ -1536,7 +1634,10 @@ void importcsv_open_dialog(GtkWidget* widget, gpointer data) {
     gint resp = gtk_dialog_run(GTK_DIALOG(dialog));
 
     if (resp == GTK_RESPONSE_OK) {
-        JPK* jpk = loadJPK(g_filename_to_utf8(gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog)), -1, NULL, NULL, NULL));
+        char* path = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
+        //char* filename = g_path_get_basename(path);
+        JPK* jpk = loadJPK(path);
+
         TakConfig* config = getConfig(jpk);
         GtkWidget* menu = GTK_WIDGET(data);
         GtkWidget* root_box = menu->parent;
@@ -1550,11 +1651,46 @@ void importcsv_open_dialog(GtkWidget* widget, gpointer data) {
         gtk_box_pack_start(GTK_BOX(vbox), create_box_bottom(jpk), 0, 0, 0);
         gtk_container_add(GTK_CONTAINER(window), vbox);
         gtk_widget_show_all(window);
+
+        open_history = addHistory(&open_history, path);
+        saveHistory(open_history, HISTORY_OPEN_FILENAME);
     }
     gtk_widget_destroy(dialog);
 }
 
+void importcsv_lastopen_dialog(GtkWidget* widget, gpointer data) {
+    OpenCallbackData* ocd = (OpenCallbackData*)data;
+    char* path = strdup(ocd->data);
+    JPK* jpk = loadJPK(path);
+
+    open_history = addHistory(&open_history, path);
+    saveHistory(open_history, HISTORY_OPEN_FILENAME);
+
+    TakConfig* config = getConfig(jpk);
+    GtkWidget* menu = GTK_WIDGET(ocd->parent);
+    GtkWidget* root_box = menu->parent;
+    GtkWidget *window = gtk_widget_get_toplevel(menu);
+
+    gtk_widget_destroy(root_box);
+    GtkWidget *vbox = gtk_vbox_new(0, 0);
+
+    gtk_box_pack_start(GTK_BOX(vbox), create_menu_bar(jpk, config, window), 0, 0, 0);
+    gtk_box_pack_start(GTK_BOX(vbox), create_notebooks(jpk, config), 1, 1, 0);
+    gtk_box_pack_start(GTK_BOX(vbox), create_box_bottom(jpk), 0, 0, 0);
+    gtk_container_add(GTK_CONTAINER(window), vbox);
+    gtk_widget_show_all(window);
+}
+
 void savecsv_dialog(GtkWidget* widget, gpointer data) {
+    JPKChange* ch = (JPKChange*)data;
+    JPK* jpk = ch->jpk;
+    TakConfig *config = ch->tak;
+    if (save_history->path != NULL) {
+        csvExport(save_history->path, configToJPK(jpk, config));
+    }
+}
+
+void savecsv_as_dialog(GtkWidget* widget, gpointer data) {
     JPKChange* ch = (JPKChange*)data;
     JPK* jpk = ch->jpk;
     TakConfig *config = ch->tak;
@@ -1567,7 +1703,12 @@ void savecsv_dialog(GtkWidget* widget, gpointer data) {
     gtk_widget_show_all(dialog);
     gint resp = gtk_dialog_run(GTK_DIALOG(dialog));
     if (resp == GTK_RESPONSE_ACCEPT) {
-        csvExport((char*)g_filename_to_utf8(gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog)), -1, NULL, NULL, NULL), configToJPK(jpk, config));
+        char* path = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
+//        char* filename = g_path_get_basename(path);
+        csvExport(path, configToJPK(jpk, config));
+
+        save_history = addHistory(&save_history, path);
+        saveHistory(save_history, HISTORY_SAVE_FILENAME);
     }
     gtk_widget_destroy(dialog);
 }
