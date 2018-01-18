@@ -661,7 +661,7 @@ static GtkWidget* create_menu_bar(JPK* jpk, TakConfig* config, GtkWidget* window
     GtkAccelGroup *accel_group = gtk_accel_group_new();
     gtk_window_add_accel_group(GTK_WINDOW(window), accel_group);
 
-    menu_item = gtk_image_menu_item_new_with_label("Rejestr");
+    menu_item = gtk_image_menu_item_new_with_mnemonic("_Rejestr");
     GtkWidget *img = gtk_image_new_from_stock(GTK_STOCK_FILE, GTK_ICON_SIZE_MENU);
     gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item), img);
     gtk_menu_item_set_submenu(GTK_MENU_ITEM(menu_item), file_menu);

@@ -60,7 +60,7 @@ History* addHistory(History** hist, char* path) {
         if (strcmp(cur->path, path) == 0) {
             cur->prev->next = cur->next;
         }
-        if (cur != NULL) cur = cur->next;
+        cur = cur->next;
     }
 
     return *hist;
@@ -107,16 +107,18 @@ History* loadHistory(char* name) {
         }
         fclose(file);
     }
-
     //reverse
-/*    History* tmp = h->prev;
-    while (h != NULL) {
-        tmp = h->next;
-        h->next = h->prev;
-        h->prev = tmp;
-        h = tmp;
-        printf("%s\n", h->path);
-    }*/
-
+    if (!history_isEmpty(h)) {
+        History* tmp = h->prev;
+        History* prev;
+        while (h != NULL) {
+            tmp = h->next;
+            h->next = h->prev;
+            h->prev = tmp;
+            prev = h;
+            h = tmp;
+        }
+        return prev;
+    }
     return h;
 }
