@@ -13,7 +13,6 @@
 #include "utils.h"
 #include "history.h"
 
-#define HISTORY_SAVE_FILENAME "save.dat"
 #define HISTORY_OPEN_FILENAME "open.dat"
 
 GtkWidget *label_sell_sum;
@@ -21,7 +20,6 @@ GtkWidget *label_pur_sum;
 GtkWidget *date_menu;
 GtkWidget *entry_year;
 History* open_history;
-History* save_history;
 
 int current_notebook;
 int default_month;
@@ -655,9 +653,6 @@ static void about_dialog(GtkWidget *widget, gpointer data) {
 }
 
 static GtkWidget* create_menu_bar(JPK* jpk, TakConfig* config, GtkWidget* window) {
-    open_history = loadHistory(HISTORY_OPEN_FILENAME);
-    //save_history = loadHistory(HISTORY_SAVE_FILENAME);
-
     GtkWidget* menu_bar = gtk_menu_bar_new();
     GtkWidget* file_menu = gtk_menu_new();
     GtkWidget* help_menu = gtk_menu_new();
@@ -1345,7 +1340,6 @@ static GtkWidget* create_box_bottom(JPK* jpk) {
 void drawGui(JPK* jpk) {
     TakConfig* config = parseConfig();
     open_history = loadHistory(HISTORY_OPEN_FILENAME);
-    //save_history = loadHistory(HISTORY_SAVE_FILENAME);
 
     gtk_init(NULL, NULL);
     GtkWidget *window, *vbox;
@@ -1685,8 +1679,8 @@ void savecsv_dialog(GtkWidget* widget, gpointer data) {
     JPKChange* ch = (JPKChange*)data;
     JPK* jpk = ch->jpk;
     TakConfig *config = ch->tak;
-    if (save_history->path != NULL) {
-        csvExport(save_history->path, configToJPK(jpk, config));
+    if (open_history->path != NULL) {
+        csvExport(open_history->path, configToJPK(jpk, config));
     }
 }
 
@@ -1707,8 +1701,8 @@ void savecsv_as_dialog(GtkWidget* widget, gpointer data) {
 //        char* filename = g_path_get_basename(path);
         csvExport(path, configToJPK(jpk, config));
 
-        save_history = addHistory(&save_history, path);
-        saveHistory(save_history, HISTORY_SAVE_FILENAME);
+        open_history = addHistory(&open_history, path);
+        saveHistory(open_history, HISTORY_OPEN_FILENAME);
     }
     gtk_widget_destroy(dialog);
 }

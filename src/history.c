@@ -107,5 +107,16 @@ History* loadHistory(char* name) {
         }
         fclose(file);
     }
+
+    //reverse
+/*    History* tmp = h->prev;
+    while (h != NULL) {
+        tmp = h->next;
+        h->next = h->prev;
+        h->prev = tmp;
+        h = tmp;
+        printf("%s\n", h->path);
+    }*/
+
     return h;
 }
