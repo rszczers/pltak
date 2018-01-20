@@ -454,20 +454,22 @@ static GtkWidget* draw_sell_spreadsheet(TakConfig* config, JPK* data) {
                         hbox,
                         1, 2, j, j+1);
             } else {
-                sprintf(buffer, "%s", sell_d2m(data, j, whichCols[i-2]+1));
-                entry = gtk_entry_new();
-                change = (JPKChange*)malloc(sizeof(JPKChange));
-                change->i = j;
-                change->j = whichCols[i-2]+1;
-                change->jpk = data;
-                change->tak = config;
-                gtk_widget_set_size_request(entry, 50, -1);
-                gtk_entry_set_text(GTK_ENTRY(entry), buffer);
-                gtk_table_attach_defaults (GTK_TABLE(table_sell),
-                        entry,
-                        i, i+1, j, j+1);
-                g_signal_connect(GTK_ENTRY(entry), "changed",
-                        G_CALLBACK(sell_entry_callback), change);
+                if (data->soldCount > 0) {
+                    sprintf(buffer, "%s", sell_d2m(data, j, whichCols[i-2]+1));
+                    entry = gtk_entry_new();
+                    change = (JPKChange*)malloc(sizeof(JPKChange));
+                    change->i = j;
+                    change->j = whichCols[i-2]+1;
+                    change->jpk = data;
+                    change->tak = config;
+                    gtk_widget_set_size_request(entry, 50, -1);
+                    gtk_entry_set_text(GTK_ENTRY(entry), buffer);
+                    gtk_table_attach_defaults (GTK_TABLE(table_sell),
+                            entry,
+                            i, i+1, j, j+1);
+                    g_signal_connect(GTK_ENTRY(entry), "changed",
+                            G_CALLBACK(sell_entry_callback), change);
+                }
 //                g_signal_connect(GTK_ENTRY(entry), "delete_text",
 //                        G_CALLBACK(sell_entry_delete_callback), change);
             }
@@ -571,20 +573,22 @@ static GtkWidget* draw_pur_spreadsheet(TakConfig* config, JPK* data) {
                         hbox,
                         1, 2, j, j+1);
             } else {
-                sprintf(buffer, "%s", pur_d2m(data, j, whichCols[i-2]+1));
-                entry = gtk_entry_new();
-                change = (JPKChange*)malloc(sizeof(JPKChange));
-                change->i = j;
-                change->j = whichCols[i-2]+1;
-                change->jpk = data;
-                change->tak = config;
-                gtk_widget_set_size_request(entry, 50, -1);
-                gtk_entry_set_text(GTK_ENTRY(entry), buffer);
-                gtk_table_attach_defaults(GTK_TABLE(table_pur),
-                        entry,
-                        i, i+1, j, j+1);
-                g_signal_connect(GTK_ENTRY(entry), "changed",
-                        G_CALLBACK(pur_entry_callback), change);
+                if (data->soldCount > 0) {
+                    sprintf(buffer, "%s", pur_d2m(data, j, whichCols[i-2]+1));
+                    entry = gtk_entry_new();
+                    change = (JPKChange*)malloc(sizeof(JPKChange));
+                    change->i = j;
+                    change->j = whichCols[i-2]+1;
+                    change->jpk = data;
+                    change->tak = config;
+                    gtk_widget_set_size_request(entry, 50, -1);
+                    gtk_entry_set_text(GTK_ENTRY(entry), buffer);
+                    gtk_table_attach_defaults(GTK_TABLE(table_pur),
+                            entry,
+                            i, i+1, j, j+1);
+                    g_signal_connect(GTK_ENTRY(entry), "changed",
+                            G_CALLBACK(pur_entry_callback), change);
+                }
             }
         }
     }
@@ -709,7 +713,7 @@ static GtkWidget* create_menu_bar(JPK* jpk, TakConfig* config, GtkWidget* window
     JPKChange *change = (JPKChange*)malloc(sizeof(JPKChange));
     change->tak = config;
     change->jpk = jpk;
-    
+
     History* cur = open_history;
     if (isLoaded && cur != NULL) {
         menu_item = gtk_image_menu_item_new_with_label("Zapisz");
@@ -738,7 +742,7 @@ static GtkWidget* create_menu_bar(JPK* jpk, TakConfig* config, GtkWidget* window
 
         gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), menu_item);
 
-        ocd->data = strdup(cur->path); 
+        ocd->data = strdup(cur->path);
         menu_item = gtk_image_menu_item_new_with_label(g_path_get_basename(cur->path));
         img = gtk_image_new_from_stock(GTK_STOCK_EDIT, GTK_ICON_SIZE_MENU);
         gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item), img);
@@ -746,12 +750,12 @@ static GtkWidget* create_menu_bar(JPK* jpk, TakConfig* config, GtkWidget* window
         g_signal_connect(menu_item, "activate", G_CALLBACK(importcsv_lastopen_dialog), ocd);
         cur = cur->next;
     }
-    if (cur != NULL && !history_isEmpty(cur)) {    
+    if (cur != NULL && !history_isEmpty(cur)) {
         OpenCallbackData* ocd = (OpenCallbackData*)malloc(sizeof(OpenCallbackData));
         ocd->config = config;
         ocd->jpk = jpk;
         ocd->parent = menu_bar;
-        ocd->data = strdup(cur->path); 
+        ocd->data = strdup(cur->path);
 
         menu_item = gtk_image_menu_item_new_with_label(g_path_get_basename(cur->path));
         img = gtk_image_new_from_stock(GTK_STOCK_EDIT, GTK_ICON_SIZE_MENU);
@@ -760,12 +764,12 @@ static GtkWidget* create_menu_bar(JPK* jpk, TakConfig* config, GtkWidget* window
         g_signal_connect(menu_item, "activate", G_CALLBACK(importcsv_lastopen_dialog), ocd);
         cur = cur->next;
     }
-    if (cur != NULL && !history_isEmpty(cur)) {    
+    if (cur != NULL && !history_isEmpty(cur)) {
         OpenCallbackData* ocd = (OpenCallbackData*)malloc(sizeof(OpenCallbackData));
         ocd->config = config;
         ocd->jpk = jpk;
         ocd->parent = menu_bar;
-        ocd->data = strdup(cur->path); 
+        ocd->data = strdup(cur->path);
 
         menu_item = gtk_image_menu_item_new_with_label(g_path_get_basename(cur->path));
         img = gtk_image_new_from_stock(GTK_STOCK_EDIT, GTK_ICON_SIZE_MENU);
@@ -774,12 +778,12 @@ static GtkWidget* create_menu_bar(JPK* jpk, TakConfig* config, GtkWidget* window
         g_signal_connect(menu_item, "activate", G_CALLBACK(importcsv_lastopen_dialog), ocd);
         cur = cur->next;
     }
-    if (cur != NULL && !history_isEmpty(cur)) {    
+    if (cur != NULL && !history_isEmpty(cur)) {
         OpenCallbackData* ocd = (OpenCallbackData*)malloc(sizeof(OpenCallbackData));
         ocd->config = config;
         ocd->jpk = jpk;
         ocd->parent = menu_bar;
-        ocd->data = strdup(cur->path); 
+        ocd->data = strdup(cur->path);
 
         menu_item = gtk_image_menu_item_new_with_label(g_path_get_basename(cur->path));
         img = gtk_image_new_from_stock(GTK_STOCK_EDIT, GTK_ICON_SIZE_MENU);
@@ -788,12 +792,12 @@ static GtkWidget* create_menu_bar(JPK* jpk, TakConfig* config, GtkWidget* window
         g_signal_connect(menu_item, "activate", G_CALLBACK(importcsv_lastopen_dialog), ocd);
         cur = cur->next;
     }
-    if (cur != NULL && !history_isEmpty(cur)) {    
+    if (cur != NULL && !history_isEmpty(cur)) {
         OpenCallbackData* ocd = (OpenCallbackData*)malloc(sizeof(OpenCallbackData));
         ocd->config = config;
         ocd->jpk = jpk;
         ocd->parent = menu_bar;
-        ocd->data = strdup(cur->path); 
+        ocd->data = strdup(cur->path);
 
         menu_item = gtk_image_menu_item_new_with_label(g_path_get_basename(cur->path));
         img = gtk_image_new_from_stock(GTK_STOCK_EDIT, GTK_ICON_SIZE_MENU);
@@ -801,7 +805,7 @@ static GtkWidget* create_menu_bar(JPK* jpk, TakConfig* config, GtkWidget* window
         gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), menu_item);
         g_signal_connect(menu_item, "activate", G_CALLBACK(importcsv_lastopen_dialog), ocd);
     }
-    
+
     menu_item = gtk_separator_menu_item_new();
     gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), menu_item);
 
