@@ -375,7 +375,7 @@ char* sell_d2m(JPK* data, int i, int j) {
                 category = category->next;
             }
             out = category->title;
-        } else {
+        } else if (data->sold->val != NULL) {
             JPKSoldList* row = data->sold;
             for (int k = 0; k < i-1; ++k) {
                 row = row->next;
@@ -512,7 +512,7 @@ char* pur_d2m(JPK* data, int i, int j) {
                 category = category->next;
             }
             out = category->title;
-        } else {
+        } else if (data->purchase->val != NULL) {
             JPKPurchaseList* row = data->purchase;
             for (int k = 0; k < i-1; ++k) {
                 row = row->next;
@@ -677,8 +677,10 @@ JPKSoldList* getSoldList(tData* parsedData, int soldCount) {
     JPKSoldList* sells = (JPKSoldList*)malloc(sizeof(JPKSoldList));
     sells->val = NULL;
     sells->next = NULL;
-    for (int i = SELLS; i < SELLS + soldCount; ++i) {
-        addSold(sells, rowToSold(parsedData, i));
+    if (parsedData->next->next->next->next->row->colNum >= 0) {
+        for (int i = SELLS; i < SELLS + soldCount; ++i) {
+            addSold(sells, rowToSold(parsedData, i));
+        }
     }
     return sells;
 }
@@ -696,10 +698,12 @@ JPKPurchaseList* getPurchaseList(tData* parsedData, int purchaseCount) {
 double evalTotalSold(JPKSoldList* jpk) {
     double eval = 0.0;
     while (jpk != NULL) {
-        eval += jpk->val->k_16 +
-            jpk->val->k_18 + jpk->val->k_20 + jpk->val->k_24 + jpk->val->k_26 +
-            jpk->val->k_28 + jpk->val->k_30 + jpk->val->k_33 + jpk->val->k_35 +
-            jpk->val->k_36 + jpk->val->k_37 - jpk->val->k_38 - jpk->val->k_39;
+        if (jpk->val != NULL)  {
+            eval += jpk->val->k_16 +
+                jpk->val->k_18 + jpk->val->k_20 + jpk->val->k_24 + jpk->val->k_26 +
+                jpk->val->k_28 + jpk->val->k_30 + jpk->val->k_33 + jpk->val->k_35 +
+                jpk->val->k_36 + jpk->val->k_37 - jpk->val->k_38 - jpk->val->k_39;
+        }
         jpk = jpk->next;
     }
     return eval;
@@ -708,8 +712,10 @@ double evalTotalSold(JPKSoldList* jpk) {
 double evalTotalPurchase(JPKPurchaseList* jpk) {
     double eval = 0.0;
     while (jpk != NULL) {
-        eval += jpk->val->k_44 + jpk->val->k_46 + jpk->val->k_47 +
-            jpk->val->k_48 + jpk->val->k_49 + jpk->val->k_50;
+        if (jpk->val != NULL)  {
+            eval += jpk->val->k_44 + jpk->val->k_46 + jpk->val->k_47 +
+                jpk->val->k_48 + jpk->val->k_49 + jpk->val->k_50;
+        }
         jpk = jpk->next;
     }
     return eval;
@@ -740,6 +746,7 @@ JPK* loadJPK(char *filename) {
     PURCHASES = SELLS + data->soldCount + 2;
     data->purchaseCount = countPurchases(parsedData);
     data->sold = getSoldList(parsedData, data->soldCount);
+
     data->soldTotal = evalTotalSold(data->sold);
     data->purchase = getPurchaseList(parsedData, data->purchaseCount);
     data->purchaseTotal = evalTotalPurchase(data->purchase);
@@ -882,10 +889,12 @@ void addSellRow(JPK* jpk) {
     new->next = NULL;
     JPKSoldList* cur = jpk->sold;
     JPKSoldList* prev = NULL;
+
     while (cur != NULL) {
         prev = cur;
         cur = cur->next;
     }
+
     Date* data = getDate();
     asprintf(&new->val->dataSprzedazy, "%s-%s-%s", data->year, data->month, data->day);
 
@@ -923,7 +932,7 @@ void addSellRow(JPK* jpk) {
     new->val->k_37 = 0.0;
     new->val->k_38 = 0.0;
     new->val->k_39 = 0.0;
-    new->val->lpSprzedazy = prev == NULL ? 1 : prev->val->lpSprzedazy + 1;
+    new->val->lpSprzedazy = jpk->soldCount + 1;
     new->val->nazwaKontrahenta = "";
     new->val->nrKontrahenta = "";
     if (prev != NULL)
@@ -963,7 +972,7 @@ void addPurchaseRow(JPK* jpk) {
     new->val->k_48 = 0.0;
     new->val->k_49 = 0.0;
     new->val->k_50 = 0.0;
-    new->val->lpZakupu = prev == NULL ? 1 : prev->val->lpZakupu + 1;
+    new->val->lpZakupu = jpk->purchaseCount + 1;
     if (prev != NULL)
         prev->next = new;
     else {
