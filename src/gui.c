@@ -408,54 +408,54 @@ static GtkWidget* draw_sell_spreadsheet(TakConfig* config, JPK* data) {
     JPKChange* change;
 
     gtk_table_set_homogeneous(GTK_TABLE(table_sell), FALSE);
-    char* buffer = (char*)malloc(64);
+    char* buffer;
     char* text_buffer;
     col = config->sellColumns;
-    for (int i = 0; i < length + 2; i++) {
-        if (i > 1) {
-            hbox_title = gtk_hbox_new(0, 0);
-            button = gtk_button_new_with_label("×");
-            gtk_widget_set_tooltip_text(GTK_WIDGET(button), "Ukryj kolumnę");
-            ColFilter* filter = (ColFilter*)malloc(sizeof(ColFilter));
-            filter->config = config;
-            filter->name = sell_d2m(data, 0, whichCols[i-2]);
-            filter->jpk = data;
-            gtk_widget_set_size_request(button, 20, 20);
-            gtk_box_pack_start(GTK_BOX(hbox_title), button, 0, 0, 0);
-
-            char* aprop_lab = sell_d2m(data, 0, whichCols[i-2]);
-            GtkWidget* col_title_label = gtk_label_new(aprop_lab);
-            gtk_widget_set_tooltip_text (col_title_label, mf2human(aprop_lab));
-
-            gtk_box_pack_start(GTK_BOX(hbox_title), col_title_label, 1, 1, 0);
-            g_signal_connect(GTK_BUTTON(button), "clicked",
-                            G_CALLBACK(sell_filter_from_table_callback), filter);
-            gtk_table_attach_defaults(GTK_TABLE(table_sell), hbox_title, i, i+1, 0, 1);
-        }
-        for (int j = 1; j < data->soldCount + 1; j++) {
-            if (i == 0) {
-                asprintf(&text_buffer, "%d", j);
-                gtk_table_attach_defaults (GTK_TABLE(table_sell),
-                        gtk_label_new(text_buffer),
-                        0, 1, j, j+1);
-            } else if (i == 1) {
-                hbox = gtk_hbox_new(0, 0);
+    if (data->soldCount > 0) {
+        for (int i = 0; i < length + 2; i++) {
+            if (i > 1) {
+                hbox_title = gtk_hbox_new(0, 0);
                 button = gtk_button_new_with_label("×");
-                gtk_widget_set_tooltip_text(GTK_WIDGET(button), "Usuń wiersz");
-                change = (JPKChange*)malloc(sizeof(JPKChange));
-                change->i = j;
-                change->jpk = data;
-                change->tak = config;
-                g_signal_connect(GTK_BUTTON(button), "clicked",
-                        G_CALLBACK(sell_rmrow_callback), change);
+                gtk_widget_set_tooltip_text(GTK_WIDGET(button), "Ukryj kolumnę");
+                ColFilter* filter = (ColFilter*)malloc(sizeof(ColFilter));
+                filter->config = config;
+                filter->name = sell_d2m(data, 0, whichCols[i-2]);
+                filter->jpk = data;
                 gtk_widget_set_size_request(button, 20, 20);
-                gtk_box_pack_start(GTK_BOX(hbox), button, 0, 0, 0);
-                gtk_table_attach_defaults (GTK_TABLE(table_sell),
-                        hbox,
-                        1, 2, j, j+1);
-            } else {
-                if (data->soldCount > 0) {
-                    sprintf(buffer, "%s", sell_d2m(data, j, whichCols[i-2]+1));
+                gtk_box_pack_start(GTK_BOX(hbox_title), button, 0, 0, 0);
+
+                char* aprop_lab = sell_d2m(data, 0, whichCols[i-2]);
+                GtkWidget* col_title_label = gtk_label_new(aprop_lab);
+                gtk_widget_set_tooltip_text (col_title_label, mf2human(aprop_lab));
+
+                gtk_box_pack_start(GTK_BOX(hbox_title), col_title_label, 1, 1, 0);
+                g_signal_connect(GTK_BUTTON(button), "clicked",
+                                G_CALLBACK(sell_filter_from_table_callback), filter);
+                gtk_table_attach_defaults(GTK_TABLE(table_sell), hbox_title, i, i+1, 0, 1);
+            }
+            for (int j = 1; j < data->soldCount + 1; j++) {
+                if (i == 0) {
+                    asprintf(&text_buffer, "%d", j);
+                    gtk_table_attach_defaults (GTK_TABLE(table_sell),
+                            gtk_label_new(text_buffer),
+                            0, 1, j, j+1);
+                } else if (i == 1) {
+                    hbox = gtk_hbox_new(0, 0);
+                    button = gtk_button_new_with_label("×");
+                    gtk_widget_set_tooltip_text(GTK_WIDGET(button), "Usuń wiersz");
+                    change = (JPKChange*)malloc(sizeof(JPKChange));
+                    change->i = j;
+                    change->jpk = data;
+                    change->tak = config;
+                    g_signal_connect(GTK_BUTTON(button), "clicked",
+                            G_CALLBACK(sell_rmrow_callback), change);
+                    gtk_widget_set_size_request(button, 20, 20);
+                    gtk_box_pack_start(GTK_BOX(hbox), button, 0, 0, 0);
+                    gtk_table_attach_defaults (GTK_TABLE(table_sell),
+                            hbox,
+                            1, 2, j, j+1);
+                } else {
+                    asprintf(&buffer, "%s", sell_d2m(data, j, whichCols[i-2]+1));
                     entry = gtk_entry_new();
                     change = (JPKChange*)malloc(sizeof(JPKChange));
                     change->i = j;
@@ -470,10 +470,13 @@ static GtkWidget* draw_sell_spreadsheet(TakConfig* config, JPK* data) {
                     g_signal_connect(GTK_ENTRY(entry), "changed",
                             G_CALLBACK(sell_entry_callback), change);
                 }
-//                g_signal_connect(GTK_ENTRY(entry), "delete_text",
-//                        G_CALLBACK(sell_entry_delete_callback), change);
+    //                g_signal_connect(GTK_ENTRY(entry), "delete_text",
+    //                        G_CALLBACK(sell_entry_delete_callback), change);
             }
         }
+    } else {
+        GtkWidget* empty_msg = gtk_label_new("Brak wierszy. Dodaj wiersz.");
+        gtk_table_attach_defaults(GTK_TABLE(table_sell), empty_msg, 0, 2, 0, 1);
     }
     GdkColor color;
     gdk_color_parse("#A3BE8C", &color);
@@ -527,70 +530,75 @@ static GtkWidget* draw_pur_spreadsheet(TakConfig* config, JPK* data) {
     JPKChange* change;
 
     gtk_table_set_homogeneous(GTK_TABLE(table_pur), FALSE);
-    char* buffer = (char*)malloc(64);
+    char* buffer;
     char* text_buffer;
     col = config->purchaseColumns;
-    for (int i = 0; i < length + 2; i++) {
-        if (i > 1) {
-            hbox_title = gtk_hbox_new(0, 0);
-            button = gtk_button_new_with_label("×");
-            gtk_widget_set_tooltip_text(GTK_WIDGET(button), "Ukryj kolumnę");
-            ColFilter* filter = (ColFilter*)malloc(sizeof(ColFilter));
-            filter->config = config;
-            filter->name = pur_d2m(data, 0, whichCols[i-2]);
-            filter->jpk = data;
-            gtk_widget_set_size_request(button, 20, 20);
-            gtk_box_pack_start(GTK_BOX(hbox_title), button, 0, 0, 0);
-
-            char* aprop_lab = pur_d2m(data, 0, whichCols[i-2]);
-            GtkWidget* col_title_label = gtk_label_new(aprop_lab);
-            gtk_widget_set_tooltip_text(col_title_label, mf2human(aprop_lab));
-
-            gtk_box_pack_start(GTK_BOX(hbox_title), col_title_label, 1, 1, 0);
-            g_signal_connect(GTK_BUTTON(button), "clicked",
-                            G_CALLBACK(pur_filter_from_table_callback), filter);
-            gtk_table_attach_defaults(GTK_TABLE(table_pur), hbox_title, i, i+1, 0, 1);
-        }
-        for (int j = 1; j < data->purchaseCount + 1; j++) {
-            if (i == 0) {
-                asprintf(&text_buffer, "%d", j);
-                gtk_table_attach_defaults(GTK_TABLE(table_pur),
-                        gtk_label_new(text_buffer),
-                        0, 1, j, j+1);
-            } else if (i == 1) {
-                hbox = gtk_hbox_new(0, 0);
+    if (data->purchaseCount > 0) {
+        for (int i = 0; i < length + 2; i++) {
+            if (i > 1) {
+                hbox_title = gtk_hbox_new(0, 0);
                 button = gtk_button_new_with_label("×");
-                gtk_widget_set_tooltip_text(GTK_WIDGET(button), "Usuń wiersz");
-                change = (JPKChange*)malloc(sizeof(JPKChange));
-                change->i = j;
-                change->jpk = data;
-                change->tak = config;
-                g_signal_connect(GTK_BUTTON(button), "clicked",
-                        G_CALLBACK(pur_rmrow_callback), change);
+                gtk_widget_set_tooltip_text(GTK_WIDGET(button), "Ukryj kolumnę");
+                ColFilter* filter = (ColFilter*)malloc(sizeof(ColFilter));
+                filter->config = config;
+                filter->name = pur_d2m(data, 0, whichCols[i-2]);
+                filter->jpk = data;
                 gtk_widget_set_size_request(button, 20, 20);
-                gtk_box_pack_start(GTK_BOX(hbox), button, 0, 0, 0);
-                gtk_table_attach_defaults (GTK_TABLE(table_pur),
-                        hbox,
-                        1, 2, j, j+1);
-            } else {
-                if (data->soldCount > 0) {
-                    sprintf(buffer, "%s", pur_d2m(data, j, whichCols[i-2]+1));
-                    entry = gtk_entry_new();
+                gtk_box_pack_start(GTK_BOX(hbox_title), button, 0, 0, 0);
+
+                char* aprop_lab = pur_d2m(data, 0, whichCols[i-2]);
+                GtkWidget* col_title_label = gtk_label_new(aprop_lab);
+                gtk_widget_set_tooltip_text(col_title_label, mf2human(aprop_lab));
+
+                gtk_box_pack_start(GTK_BOX(hbox_title), col_title_label, 1, 1, 0);
+                g_signal_connect(GTK_BUTTON(button), "clicked",
+                                G_CALLBACK(pur_filter_from_table_callback), filter);
+                gtk_table_attach_defaults(GTK_TABLE(table_pur), hbox_title, i, i+1, 0, 1);
+            }
+            for (int j = 1; j < data->purchaseCount + 1; j++) {
+                if (i == 0) {
+                    asprintf(&text_buffer, "%d", j);
+                    gtk_table_attach_defaults(GTK_TABLE(table_pur),
+                            gtk_label_new(text_buffer),
+                            0, 1, j, j+1);
+                } else if (i == 1) {
+                    hbox = gtk_hbox_new(0, 0);
+                    button = gtk_button_new_with_label("×");
+                    gtk_widget_set_tooltip_text(GTK_WIDGET(button), "Usuń wiersz");
                     change = (JPKChange*)malloc(sizeof(JPKChange));
                     change->i = j;
-                    change->j = whichCols[i-2]+1;
                     change->jpk = data;
                     change->tak = config;
-                    gtk_widget_set_size_request(entry, 50, -1);
-                    gtk_entry_set_text(GTK_ENTRY(entry), buffer);
-                    gtk_table_attach_defaults(GTK_TABLE(table_pur),
-                            entry,
-                            i, i+1, j, j+1);
-                    g_signal_connect(GTK_ENTRY(entry), "changed",
-                            G_CALLBACK(pur_entry_callback), change);
+                    g_signal_connect(GTK_BUTTON(button), "clicked",
+                            G_CALLBACK(pur_rmrow_callback), change);
+                    gtk_widget_set_size_request(button, 20, 20);
+                    gtk_box_pack_start(GTK_BOX(hbox), button, 0, 0, 0);
+                    gtk_table_attach_defaults (GTK_TABLE(table_pur),
+                            hbox,
+                            1, 2, j, j+1);
+                } else {
+                    if (data->soldCount > 0) {
+                        asprintf(&buffer, "%s", pur_d2m(data, j, whichCols[i-2]+1));
+                        entry = gtk_entry_new();
+                        change = (JPKChange*)malloc(sizeof(JPKChange));
+                        change->i = j;
+                        change->j = whichCols[i-2]+1;
+                        change->jpk = data;
+                        change->tak = config;
+                        gtk_widget_set_size_request(entry, 50, -1);
+                        gtk_entry_set_text(GTK_ENTRY(entry), buffer);
+                        gtk_table_attach_defaults(GTK_TABLE(table_pur),
+                                entry,
+                                i, i+1, j, j+1);
+                        g_signal_connect(GTK_ENTRY(entry), "changed",
+                                G_CALLBACK(pur_entry_callback), change);
+                    }
                 }
             }
         }
+    } else {
+        GtkWidget* empty_msg = gtk_label_new("Brak wierszy. Dodaj wiersz.");
+        gtk_table_attach_defaults(GTK_TABLE(table_pur), empty_msg, 0, 2, 0, 1);
     }
     GdkColor color;
     gdk_color_parse("#A3BE8C", &color);
