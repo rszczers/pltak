@@ -577,22 +577,20 @@ static GtkWidget* draw_pur_spreadsheet(TakConfig* config, JPK* data) {
                             hbox,
                             1, 2, j, j+1);
                 } else {
-                    if (data->soldCount > 0) {
-                        asprintf(&buffer, "%s", pur_d2m(data, j, whichCols[i-2]+1));
-                        entry = gtk_entry_new();
-                        change = (JPKChange*)malloc(sizeof(JPKChange));
-                        change->i = j;
-                        change->j = whichCols[i-2]+1;
-                        change->jpk = data;
-                        change->tak = config;
-                        gtk_widget_set_size_request(entry, 50, -1);
-                        gtk_entry_set_text(GTK_ENTRY(entry), buffer);
-                        gtk_table_attach_defaults(GTK_TABLE(table_pur),
-                                entry,
-                                i, i+1, j, j+1);
-                        g_signal_connect(GTK_ENTRY(entry), "changed",
-                                G_CALLBACK(pur_entry_callback), change);
-                    }
+                    asprintf(&buffer, "%s", pur_d2m(data, j, whichCols[i-2]+1));
+                    entry = gtk_entry_new();
+                    change = (JPKChange*)malloc(sizeof(JPKChange));
+                    change->i = j;
+                    change->j = whichCols[i-2]+1;
+                    change->jpk = data;
+                    change->tak = config;
+                    gtk_widget_set_size_request(entry, 50, -1);
+                    gtk_entry_set_text(GTK_ENTRY(entry), buffer);
+                    gtk_table_attach_defaults(GTK_TABLE(table_pur),
+                            entry,
+                            i, i+1, j, j+1);
+                    g_signal_connect(GTK_ENTRY(entry), "changed",
+                            G_CALLBACK(pur_entry_callback), change);
                 }
             }
         }
