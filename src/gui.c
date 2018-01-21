@@ -57,6 +57,25 @@ static void savecsv_dialog(GtkWidget*, gpointer);
 static void new_file_callback(GtkWidget*, gpointer);
 void importcsv_lastopen_dialog(GtkWidget*, gpointer);
 
+char* filter_alphanum(char* input) {
+    int length = strlen(input);
+    char buffer[length];
+     
+    int i = 0;
+    int j = 0;
+    while (i < length) {
+        if (input[i] > 32 && input[i] < 127) {
+            buffer[j] = input[i];
+            j++;
+        }
+        i++;
+    }
+    char* out;
+    asprintf(&out, "%s", buffer);
+    free(out);
+    return out;
+}
+
 void addUS(USList* list, char* code, char* name) {
     while (list->next != NULL) {
         list = list->next;
@@ -206,7 +225,7 @@ static void waluta_callback(GtkWidget* widget, gpointer data) {
     TakConfig* config = ch->tak;
     JPK* jpk = ch->jpk;
     char* input = strdup((char*)gtk_entry_get_text(GTK_ENTRY(widget)));
-    input = (input == NULL ? "" : input);
+    input = input == NULL ? "" : filter_alphanum(input);
     config->DomyslnyKodWaluty = input;
     jpk->header->domyslnyKodWaluty = input;
     saveConfig(config);
@@ -216,7 +235,7 @@ static void nip_callback(GtkWidget* widget, gpointer data) {
     TakConfig* config = ch->tak;
     JPK* jpk = ch->jpk;
     char* input = strdup((char*)gtk_entry_get_text(GTK_ENTRY(widget)));
-    input = (input == NULL ? "" : input);
+    input = (input == NULL ? "" : filter_alphanum(input));
     config->NIP = input;
     jpk->profile->nip = input;
     saveConfig(config);
@@ -226,7 +245,7 @@ static void pelnanazwa_callback(GtkWidget* widget, gpointer data) {
     TakConfig* config = ch->tak;
     JPK* jpk = ch->jpk;
     char* input = strdup((char*)gtk_entry_get_text(GTK_ENTRY(widget)));
-    input = (input == NULL ? "" : input);
+    input = (input == NULL ? "" : filter_alphanum(input));
     config->PelnaNazwa = input;
     jpk->profile->pelnaNazwa = input;
     saveConfig(config);
@@ -236,7 +255,7 @@ static void regon_callback(GtkWidget* widget, gpointer data) {
     TakConfig* config = ch->tak;
     JPK* jpk = ch->jpk;
     char* input = strdup((char*)gtk_entry_get_text(GTK_ENTRY(widget)));
-    input = (input == NULL ? "" : input);
+    input = (input == NULL ? "" : filter_alphanum(input));
     config->REGON = input;
     jpk->profile->regon = input;
     saveConfig(config);
@@ -246,7 +265,7 @@ static void kraj_callback(GtkWidget* widget, gpointer data) {
     TakConfig* config = ch->tak;
     JPK* jpk = ch->jpk;
     char* input = strdup((char*)gtk_entry_get_text(GTK_ENTRY(widget)));
-    input = (input == NULL ? "" : input);
+    input = (input == NULL ? "" : filter_alphanum(input));
     config->KodKraju = input;
     jpk->profile->kodKraju = input;
     saveConfig(config);
@@ -256,7 +275,7 @@ static void wojewodztwo_callback(GtkWidget* widget, gpointer data) {
     TakConfig* config = ch->tak;
     JPK* jpk = ch->jpk;
     char* input = strdup((char*)gtk_entry_get_text(GTK_ENTRY(widget)));
-    input = (input == NULL ? "" : input);
+    input = (input == NULL ? "" : filter_alphanum(input));
     config->Wojewodztwo = input;
     jpk->profile->wojewodztwo = input;
     saveConfig(config);
@@ -266,7 +285,7 @@ static void powiat_callback(GtkWidget* widget, gpointer data) {
     TakConfig* config = ch->tak;
     JPK* jpk = ch->jpk;
     char* input = strdup((char*)gtk_entry_get_text(GTK_ENTRY(widget)));
-    input = (input == NULL ? "" : input);
+    input = (input == NULL ? "" : filter_alphanum(input));
     config->Powiat = input;
     jpk->profile->powiat = input;
     saveConfig(config);
@@ -276,7 +295,7 @@ static void gmina_callback(GtkWidget* widget, gpointer data) {
     TakConfig* config = ch->tak;
     JPK* jpk = ch->jpk;
     char* input = strdup((char*)gtk_entry_get_text(GTK_ENTRY(widget)));
-    input = (input == NULL ? "" : input);
+    input = (input == NULL ? "" : filter_alphanum(input));
     config->Gmina = input;
     jpk->profile->gmina = input;
     saveConfig(config);
@@ -286,7 +305,7 @@ static void ulica_callback(GtkWidget* widget, gpointer data) {
     TakConfig* config = ch->tak;
     JPK* jpk = ch->jpk;
     char* input = strdup((char*)gtk_entry_get_text(GTK_ENTRY(widget)));
-    input = (input == NULL ? "" : input);
+    input = (input == NULL ? "" : filter_alphanum(input));
     config->Ulica = input;
     jpk->profile->ulica = input;
     saveConfig(config);
@@ -296,7 +315,7 @@ static void nrdomu_callback(GtkWidget* widget, gpointer data) {
     TakConfig* config = ch->tak;
     JPK* jpk = ch->jpk;
     char* input = strdup((char*)gtk_entry_get_text(GTK_ENTRY(widget)));
-    input = (input == NULL ? "" : input);
+    input = (input == NULL ? "" : filter_alphanum(input));
     config->NrDomu = input;
     jpk->profile->nrDomu = input;
     saveConfig(config);
@@ -306,7 +325,7 @@ static void nrlokalu_callback(GtkWidget* widget, gpointer data) {
     TakConfig* config = ch->tak;
     JPK* jpk = ch->jpk;
     char* input = strdup((char*)gtk_entry_get_text(GTK_ENTRY(widget)));
-    input = (input == NULL ? "" : input);
+    input = (input == NULL ? "" : filter_alphanum(input));
     config->NrLokalu = input;
     jpk->profile->nrDomu = input;
     saveConfig(config);
@@ -316,7 +335,7 @@ static void miejscowosc_callback(GtkWidget* widget, gpointer data) {
     TakConfig* config = ch->tak;
     JPK* jpk = ch->jpk;
     char* input = strdup((char*)gtk_entry_get_text(GTK_ENTRY(widget)));
-    input = (input == NULL ? "" : input);
+    input = (input == NULL ? "" : filter_alphanum(input));
     config->Miejscowosc = input;
     jpk->profile->miejscowosc = input;
     saveConfig(config);
@@ -326,7 +345,7 @@ static void kodpocztowy_callback(GtkWidget* widget, gpointer data) {
     TakConfig* config = ch->tak;
     JPK* jpk = ch->jpk;
     char* input = strdup((char*)gtk_entry_get_text(GTK_ENTRY(widget)));
-    input = (input == NULL ? "" : input);
+    input = (input == NULL ? "" : filter_alphanum(input));
     config->KodPocztowy = input;
     jpk->profile->kodPocztowy = input;
     saveConfig(config);
@@ -336,7 +355,7 @@ static void poczta_callback(GtkWidget* widget, gpointer data) {
     TakConfig* config = ch->tak;
     JPK* jpk = ch->jpk;
     char* input = strdup((char*)gtk_entry_get_text(GTK_ENTRY(widget)));
-    input = (input == NULL ? "" : input);
+    input = (input == NULL ? "" : filter_alphanum(input));
     config->Poczta = input;
     jpk->profile->poczta = input;
     saveConfig(config);
@@ -1589,9 +1608,11 @@ static void sell_entry_delete_callback(GtkEntry* widget,
 }
 */
 
+
 static void sell_entry_callback(GtkWidget* widget, gpointer data) {
     JPKChange* change = (JPKChange*)data;
     char* input = (char*)gtk_entry_get_text(GTK_ENTRY(widget));
+    input = input == NULL ? "" : filter_alphanum(input);
     changeSellData(change->jpk, change->i, change->j, input);
     refreshSellSum(change->jpk, change->tak);
 //    gtk_entry_set_text(GTK_ENTRY(widget), sell_d2m(change->jpk, change->i, change->j));
@@ -1600,6 +1621,7 @@ static void sell_entry_callback(GtkWidget* widget, gpointer data) {
 static void pur_entry_callback(GtkWidget* widget, gpointer data) {
     JPKChange* change = (JPKChange*)data;
     char* input = (char*)gtk_entry_get_text(GTK_ENTRY(widget));
+    input = input == NULL ? "" : filter_alphanum(input);
     changePurData(change->jpk, change->i, change->j, input);
     refreshPurSum(change->jpk, change->tak);
 //    gtk_entry_set_text(GTK_ENTRY(widget), sell_d2m(change->jpk, change->i, change->j));
