@@ -1612,7 +1612,7 @@ static void sell_entry_delete_callback(GtkEntry* widget,
 
 static void sell_entry_callback(GtkWidget* widget, gpointer data) {
     JPKChange* change = (JPKChange*)data;
-    char* input = (char*)gtk_entry_get_text(GTK_ENTRY(widget));
+    char* input = strdup((char*)gtk_entry_get_text(GTK_ENTRY(widget)));
     input = input == NULL ? "" : filter_alphanum(input);
     changeSellData(change->jpk, change->i, change->j, input);
     refreshSellSum(change->jpk, change->tak);
@@ -1621,7 +1621,7 @@ static void sell_entry_callback(GtkWidget* widget, gpointer data) {
 
 static void pur_entry_callback(GtkWidget* widget, gpointer data) {
     JPKChange* change = (JPKChange*)data;
-    char* input = (char*)gtk_entry_get_text(GTK_ENTRY(widget));
+    char* input = strdup((char*)gtk_entry_get_text(GTK_ENTRY(widget)));
     input = input == NULL ? "" : filter_alphanum(input);
     changePurData(change->jpk, change->i, change->j, input);
     refreshPurSum(change->jpk, change->tak);
