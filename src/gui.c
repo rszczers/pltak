@@ -70,6 +70,7 @@ char* filter_alphanum(char* input) {
         }
         i++;
     }
+    buffer[j] = '\0';
     char* out;
     asprintf(&out, "%s", buffer);
     free(out);

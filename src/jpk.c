@@ -935,7 +935,7 @@ void addSellRow(JPK* jpk) {
     new->val->lpSprzedazy = jpk->soldCount + 1;
     new->val->nazwaKontrahenta = "";
     new->val->nrKontrahenta = "";
-    if (prev != NULL)
+    if (prev != NULL && prev->val != NULL)
         prev->next = new;
     else {
         JPKSoldList* newSold = (JPKSoldList*)malloc(sizeof(JPKSoldList));
@@ -973,7 +973,7 @@ void addPurchaseRow(JPK* jpk) {
     new->val->k_49 = 0.0;
     new->val->k_50 = 0.0;
     new->val->lpZakupu = jpk->purchaseCount + 1;
-    if (prev != NULL)
+    if (prev != NULL && prev->val != NULL)
         prev->next = new;
     else {
         JPKPurchaseList* newPurch = (JPKPurchaseList*)malloc(sizeof(JPKPurchaseList));
