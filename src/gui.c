@@ -1615,7 +1615,6 @@ static void sell_entry_callback(GtkWidget* widget, gpointer data) {
     JPKChange* change = (JPKChange*)data;
     char* input = strdup((char*)gtk_entry_get_text(GTK_ENTRY(widget)));
     input = input == NULL ? "" : filter_alphanum(input);
-    g_print("%s\n", input);
     changeSellData(change->jpk, change->i, change->j, input);
     refreshSellSum(change->jpk, change->tak);
 //    gtk_entry_set_text(GTK_ENTRY(widget), sell_d2m(change->jpk, change->i, change->j));
