@@ -196,6 +196,7 @@ char* genPurchase(JPK* jpk) {
     char* purchaseField = "";
     char* purchaseRow;
     char* buffer;
+    if (jpk->purchaseCount != 0) 
     while (row != NULL) {
         asprintf(&purchaseRow,
        "%s" "%s" SEP
@@ -251,8 +252,8 @@ void csvExport(char* filename, JPK* jpk) {
     asprintf(&csv, CATEGORIES ENDL "%s" "%s" "%s" "%s",
         genHeader(jpk),
         genProfile(jpk),
-        jpk->sold != NULL ? genSold(jpk) : "",
-        jpk->purchase != NULL ? genPurchase(jpk) : "");
+        genSold(jpk),
+        genPurchase(jpk));
     FILE *fp = fopen(filename, "w");
     if (fp != NULL)
     {
