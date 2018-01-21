@@ -93,6 +93,7 @@ char* genSold(JPK* jpk) {
     char* soldField = "";
     char* soldRow;
     char* buffer;
+    if (jpk->soldCount > 0) 
     while (row != NULL) {
         asprintf(&soldRow,
        "%s" "%s" SEP
@@ -196,7 +197,7 @@ char* genPurchase(JPK* jpk) {
     char* purchaseField = "";
     char* purchaseRow;
     char* buffer;
-    if (jpk->purchaseCount != 0) 
+    if (jpk->purchaseCount > 0) 
     while (row != NULL) {
         asprintf(&purchaseRow,
        "%s" "%s" SEP
