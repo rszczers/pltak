@@ -490,6 +490,8 @@ static GtkWidget* draw_sell_spreadsheet(TakConfig* config, JPK* data) {
                 } else {
                     asprintf(&buffer, "%s", sell_d2m(data, j, whichCols[i-2]+1));
                     entry = gtk_entry_new();
+                    if ((whichCols[i-2]+1 > 32 && whichCols[i-2]+1 < 64) || whichCols[i-2]+1 > 72) 
+                        gtk_entry_set_alignment(GTK_ENTRY(entry), 1);
                     change = (JPKChange*)malloc(sizeof(JPKChange));
                     change->i = j;
                     change->j = whichCols[i-2]+1;
@@ -612,6 +614,8 @@ static GtkWidget* draw_pur_spreadsheet(TakConfig* config, JPK* data) {
                 } else {
                     asprintf(&buffer, "%s", pur_d2m(data, j, whichCols[i-2]+1));
                     entry = gtk_entry_new();
+                    if ((whichCols[i-2]+1 > 32 && whichCols[i-2]+1 < 64) || whichCols[i-2]+1 > 72) 
+                        gtk_entry_set_alignment(GTK_ENTRY(entry), 1);
                     change = (JPKChange*)malloc(sizeof(JPKChange));
                     change->i = j;
                     change->j = whichCols[i-2]+1;
