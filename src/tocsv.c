@@ -251,8 +251,8 @@ void csvExport(char* filename, JPK* jpk) {
     asprintf(&csv, CATEGORIES ENDL "%s" "%s" "%s" "%s",
         genHeader(jpk),
         genProfile(jpk),
-        genSold(jpk),
-        genPurchase(jpk));
+        jpk->sold->val != NULL ? genSold(jpk) : "",
+        jpk->purchase->val != NULL ? genPurchase(jpk) : "");
     FILE *fp = fopen(filename, "w");
     if (fp != NULL)
     {
