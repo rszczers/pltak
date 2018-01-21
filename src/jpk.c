@@ -12,7 +12,6 @@
 #include "parse.h"
 #include "utils.h"
 
-
 typedef enum {
     COLUMN_NAME = 1,
     HEADER,
@@ -677,7 +676,7 @@ JPKSoldList* getSoldList(tData* parsedData, int soldCount) {
     JPKSoldList* sells = (JPKSoldList*)malloc(sizeof(JPKSoldList));
     sells->val = NULL;
     sells->next = NULL;
-    if (parsedData->next->next->next->next->row->colNum >= 0) {
+    if (parsedData->next->next->next->next->row->colNum == 24) {
         for (int i = SELLS; i < SELLS + soldCount; ++i) {
             addSold(sells, rowToSold(parsedData, i));
         }
@@ -743,7 +742,7 @@ JPK* loadJPK(char *filename) {
     // Te dwa musza być zdefiniowane wcześniej, bo
     // pozostałe funkcje uzywają tych pól
     data->soldCount = countSells(parsedData);
-    PURCHASES = SELLS + data->soldCount + 2;
+    PURCHASES = data->soldCount > 0 ? SELLS + data->soldCount + 2 : SELLS;
     data->purchaseCount = countPurchases(parsedData);
     data->sold = getSoldList(parsedData, data->soldCount);
 
