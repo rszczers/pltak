@@ -37,7 +37,7 @@ char* genHeader(JPK* jpk) {
             getDate()->timestamp,         
             jpk->header->dataOd,
             jpk->header->dataDo,
-            jpk->header->domyslnyKodWaluty,
+            jpk->header->domyslnyKodWaluty == NULL ? "" : jpk->header->domyslnyKodWaluty,
             kodUrzedu,
             tail);
     return header;
@@ -64,21 +64,21 @@ char* genProfile(JPK* jpk) {
         "%s" SEP
         "%s" "%s" ENDL,
         head_1,
-        jpk->profile->nip,
-        jpk->profile->pelnaNazwa,
-        jpk->profile->regon,
+        jpk->profile->nip == NULL ? "" : jpk->profile->nip,
+        jpk->profile->pelnaNazwa == NULL ? "" : jpk->profile->pelnaNazwa,
+        jpk->profile->regon == NULL ? "" : jpk->profile->regon,
         tail_1,
         head_2,
-        jpk->profile->kodKraju,
-        jpk->profile->wojewodztwo,
-        jpk->profile->powiat,
-        jpk->profile->gmina,
-        jpk->profile->ulica,
-        jpk->profile->nrDomu,
-        jpk->profile->nrLokalu,
-        jpk->profile->miejscowosc,
-        jpk->profile->kodPocztowy,
-        jpk->profile->poczta,
+        jpk->profile->kodKraju == NULL ? "" : jpk->profile->kodKraju,
+        jpk->profile->wojewodztwo == NULL ? "" : jpk->profile->wojewodztwo,
+        jpk->profile->powiat == NULL ? "" : jpk->profile->powiat,
+        jpk->profile->gmina == NULL ? "" : jpk->profile->gmina,
+        jpk->profile->ulica == NULL ? "" : jpk->profile->ulica,
+        jpk->profile->nrDomu == NULL ? "" : jpk->profile->nrDomu,
+        jpk->profile->nrLokalu == NULL ? "" : jpk->profile->nrLokalu,
+        jpk->profile->miejscowosc == NULL ? "" : jpk->profile->miejscowosc,
+        jpk->profile->kodPocztowy == NULL ? "" : jpk->profile->kodPocztowy,
+        jpk->profile->poczta == NULL ? "" : jpk->profile->poczta,
         tail_2);
     return profile;
 }
