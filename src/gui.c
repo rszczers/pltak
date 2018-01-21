@@ -6,7 +6,8 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <pwd.h>
-#include <ctype.h>
+#include <ctype.h>   // funkcje is*
+#include <locale.h>
 #include "tocsv.h"
 #include "jpk.h"
 #include "config.h"
@@ -64,7 +65,7 @@ char* filter_alphanum(char* input) {
     int i = 0;
     int j = 0;
     while (i < length) {
-        if (!g_ascii_iscntrl(input[i])) {
+        if (input[i] != '\n' || input[i] != '\r' || input[i] != '\t' || input[i] != ';')  {
             buffer[j] = input[i];
             j++;
         }
@@ -1402,6 +1403,8 @@ void drawGui(JPK* jpk) {
     g_signal_connect(window, "delete_event", G_CALLBACK(gtk_main_quit), NULL);
     gtk_widget_add_events(window, GDK_KEY_PRESS_MASK);
     vbox = gtk_vbox_new(0, 0);
+    setlocale(LC_ALL, "pl_PL.utf8");
+    gtk_set_locale();
     gtk_box_pack_start(GTK_BOX(vbox), create_menu_bar(jpk, config, window), 0, 0, 0);
     gtk_box_pack_start(GTK_BOX(vbox), create_notebooks(jpk, config), 1, 1, 0);
     gtk_box_pack_start(GTK_BOX(vbox), create_box_bottom(jpk), 0, 0, 0);
