@@ -64,7 +64,7 @@ char* filter_alphanum(char* input) {
     int i = 0;
     int j = 0;
     while (i < length) {
-        if (input[i] > 32 && input[i] < 127) {
+        if (!g_ascii_iscntrl(input[i])) {
             buffer[j] = input[i];
             j++;
         }
@@ -73,7 +73,6 @@ char* filter_alphanum(char* input) {
     buffer[j] = '\0';
     char* out;
     asprintf(&out, "%s", buffer);
-    free(out);
     return out;
 }
 
@@ -201,8 +200,7 @@ static void uscode_callback(GtkWidget* entry, gpointer data) {
 //    g_signal_connect(GTK_COMBO(newCombo), "activate", G_CALLBACK(uscode_callback), newData);
 }
 
-typedef struct {
-    char* data;
+typedef struct { char* data;
     TakConfig *config;
     JPK* jpk;
     GtkWidget* parent;
@@ -1614,6 +1612,7 @@ static void sell_entry_callback(GtkWidget* widget, gpointer data) {
     JPKChange* change = (JPKChange*)data;
     char* input = strdup((char*)gtk_entry_get_text(GTK_ENTRY(widget)));
     input = input == NULL ? "" : filter_alphanum(input);
+    g_print("%s\n", input);
     changeSellData(change->jpk, change->i, change->j, input);
     refreshSellSum(change->jpk, change->tak);
 //    gtk_entry_set_text(GTK_ENTRY(widget), sell_d2m(change->jpk, change->i, change->j));
