@@ -52,79 +52,64 @@ TakConfig* parseConfig() {
             if (token != NULL) {
                 if (strcmp(token, "DomyslnyKodWaluty") == 0) {
                     char *cur = strtok(NULL, "\n");
-                    if (cur != NULL)
-                        asprintf(&(config->DomyslnyKodWaluty), "%s",
-                               cur == NULL ? "" : cur);
+                    asprintf(&(config->DomyslnyKodWaluty), "%s",
+                           cur == NULL ? "" : cur);
                 } else if (strcmp(token, "KodUrzedu") == 0) {
                     char *cur = strtok(NULL, "\n");
-                    if (cur != NULL)
-                        asprintf(&(config->KodUrzedu), "%s",
-                               cur == NULL ? "" : cur);
+                    asprintf(&(config->KodUrzedu), "%s",
+                           cur == NULL ? "" : cur);
                 } else if (strcmp(token, "NIP") == 0) {
                     char *cur = strtok(NULL, "\n");
-                    if (cur != NULL)
-                        asprintf(&(config->NIP), "%s",
-                               cur == NULL ? "" : cur);
+                    asprintf(&(config->NIP), "%s",
+                           cur == NULL ? "" : cur);
                 } else if (strcmp(token, "PelnaNazwa") == 0) {
                     char *cur = strtok(NULL, "\n");
-                    if (cur != NULL)
-                        asprintf(&(config->PelnaNazwa), "%s",
-                               cur == NULL ? "" : cur);
+                    asprintf(&(config->PelnaNazwa), "%s",
+                           cur == NULL ? "" : cur);
                 } else if (strcmp(token, "REGON") == 0) {
                     char *cur = strtok(NULL, "\n");
-                    if (cur != NULL)
-                        asprintf(&(config->REGON), "%s",
-                               cur == NULL ? "" : cur);
+                    asprintf(&(config->REGON), "%s",
+                           cur == NULL ? "" : cur);
                 } else if (strcmp(token, "KodKraju") == 0) {
                     char *cur = strtok(NULL, "\n");
-                    if (cur != NULL)
-                        asprintf(&(config->KodKraju), "%s",
-                               cur == NULL ? "" : cur);
+                    asprintf(&(config->KodKraju), "%s",
+                           cur == NULL ? "" : cur);
                 } else if (strcmp(token, "Wojewodztwo") == 0) {
                     char *cur = strtok(NULL, "\n");
-                    if (cur != NULL)
-                        asprintf(&(config->Wojewodztwo), "%s",
-                               cur == NULL ? "" : cur);
+                    asprintf(&(config->Wojewodztwo), "%s",
+                           cur == NULL ? "" : cur);
                 } else if (strcmp(token, "Powiat") == 0) {
                     char *cur = strtok(NULL, "\n");
-                    if (cur != NULL)
-                        asprintf(&(config->Powiat), "%s",
-                               cur == NULL ? "" : cur);
+                    asprintf(&(config->Powiat), "%s",
+                           cur == NULL ? "" : cur);
                 } else if (strcmp(token, "Gmina") == 0) {
                     char *cur = strtok(NULL, "\n");
-                    if (cur != NULL)
-                        asprintf(&(config->Gmina), "%s",
-                               cur == NULL ? "" : cur);
+                    asprintf(&(config->Gmina), "%s",
+                           cur == NULL ? "" : cur);
                 } else if (strcmp(token, "Ulica") == 0) {
                     char *cur = strtok(NULL, "\n");
-                    if (cur != NULL)
-                        asprintf(&(config->Ulica), "%s",
-                               cur == NULL ? "" : cur);
+                    asprintf(&(config->Ulica), "%s",
+                           cur == NULL ? "" : cur);
                 } else if (strcmp(token, "NrDomu") == 0) {
                     char *cur = strtok(NULL, "\n");
-                    if (cur != NULL)
-                        asprintf(&(config->NrDomu), "%s",
-                               cur == NULL ? "" : cur);
+                    asprintf(&(config->NrDomu), "%s",
+                           cur == NULL ? "" : cur);
                 } else if (strcmp(token, "NrLokalu") == 0) {
                     char *cur = strtok(NULL, "\n");
-                    if (cur != NULL)
-                        asprintf(&(config->NrLokalu), "%s",
-                               cur == NULL ? "" : cur);
+                    asprintf(&(config->NrLokalu), "%s",
+                           cur == NULL ? "" : cur);
                 } else if (strcmp(token, "Miejscowosc") == 0) {
                     char *cur = strtok(NULL, "\n");
-                    if (cur != NULL)
-                        asprintf(&(config->Miejscowosc), "%s",
-                               cur == NULL ? "" : cur);
+                    asprintf(&(config->Miejscowosc), "%s",
+                           cur == NULL ? "" : cur);
                 } else if (strcmp(token, "KodPocztowy") == 0) {
                     char *cur = strtok(NULL, "\n");
-                    if (cur != NULL)
-                        asprintf(&(config->KodPocztowy), "%s",
-                               cur == NULL ? "" : cur);
+                    asprintf(&(config->KodPocztowy), "%s",
+                           cur == NULL ? "" : cur);
                 } else if (strcmp(token, "Poczta") == 0) {
                     char *cur = strtok(NULL, "\n");
-                    if (cur != NULL)
-                        asprintf(&(config->Poczta), "%s",
-                               cur == NULL ? "" : cur);
+                    asprintf(&(config->Poczta), "%s",
+                           cur == NULL ? "" : cur);
                 } else if (strcmp(token, "sellColumns") == 0) {
                     token = strtok(NULL, "=\n");
                     if (token != NULL) {
