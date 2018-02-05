@@ -153,7 +153,7 @@ char* genSold(JPK* jpk) {
     }
     char* total;
     asprintf(&total, "%s" "%d" SEP "%.2lf" "%s" ENDL, total_head, jpk->soldCount, jpk->soldTotal, total_tail);
-    asprintf(&buffer, "%s" ENDL "%s", soldField, total);
+    asprintf(&buffer, "%s%s", soldField, total);
 
     soldField = buffer;
     return soldField;
@@ -162,8 +162,8 @@ char* genSold(JPK* jpk) {
 char* genPurchase(JPK* jpk) {
     JPKPurchaseList* row = jpk->purchase;
     const char* head = ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;";
-    const char* tail = ";;;;";
-    const char* total_head = ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;";
+    const char* tail = ";;";
+    const char* total_head = ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;";
     char* purchaseField = "";
     char* purchaseRow;
     char* buffer;
@@ -218,14 +218,13 @@ char* genPurchase(JPK* jpk) {
 
 void csvExport(char* filename, JPK* jpk) {
     char* csv;
-    asprintf(&csv, CATEGORIES ENDL "%s" "%s" "%s" "%s",
+    asprintf(&csv, CATEGORIES ENDL "%s" "%s" CLINE ENDL "%s" "%s",
         genHeader(jpk),
         genProfile(jpk),
         jpk->soldCount > 0 ? genSold(jpk) : "",
         jpk->purchaseCount > 0 ? genPurchase(jpk) : "");
     FILE *fp = fopen(filename, "w");
-    if (fp != NULL)
-    {
+    if (fp != NULL) {
         fputs(csv, fp);
         fclose(fp);
     }

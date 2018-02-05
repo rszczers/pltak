@@ -696,7 +696,7 @@ JPK* loadJPK(char *filename) {
     // Te dwa musza być zdefiniowane wcześniej, bo
     // pozostałe funkcje uzywają tych pól
     data->soldCount = countSells(parsedData);
-    PURCHASES = data->soldCount > 0 ? SELLS + data->soldCount + 2 : SELLS;
+    PURCHASES = data->soldCount > 0 ? SELLS + data->soldCount + 1 : SELLS;
     data->purchaseCount = countPurchases(parsedData);
     data->sold = getSoldList(parsedData, data->soldCount);
 
@@ -1314,16 +1314,18 @@ JPK* newJPK() {
     char* timestamp_end;
 
     asprintf(&timestamp, "%s-%s-%s", date->year, date->month, date->day);
-    asprintf(&timestamp_start, "%s-%s-%s", year, month, "1");
+    asprintf(&timestamp_start, "%s-%s-%s", year, month, "01");
     asprintf(&timestamp_end, "%s-%s-%d", year, month, getLastDayOfMonth(month_i, atoi(year)));
-    
+
     e->header->dataWytworzeniaJPK = date->timestamp;
     e->header->dataOd = timestamp_start;
     e->header->dataDo = timestamp_end;
+    e->header->nazwaSystemu = "PLTak";
     e->purchase->val->dataZakupu = timestamp;
     e->purchase->val->dataWplywu = timestamp;
     e->sold->val->dataSprzedazy = timestamp;
     e->sold->val->dataWystawienia = timestamp;
+
     return e;
 }
 
