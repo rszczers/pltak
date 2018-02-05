@@ -124,82 +124,12 @@ USList* loadUSCodes() {
     return codes;
 }
 
-GList* appendUSCodes(GtkWidget* combo) {
-    GList *cbitems = NULL;
-    USList* list = loadUSCodes();
-    while (list != NULL) {
-        char* s;
-        asprintf(&s, "%s, %s", list->code, list->name);
-        cbitems = g_list_append(cbitems, s);
-        list = list->next;
-    }
-    return cbitems;
-}
-
 typedef struct _Completion {
     GtkWidget* table;
     GtkWidget* combo;
     TakConfig* config;
     JPK* jpk;
 } Completion;
-
-/**
- * To chyba najbrzydszy kod jaki kiedykolwiek napisałem.
- * Podpowiada kod urzędu. Niewazne, działa.
- */
-static void uscode_callback(GtkWidget* entry, gpointer data) {
-    // Wyczyść dotychczasową listę kodów
-    Completion* compl = (Completion*) data;
-    GtkWidget* table = compl->table;
-    GtkWidget* combo = compl->combo;
-    JPK* jpk = compl->jpk;
-    TakConfig* config = compl->config;
-
-    char* filter = strdup((char *)gtk_entry_get_text(GTK_ENTRY(entry)));
-    for (int i = 0; i < strlen(filter); ++i) {
-       filter[i] = toupper(filter[i]);
-    }
-    gtk_widget_destroy(combo);
-
-    GList *cbitems = NULL;
-    GtkWidget* newCombo = gtk_combo_new();
-    // Dodaj kody wg. filtra
-    USList* codes = loadUSCodes();
-
-    int changes = 0;
-    while (codes != NULL) {
-        if (strstr(codes->name, filter) != NULL) {
-            char* s;
-            asprintf(&s, "%s, %s", codes->code, codes->name);
-            cbitems = g_list_append(cbitems, s);
-            changes++;
-        }
-        codes = codes->next;
-    }
-    if (changes == 0) {
-        cbitems = g_list_append(cbitems, "Nie znaleziono wzorca.");
-    }
-    char* head = (char*) cbitems->data;
-    gtk_combo_set_popdown_strings(GTK_COMBO(newCombo), cbitems);
-    gtk_widget_show_now(newCombo);
-    gtk_table_attach_defaults(GTK_TABLE(table), newCombo, 1, 2, 1, 2);
-    gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(newCombo)->entry), head);
-    gtk_widget_grab_focus(GTK_WIDGET(GTK_COMBO(newCombo)->entry));
-    Completion* newData = (Completion*)malloc(sizeof(Completion));
-    config->KodUrzedu = head;
-    saveConfig(config);
-
-    jpk->header->kodUrzedu = (char*)malloc(5);
-    strncpy(jpk->header->kodUrzedu, head, 4);
-    jpk->header->kodUrzedu[4] = '\0';
-
-    newData->jpk = jpk;
-    newData->combo = newCombo;
-    newData->table = table;
-    newData->config = config;
-    g_signal_connect(GTK_ENTRY(GTK_COMBO(newCombo)->entry), "activate", G_CALLBACK(uscode_callback), newData);
-//    g_signal_connect(GTK_COMBO(newCombo), "activate", G_CALLBACK(uscode_callback), newData);
-}
 
 typedef struct { char* data;
     TakConfig *config;
@@ -220,16 +150,6 @@ typedef struct {
     TakConfig* tak;
 } JPKChange;
 
-static void waluta_callback(GtkWidget* widget, gpointer data) {
-    JPKChange* ch = (JPKChange*)data;
-    TakConfig* config = ch->tak;
-    JPK* jpk = ch->jpk;
-    char* input = strdup((char*)gtk_entry_get_text(GTK_ENTRY(widget)));
-    input = input == NULL ? "" : filter_alphanum(input);
-    config->DomyslnyKodWaluty = input;
-    jpk->header->domyslnyKodWaluty = input;
-    saveConfig(config);
-}
 static void nip_callback(GtkWidget* widget, gpointer data) {
     JPKChange* ch = (JPKChange*)data;
     TakConfig* config = ch->tak;
@@ -250,114 +170,14 @@ static void pelnanazwa_callback(GtkWidget* widget, gpointer data) {
     jpk->profile->pelnaNazwa = input;
     saveConfig(config);
 }
-static void regon_callback(GtkWidget* widget, gpointer data) {
+static void email_callback(GtkWidget* widget, gpointer data) {
     JPKChange* ch = (JPKChange*)data;
     TakConfig* config = ch->tak;
     JPK* jpk = ch->jpk;
     char* input = strdup((char*)gtk_entry_get_text(GTK_ENTRY(widget)));
     input = (input == NULL ? "" : filter_alphanum(input));
-    config->REGON = input;
-    jpk->profile->regon = input;
-    saveConfig(config);
-}
-static void kraj_callback(GtkWidget* widget, gpointer data) {
-    JPKChange* ch = (JPKChange*)data;
-    TakConfig* config = ch->tak;
-    JPK* jpk = ch->jpk;
-    char* input = strdup((char*)gtk_entry_get_text(GTK_ENTRY(widget)));
-    input = (input == NULL ? "" : filter_alphanum(input));
-    config->KodKraju = input;
-    jpk->profile->kodKraju = input;
-    saveConfig(config);
-}
-static void wojewodztwo_callback(GtkWidget* widget, gpointer data) {
-    JPKChange* ch = (JPKChange*)data;
-    TakConfig* config = ch->tak;
-    JPK* jpk = ch->jpk;
-    char* input = strdup((char*)gtk_entry_get_text(GTK_ENTRY(widget)));
-    input = (input == NULL ? "" : filter_alphanum(input));
-    config->Wojewodztwo = input;
-    jpk->profile->wojewodztwo = input;
-    saveConfig(config);
-}
-static void powiat_callback(GtkWidget* widget, gpointer data) {
-    JPKChange* ch = (JPKChange*)data;
-    TakConfig* config = ch->tak;
-    JPK* jpk = ch->jpk;
-    char* input = strdup((char*)gtk_entry_get_text(GTK_ENTRY(widget)));
-    input = (input == NULL ? "" : filter_alphanum(input));
-    config->Powiat = input;
-    jpk->profile->powiat = input;
-    saveConfig(config);
-}
-static void gmina_callback(GtkWidget* widget, gpointer data) {
-    JPKChange* ch = (JPKChange*)data;
-    TakConfig* config = ch->tak;
-    JPK* jpk = ch->jpk;
-    char* input = strdup((char*)gtk_entry_get_text(GTK_ENTRY(widget)));
-    input = (input == NULL ? "" : filter_alphanum(input));
-    config->Gmina = input;
-    jpk->profile->gmina = input;
-    saveConfig(config);
-}
-static void ulica_callback(GtkWidget* widget, gpointer data) {
-    JPKChange* ch = (JPKChange*)data;
-    TakConfig* config = ch->tak;
-    JPK* jpk = ch->jpk;
-    char* input = strdup((char*)gtk_entry_get_text(GTK_ENTRY(widget)));
-    input = (input == NULL ? "" : filter_alphanum(input));
-    config->Ulica = input;
-    jpk->profile->ulica = input;
-    saveConfig(config);
-}
-static void nrdomu_callback(GtkWidget* widget, gpointer data) {
-    JPKChange* ch = (JPKChange*)data;
-    TakConfig* config = ch->tak;
-    JPK* jpk = ch->jpk;
-    char* input = strdup((char*)gtk_entry_get_text(GTK_ENTRY(widget)));
-    input = (input == NULL ? "" : filter_alphanum(input));
-    config->NrDomu = input;
-    jpk->profile->nrDomu = input;
-    saveConfig(config);
-}
-static void nrlokalu_callback(GtkWidget* widget, gpointer data) {
-    JPKChange* ch = (JPKChange*)data;
-    TakConfig* config = ch->tak;
-    JPK* jpk = ch->jpk;
-    char* input = strdup((char*)gtk_entry_get_text(GTK_ENTRY(widget)));
-    input = (input == NULL ? "" : filter_alphanum(input));
-    config->NrLokalu = input;
-    jpk->profile->nrDomu = input;
-    saveConfig(config);
-}
-static void miejscowosc_callback(GtkWidget* widget, gpointer data) {
-    JPKChange* ch = (JPKChange*)data;
-    TakConfig* config = ch->tak;
-    JPK* jpk = ch->jpk;
-    char* input = strdup((char*)gtk_entry_get_text(GTK_ENTRY(widget)));
-    input = (input == NULL ? "" : filter_alphanum(input));
-    config->Miejscowosc = input;
-    jpk->profile->miejscowosc = input;
-    saveConfig(config);
-}
-static void kodpocztowy_callback(GtkWidget* widget, gpointer data) {
-    JPKChange* ch = (JPKChange*)data;
-    TakConfig* config = ch->tak;
-    JPK* jpk = ch->jpk;
-    char* input = strdup((char*)gtk_entry_get_text(GTK_ENTRY(widget)));
-    input = (input == NULL ? "" : filter_alphanum(input));
-    config->KodPocztowy = input;
-    jpk->profile->kodPocztowy = input;
-    saveConfig(config);
-}
-static void poczta_callback(GtkWidget* widget, gpointer data) {
-    JPKChange* ch = (JPKChange*)data;
-    TakConfig* config = ch->tak;
-    JPK* jpk = ch->jpk;
-    char* input = strdup((char*)gtk_entry_get_text(GTK_ENTRY(widget)));
-    input = (input == NULL ? "" : filter_alphanum(input));
-    config->Poczta = input;
-    jpk->profile->poczta = input;
+    config->Email = input;
+    jpk->profile->email = input;
     saveConfig(config);
 }
 
@@ -459,7 +279,7 @@ static GtkWidget* draw_sell_spreadsheet(TakConfig* config, JPK* data) {
 
                 char* aprop_lab = sell_d2m(data, 0, whichCols[i-2]);
                 GtkWidget* col_title_label = gtk_label_new(aprop_lab);
-                gtk_widget_set_tooltip_text (col_title_label, mf2human(aprop_lab));
+                gtk_widget_set_tooltip_text(col_title_label, mf2human(aprop_lab));
 
                 gtk_box_pack_start(GTK_BOX(hbox_title), col_title_label, 1, 1, 0);
                 g_signal_connect(GTK_BUTTON(button), "clicked",
@@ -490,7 +310,7 @@ static GtkWidget* draw_sell_spreadsheet(TakConfig* config, JPK* data) {
                 } else {
                     asprintf(&buffer, "%s", sell_d2m(data, j, whichCols[i-2]+1));
                     entry = gtk_entry_new();
-                    if ((whichCols[i-2]+1 > 32 && whichCols[i-2]+1 < 64) || whichCols[i-2]+1 > 72) 
+                    if ((whichCols[i-2]+1 > 19 && whichCols[i-2]+1 < 52) || whichCols[i-2]+1 > 58) 
                         gtk_entry_set_alignment(GTK_ENTRY(entry), 1);
                     change = (JPKChange*)malloc(sizeof(JPKChange));
                     change->i = j;
@@ -614,7 +434,7 @@ static GtkWidget* draw_pur_spreadsheet(TakConfig* config, JPK* data) {
                 } else {
                     asprintf(&buffer, "%s", pur_d2m(data, j, whichCols[i-2]+1));
                     entry = gtk_entry_new();
-                    if ((whichCols[i-2]+1 > 32 && whichCols[i-2]+1 < 64) || whichCols[i-2]+1 > 72) 
+                    if ((whichCols[i-2]+1 > 19 && whichCols[i-2]+1 < 52) || whichCols[i-2]+1 > 58) 
                         gtk_entry_set_alignment(GTK_ENTRY(entry), 1);
                     change = (JPKChange*)malloc(sizeof(JPKChange));
                     change->i = j;
@@ -870,13 +690,13 @@ static GtkWidget* create_menu_bar(JPK* jpk, TakConfig* config, GtkWidget* window
 
 void refreshSellSum(JPK* jpk, TakConfig* config) {
     char* buffer;
-    asprintf(&buffer, "%s: %.2lf %s", "Podatek należny", jpk->soldTotal, config->DomyslnyKodWaluty);
+    asprintf(&buffer, "%s: %.2lf %s", "Podatek należny", jpk->soldTotal, "PLN");
     gtk_label_set_text(GTK_LABEL(label_sell_sum), buffer);
 }
 
 void refreshPurSum(JPK* jpk, TakConfig* config) {
     char* buffer;
-    asprintf(&buffer, "%s: %.2lf %s", "Podatek naliczony", jpk->purchaseTotal, config->DomyslnyKodWaluty);
+    asprintf(&buffer, "%s: %.2lf %s", "Podatek naliczony", jpk->purchaseTotal, "PLN");
     gtk_label_set_text(GTK_LABEL(label_pur_sum), buffer);
 }
 
@@ -899,7 +719,7 @@ static void create_sell_notebook(GtkWidget *notebook, JPK* jpk, TakConfig* confi
     gtk_table_set_row_spacings(GTK_TABLE(table_sell), 1);
     gtk_table_set_col_spacings(GTK_TABLE(table_sell), 1);
     char* buffer;
-    asprintf(&buffer, "%s: %.2lf %s", "Podatek należny", jpk->soldTotal, config->DomyslnyKodWaluty);
+    asprintf(&buffer, "%s: %.2lf %s", "Podatek należny", jpk->soldTotal, "PLN");
     label_sell_sum = gtk_label_new(buffer);
     gtk_widget_set_tooltip_text(label_sell_sum, mf2human("PodatekNalezny"));
     GtkWidget *hbox_space = gtk_hbox_new(0, 0);
@@ -939,7 +759,7 @@ static void create_purchase_notebook(GtkWidget *notebook, JPK* jpk, TakConfig* c
     gtk_table_set_row_spacings(GTK_TABLE(table_pur), 1);
     gtk_table_set_col_spacings(GTK_TABLE(table_pur), 1);
     char* buffer;
-    asprintf(&buffer, "%s: %.2lf %s", "Podatek naliczony", jpk->purchaseTotal, config->DomyslnyKodWaluty);
+    asprintf(&buffer, "%s: %.2lf %s", "Podatek naliczony", jpk->purchaseTotal, "PLN");
     label_pur_sum = gtk_label_new(buffer);
     gtk_widget_set_tooltip_text(label_pur_sum, mf2human("PodatekNaliczony"));
     GtkWidget *hbox_space = gtk_hbox_new(0, 0);
@@ -980,7 +800,7 @@ static void create_profile_notebook(GtkWidget *notebook, JPK* jpk, TakConfig* co
     GtkWidget* scroll_profile = gtk_scrolled_window_new(NULL, NULL);
     GtkWidget *label_tab = gtk_label_new("Firma");
     GtkWidget *label_profile;
-    GtkWidget* table_profile = gtk_table_new(10, 2, FALSE);
+    GtkWidget* table_profile = gtk_table_new(3, 2, FALSE);
     gtk_table_set_col_spacings (GTK_TABLE(table_profile), 20);
     GtkWidget *entry;
 
@@ -988,46 +808,6 @@ static void create_profile_notebook(GtkWidget *notebook, JPK* jpk, TakConfig* co
     change->jpk = jpk;
     change->tak = config;
 
-    label_profile = gtk_label_new("Waluta");
-    gtk_table_attach_defaults(
-            GTK_TABLE(table_profile),
-            label_profile,
-            0, 1, 0, 1);
-    entry = gtk_entry_new();
-    if (config->DomyslnyKodWaluty == NULL) {
-        gtk_entry_set_text(GTK_ENTRY(entry), "");
-    } else {
-        gtk_entry_set_text(GTK_ENTRY(entry), config->DomyslnyKodWaluty);
-    }
-    gtk_widget_set_size_request(entry, 400, 30);
-    g_signal_connect(entry, "changed", G_CALLBACK(waluta_callback), change);
-    gtk_table_attach_defaults(
-            GTK_TABLE(table_profile),
-            entry,
-            1, 2, 0, 1);
-
-    label_profile = gtk_label_new("Urząd skarbowy");
-    gtk_table_attach_defaults(
-            GTK_TABLE(table_profile),
-            label_profile,
-            0, 1, 1, 2);
-
-    GtkWidget *combo = gtk_combo_new();
-    gtk_combo_set_popdown_strings (GTK_COMBO(combo), appendUSCodes(combo));
-
-    Completion* compl = (Completion*)malloc(sizeof(Completion));
-    compl->combo = combo;
-    compl->table = table_profile;
-    compl->config = config;
-    compl->jpk = jpk;
-    if (config->KodUrzedu == NULL) {
-        gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(combo)->entry), "");
-    } else {
-        gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(combo)->entry), config->KodUrzedu);
-    }
-    g_signal_connect(GTK_ENTRY(GTK_COMBO(combo)->entry), "activate", G_CALLBACK(uscode_callback), compl);
-    //g_signal_connect(GTK_COMBO(combo), "activate", G_CALLBACK(uscode_callback), compl);
-    gtk_table_attach_defaults(GTK_TABLE(table_profile), combo, 1, 2, 1, 2);
 
     label_profile = gtk_label_new("NIP firmy");
     gtk_table_attach_defaults(
@@ -1040,6 +820,7 @@ static void create_profile_notebook(GtkWidget *notebook, JPK* jpk, TakConfig* co
     } else {
         gtk_entry_set_text(GTK_ENTRY(entry), config->NIP);
     }
+    gtk_widget_set_size_request(entry, 400, 30);
     g_signal_connect(entry, "changed", G_CALLBACK(nip_callback), change);
     gtk_table_attach_defaults(
             GTK_TABLE(table_profile),
@@ -1063,188 +844,18 @@ static void create_profile_notebook(GtkWidget *notebook, JPK* jpk, TakConfig* co
             entry,
             1, 2, 3, 4);
 
-    label_profile = gtk_label_new("REGON");
-    gtk_table_attach_defaults(
-            GTK_TABLE(table_profile),
-            label_profile,
-            0, 1, 4, 5);
-    entry = gtk_entry_new();
-    if (config->REGON == NULL) {
-        gtk_entry_set_text(GTK_ENTRY(entry), "");
-    } else {
-        gtk_entry_set_text(GTK_ENTRY(entry), config->REGON);
-    }
-    g_signal_connect(entry, "changed", G_CALLBACK(regon_callback), change);
-    gtk_table_attach_defaults(
-            GTK_TABLE(table_profile),
-            entry,
-            1, 2, 4, 5);
-
-    label_profile = gtk_label_new("Kraj");
-    gtk_table_attach_defaults(
-            GTK_TABLE(table_profile),
-            label_profile,
-            0, 1, 5, 6);
-    entry = gtk_entry_new();
-    if (config->KodKraju == NULL) {
-        gtk_entry_set_text(GTK_ENTRY(entry), "");
-    } else {
-        gtk_entry_set_text(GTK_ENTRY(entry), config->KodKraju);
-    }
-    g_signal_connect(entry, "changed", G_CALLBACK(kraj_callback), change);
-    gtk_table_attach_defaults(
-            GTK_TABLE(table_profile),
-            entry,
-            1, 2, 5, 6);
-
-    label_profile = gtk_label_new("Województwo");
-    gtk_table_attach_defaults(
-            GTK_TABLE(table_profile),
-            label_profile,
-            0, 1, 6, 7);
-    entry = gtk_entry_new();
-    if (config->Wojewodztwo == NULL) {
-        gtk_entry_set_text(GTK_ENTRY(entry), "");
-    } else {
-        gtk_entry_set_text(GTK_ENTRY(entry), config->Wojewodztwo);
-    }
-    g_signal_connect(entry, "changed", G_CALLBACK(wojewodztwo_callback), change);
-    gtk_table_attach_defaults(
-            GTK_TABLE(table_profile),
-            entry,
-            1, 2, 6, 7);
-
-    label_profile = gtk_label_new("Powiat");
-    gtk_table_attach_defaults(
-            GTK_TABLE(table_profile),
-            label_profile,
-            0, 1, 7, 8);
-    entry = gtk_entry_new();
-    if (config->Powiat == NULL) {
-        gtk_entry_set_text(GTK_ENTRY(entry), "");
-    } else {
-        gtk_entry_set_text(GTK_ENTRY(entry), config->Powiat);
-    }
-    g_signal_connect(entry, "changed", G_CALLBACK(powiat_callback), change);
-    gtk_table_attach_defaults(
-            GTK_TABLE(table_profile),
-            entry,
-            1, 2, 7, 8);
-
-    label_profile = gtk_label_new("Gmina");
-    gtk_table_attach_defaults(
-            GTK_TABLE(table_profile),
-            label_profile,
-            0, 1, 8, 9);
-    entry = gtk_entry_new();
-    if (config->Gmina == NULL) {
-        gtk_entry_set_text(GTK_ENTRY(entry), "");
-    } else {
-        gtk_entry_set_text(GTK_ENTRY(entry), config->Gmina);
-    }
-    g_signal_connect(entry, "changed", G_CALLBACK(gmina_callback), change);
-    gtk_table_attach_defaults(
-            GTK_TABLE(table_profile),
-            entry,
-            1, 2, 8, 9);
-
-    label_profile = gtk_label_new("Ulica");
-    gtk_table_attach_defaults(
-            GTK_TABLE(table_profile),
-            label_profile,
-            0, 1, 9, 10);
-    entry = gtk_entry_new();
-    if (config->Ulica == NULL) {
-        gtk_entry_set_text(GTK_ENTRY(entry), "");
-    } else {
-        gtk_entry_set_text(GTK_ENTRY(entry), config->Ulica);
-    }
-    g_signal_connect(entry, "changed", G_CALLBACK(ulica_callback), change);
-    gtk_table_attach_defaults(
-            GTK_TABLE(table_profile),
-            entry,
-            1, 2, 9, 10);
-
-    label_profile = gtk_label_new("Numer domu");
-    gtk_table_attach_defaults(
-            GTK_TABLE(table_profile),
-            label_profile,
-            0, 1, 10, 11);
-    entry = gtk_entry_new();
-    if (config->NrDomu == NULL) {
-        gtk_entry_set_text(GTK_ENTRY(entry), "");
-    } else {
-        gtk_entry_set_text(GTK_ENTRY(entry), config->NrDomu);
-    }
-    g_signal_connect(entry, "changed", G_CALLBACK(nrdomu_callback), change);
-    gtk_table_attach_defaults(
-            GTK_TABLE(table_profile),
-            entry,
-            1, 2, 10, 11);
-
-    label_profile = gtk_label_new("Numer lokalu");
-    gtk_table_attach_defaults(
-            GTK_TABLE(table_profile),
-            label_profile,
-            0, 1, 11, 12);
-    entry = gtk_entry_new();
-    if (config->NrLokalu == NULL) {
-        gtk_entry_set_text(GTK_ENTRY(entry), "");
-    } else {
-        gtk_entry_set_text(GTK_ENTRY(entry), config->NrLokalu);
-    }
-    g_signal_connect(entry, "changed", G_CALLBACK(nrlokalu_callback), change);
-    gtk_table_attach_defaults(
-            GTK_TABLE(table_profile),
-            entry,
-            1, 2, 11, 12);
-
-    label_profile = gtk_label_new("Miejcowość");
-    gtk_table_attach_defaults(
-            GTK_TABLE(table_profile),
-            label_profile,
-            0, 1, 12, 13);
-    entry = gtk_entry_new();
-    if (config->Miejscowosc == NULL) {
-        gtk_entry_set_text(GTK_ENTRY(entry), "");
-    } else {
-        gtk_entry_set_text(GTK_ENTRY(entry), config->Miejscowosc);
-    }
-    g_signal_connect(entry, "changed", G_CALLBACK(miejscowosc_callback), change);
-    gtk_table_attach_defaults(
-            GTK_TABLE(table_profile),
-            entry,
-            1, 2, 12, 13);
-
-    label_profile = gtk_label_new("Kod pocztowy");
-    gtk_table_attach_defaults(
-            GTK_TABLE(table_profile),
-            label_profile,
-            0, 1, 13, 14);
-    entry = gtk_entry_new();
-    if (config->KodPocztowy == NULL) {
-        gtk_entry_set_text(GTK_ENTRY(entry), "");
-    } else {
-        gtk_entry_set_text(GTK_ENTRY(entry), config->KodPocztowy);
-    }
-    g_signal_connect(entry, "changed", G_CALLBACK(kodpocztowy_callback), change);
-    gtk_table_attach_defaults(
-            GTK_TABLE(table_profile),
-            entry,
-            1, 2, 13, 14);
-
-    label_profile = gtk_label_new("Poczta");
+    label_profile = gtk_label_new("Email");
     gtk_table_attach_defaults(
             GTK_TABLE(table_profile),
             label_profile,
             0, 1, 14, 15);
     entry = gtk_entry_new();
-    if (config->Poczta == NULL) {
+    if (config->Email == NULL) {
         gtk_entry_set_text(GTK_ENTRY(entry), "");
     } else {
-        gtk_entry_set_text(GTK_ENTRY(entry), config->Poczta);
+        gtk_entry_set_text(GTK_ENTRY(entry), config->Email);
     }
-    g_signal_connect(entry, "changed", G_CALLBACK(poczta_callback), change);
+    g_signal_connect(entry, "changed", G_CALLBACK(email_callback), change);
     gtk_table_attach_defaults(
             GTK_TABLE(table_profile),
             entry,
@@ -1356,17 +967,17 @@ static GtkWidget* create_date_menu(JPK *jpk) {
 
 static void aim_first_callback(GtkWidget* widget, gpointer data) {
     JPK* jpk = (JPK*)data;
-    jpk->header->celZlozenia = 1;
+    jpk->header->celZlozenia = 0;
 }
 
 static void aim_second_callback(GtkWidget* widget, gpointer data) {
     JPK* jpk = (JPK*)data;
-    jpk->header->celZlozenia = 2;
+    jpk->header->celZlozenia = 1;
 }
 
 static void aim_third_callback(GtkWidget* widget, gpointer data) {
     JPK* jpk = (JPK*)data;
-    jpk->header->celZlozenia = 3;
+    jpk->header->celZlozenia = 2;
 }
 
 static GtkWidget* create_box_bottom(JPK* jpk) {
@@ -1552,68 +1163,6 @@ static void pur_rmrow_callback(GtkWidget* widget, gpointer data) {
     gtk_widget_show_all(window);
     gtk_notebook_set_current_page(GTK_NOTEBOOK(notebook), 1);
 }
-/*
-static void sell_entry_insert_callback(GtkEntry* widget,
-                                       const gchar *text,
-                                       gint length,
-                                       gint *position,
-                                       gpointer data) {
-    GtkEditable* entry = GTK_EDITABLE(widget);
-    JPKChange* change = (JPKChange*)data;
-    char* entry_data = (char*)gtk_editable_get_chars(entry, 0, -1);
-
-    char *p = (char*)text;
-    while (*p != '\0') {
-        if (*p == ';') text = "";
-        p++;
-    }
-
-    char* in = (char*)text;
-    int in_len = strlen(text);
-    int old_len = strlen(entry_data);
-    int new_len = old_len + in_len;
-    int offset = *position;
-
-    char* buffer = (char*)malloc(new_len + 1);
-    memcpy(buffer, entry_data, offset);
-    memcpy(buffer + offset, in, in_len);
-    memcpy(buffer + offset + in_len, entry_data + offset, old_len - offset);
-    buffer[new_len] = '\0';
-
-    char* safe_input = sanitizeSellEntry(change->i, change->j, buffer);
-    int safe_len = strlen(safe_input);
-    changeSellData(change->jpk, change->i, change->j, safe_input);
-    refreshSellSum(change->jpk, change->tak);
-
-    g_signal_handlers_block_by_func(G_OBJECT(entry), G_CALLBACK(sell_entry_insert_callback), data);
-    gtk_editable_delete_text(entry, 0, -1);
-    gtk_editable_insert_text(entry, safe_input, safe_len, position);
-    g_signal_handlers_unblock_by_func(G_OBJECT(entry), G_CALLBACK(sell_entry_insert_callback), data);
-    g_signal_stop_emission_by_name(G_OBJECT(entry), "insert_text");
-    g_free(buffer);
-}
-
-static void sell_entry_delete_callback(GtkEntry* widget,
-                                       const gchar *text,
-                                       gint length,
-                                       gint *position,
-                                       gpointer data) {
-    GtkEditable* entry = GTK_EDITABLE(widget);
-    JPKChange* change = (JPKChange*)data;
-    gchar* entry_data = gtk_editable_get_chars(entry, 0, -1);
-    char* safe_input = sanitizeSellEntry(change->i, change->j, entry_data);
-
-    changeSellData(change->jpk, change->i, change->j, safe_input);
-    refreshSellSum(change->jpk, change->tak);
-    g_signal_handlers_block_by_func(G_OBJECT(entry), G_CALLBACK(sell_entry_delete_callback), data);
-    gtk_editable_delete_text(entry, 0, -1);
-    gint new_position = gtk_editable_get_position(entry);
-    gtk_editable_insert_text(entry, safe_input, strlen(safe_input), &new_position);
-    g_signal_handlers_unblock_by_func(G_OBJECT(entry), G_CALLBACK(sell_entry_delete_callback), data);
-    g_signal_stop_emission_by_name(G_OBJECT(entry), "delete_text");
-}
-*/
-
 
 static void sell_entry_callback(GtkWidget* widget, gpointer data) {
     JPKChange* change = (JPKChange*)data;
@@ -1632,6 +1181,7 @@ static void pur_entry_callback(GtkWidget* widget, gpointer data) {
     refreshPurSum(change->jpk, change->tak);
 //    gtk_entry_set_text(GTK_ENTRY(widget), sell_d2m(change->jpk, change->i, change->j));
 }
+
 static void new_file_callback(GtkWidget* widget, gpointer data) {
     isLoaded = 0;
     JPK* jpk = newJPK();

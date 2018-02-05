@@ -9,7 +9,7 @@
 int main(int argc, char *argv[])
 {
     setlocale(LC_NUMERIC, "pl_PL.utf8");
-    JPK* data = newJPK();
-    drawGui(data);
+    JPK* newData = newJPK();
+    drawGui(newData);
     return 0;
 }

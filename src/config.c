@@ -8,23 +8,10 @@
 #include "jpk.h"
 #include <assert.h>
 
-
 typedef struct {
-    char* DomyslnyKodWaluty;
-    char* KodUrzedu;
     char* NIP;
     char* PelnaNazwa;
-    char* REGON;
-    char* KodKraju;
-    char* Wojewodztwo;
-    char* Powiat;
-    char* Gmina;
-    char* Ulica;
-    char* NrDomu;
-    char* NrLokalu;
-    char* Miejscowosc;
-    char* KodPocztowy;
-    char* Poczta;
+    char* Email;
     JPKColumns* sellColumns;
     JPKColumns* purchaseColumns;
 } TakConfig;
@@ -50,15 +37,7 @@ TakConfig* parseConfig() {
         while ((read = getline(&line, &len, fp)) != -1) {
             token = strtok(line, "=\n");
             if (token != NULL) {
-                if (strcmp(token, "DomyslnyKodWaluty") == 0) {
-                    char *cur = strtok(NULL, "\n");
-                    asprintf(&(config->DomyslnyKodWaluty), "%s",
-                           cur == NULL ? "" : cur);
-                } else if (strcmp(token, "KodUrzedu") == 0) {
-                    char *cur = strtok(NULL, "\n");
-                    asprintf(&(config->KodUrzedu), "%s",
-                           cur == NULL ? "" : cur);
-                } else if (strcmp(token, "NIP") == 0) {
+                if (strcmp(token, "NIP") == 0) {
                     char *cur = strtok(NULL, "\n");
                     asprintf(&(config->NIP), "%s",
                            cur == NULL ? "" : cur);
@@ -66,49 +45,9 @@ TakConfig* parseConfig() {
                     char *cur = strtok(NULL, "\n");
                     asprintf(&(config->PelnaNazwa), "%s",
                            cur == NULL ? "" : cur);
-                } else if (strcmp(token, "REGON") == 0) {
+                } else if (strcmp(token, "Email") == 0) {
                     char *cur = strtok(NULL, "\n");
-                    asprintf(&(config->REGON), "%s",
-                           cur == NULL ? "" : cur);
-                } else if (strcmp(token, "KodKraju") == 0) {
-                    char *cur = strtok(NULL, "\n");
-                    asprintf(&(config->KodKraju), "%s",
-                           cur == NULL ? "" : cur);
-                } else if (strcmp(token, "Wojewodztwo") == 0) {
-                    char *cur = strtok(NULL, "\n");
-                    asprintf(&(config->Wojewodztwo), "%s",
-                           cur == NULL ? "" : cur);
-                } else if (strcmp(token, "Powiat") == 0) {
-                    char *cur = strtok(NULL, "\n");
-                    asprintf(&(config->Powiat), "%s",
-                           cur == NULL ? "" : cur);
-                } else if (strcmp(token, "Gmina") == 0) {
-                    char *cur = strtok(NULL, "\n");
-                    asprintf(&(config->Gmina), "%s",
-                           cur == NULL ? "" : cur);
-                } else if (strcmp(token, "Ulica") == 0) {
-                    char *cur = strtok(NULL, "\n");
-                    asprintf(&(config->Ulica), "%s",
-                           cur == NULL ? "" : cur);
-                } else if (strcmp(token, "NrDomu") == 0) {
-                    char *cur = strtok(NULL, "\n");
-                    asprintf(&(config->NrDomu), "%s",
-                           cur == NULL ? "" : cur);
-                } else if (strcmp(token, "NrLokalu") == 0) {
-                    char *cur = strtok(NULL, "\n");
-                    asprintf(&(config->NrLokalu), "%s",
-                           cur == NULL ? "" : cur);
-                } else if (strcmp(token, "Miejscowosc") == 0) {
-                    char *cur = strtok(NULL, "\n");
-                    asprintf(&(config->Miejscowosc), "%s",
-                           cur == NULL ? "" : cur);
-                } else if (strcmp(token, "KodPocztowy") == 0) {
-                    char *cur = strtok(NULL, "\n");
-                    asprintf(&(config->KodPocztowy), "%s",
-                           cur == NULL ? "" : cur);
-                } else if (strcmp(token, "Poczta") == 0) {
-                    char *cur = strtok(NULL, "\n");
-                    asprintf(&(config->Poczta), "%s",
+                    asprintf(&(config->Email), "%s",
                            cur == NULL ? "" : cur);
                 } else if (strcmp(token, "sellColumns") == 0) {
                     token = strtok(NULL, "=\n");
@@ -152,29 +91,15 @@ TakConfig* parseConfig() {
         fclose(fp);
     } else { // stwórz domyślną konfigurację
         fp = fopen(filename, "ab");
-        char* defaultConfig = "DomyslnyKodWaluty=PLN\n"
-                              "KodUrzedu=\n"
-                              "NIP=\n"
+        char* defaultConfig = "NIP=\n"
                               "PelnaNazwa=\n"
-                              "REGON=\n"
-                              "KodKraju=\n"
-                              "Wojewodztwo=\n"
-                              "Powiat=\n"
-                              "Gmina=\n"
-                              "Ulica=\n"
-                              "NrDomu=\n"
-                              "NrLokalu=\n"
-                              "Miejscowosc=\n"
-                              "KodPocztowy=\n"
-                              "Poczta=\n"
+                              "Email=\n"
                               "sellColumns=\n"
                               "purchaseColumns=";
-
         if (fp != NULL) {
             fputs(defaultConfig, fp);
             fclose(fp);
         }
-        config->DomyslnyKodWaluty = "PLN";
     }
     return config;
 }
@@ -224,38 +149,14 @@ void saveConfig(TakConfig* tak) {
         col = col->next;
     }
 
-    asprintf(&config, "DomyslnyKodWaluty=%s\n"
-                      "KodUrzedu=%s\n"
-                      "NIP=%s\n"
+    asprintf(&config, "NIP=%s\n"
                       "PelnaNazwa=%s\n"
-                      "REGON=%s\n"
-                      "KodKraju=%s\n"
-                      "Wojewodztwo=%s\n"
-                      "Powiat=%s\n"
-                      "Gmina=%s\n"
-                      "Ulica=%s\n"
-                      "NrDomu=%s\n"
-                      "NrLokalu=%s\n"
-                      "Miejscowosc=%s\n"
-                      "KodPocztowy=%s\n"
-                      "Poczta=%s\n"
+                      "Email=%s\n"
                       "sellColumns=%s\n"
                       "purchaseColumns=%s",
-                tak->DomyslnyKodWaluty != NULL ? tak->DomyslnyKodWaluty : "",
-                tak->KodUrzedu != NULL ? tak->KodUrzedu : "",
                 tak->NIP != NULL ? tak->NIP : "",
                 tak->PelnaNazwa != NULL ? tak->PelnaNazwa : "",
-                tak->REGON != NULL ? tak->REGON : "",
-                tak->KodKraju != NULL ? tak->KodKraju : "",
-                tak->Wojewodztwo != NULL ? tak->Wojewodztwo : "",
-                tak->Powiat != NULL ? tak->Powiat : "",
-                tak->Gmina != NULL ? tak->Gmina : "",
-                tak->Ulica != NULL ? tak->Ulica : "",
-                tak->NrDomu != NULL ? tak->NrDomu : "",
-                tak->NrLokalu != NULL ? tak->NrLokalu : "",
-                tak->Miejscowosc != NULL ? tak->Miejscowosc : "",
-                tak->KodPocztowy != NULL ? tak->KodPocztowy : "",
-                tak->Poczta != NULL ? tak->Poczta : "",
+                tak->Email != NULL ? tak->Email: "",
                 sell,
                 purchase);
 
@@ -285,73 +186,25 @@ void printTakConfig(TakConfig* takData) {
 //    assert(takData->sellColumns != NULL);
     printf("Konfiguracja: %s,\n"
             "\t%s,\n"
-            "\t%s,\n"
-            "\t%s,\n"
-            "\t%s,\n"
-            "\t%s,\n"
-            "\t%s,\n"
-            "\t%s,\n"
-            "\t%s,\n"
-            "\t%s,\n"
-            "\t%s,\n"
-            "\t%s,\n"
-            "\t%s,\n"
-            "\t%s,\n"
             "\t%s,\n",
-            takData->DomyslnyKodWaluty,
-            takData->KodUrzedu,
             takData->NIP,
             takData->PelnaNazwa,
-            takData->REGON,
-            takData->KodKraju,
-            takData->Wojewodztwo,
-            takData->Powiat,
-            takData->Gmina,
-            takData->Ulica,
-            takData->NrDomu,
-            takData->NrLokalu,
-            takData->Miejscowosc,
-            takData->KodPocztowy,
-            takData->Poczta);
-      printTakCols(takData->sellColumns);
-      printTakCols(takData->purchaseColumns);
+            takData->Email);
+    printTakCols(takData->sellColumns);
+    printTakCols(takData->purchaseColumns);
 }
 
 TakConfig* getConfig(JPK* jpk) {
     TakConfig* config = parseConfig();
-    config->DomyslnyKodWaluty = jpk->header->domyslnyKodWaluty;
-    config->Gmina = jpk->profile->gmina;
-    config->KodKraju = jpk->profile->kodKraju;
-    config->KodPocztowy = jpk->profile->kodPocztowy;
-    config->KodUrzedu = jpk->header->kodUrzedu;
-    config->Miejscowosc = jpk->profile->miejscowosc;
-    config->NrDomu = jpk->profile->nrDomu;
-    config->NrLokalu = jpk->profile->nrLokalu;
     config->NIP = jpk->profile->nip;
     config->PelnaNazwa = jpk->profile->pelnaNazwa;
-    config->Poczta = jpk->profile->poczta;
-    config->Powiat = jpk->profile->powiat;
-    config->REGON = jpk->profile->regon;
-    config->Ulica = jpk->profile->ulica;
-    config->Wojewodztwo = jpk->profile->wojewodztwo;
+    config->Email = jpk->profile->email;
     return config;
 }
 
 JPK* configToJPK(JPK* jpk, TakConfig* tak) {
-    jpk->profile->gmina = tak->Gmina;
-    jpk->profile->kodKraju = tak->KodKraju;
-    jpk->profile->kodPocztowy = tak->KodPocztowy;
-    jpk->profile->miejscowosc = tak->Miejscowosc;
     jpk->profile->nip = tak->NIP;
-    jpk->profile->nrDomu = tak->NrDomu;
-    jpk->profile->nrLokalu = tak->NrLokalu;
     jpk->profile->pelnaNazwa = tak->PelnaNazwa;
-    jpk->profile->poczta = tak->Poczta;
-    jpk->profile->powiat = tak->Powiat;
-    jpk->profile->regon = tak->REGON;
-    jpk->profile->ulica = tak->Ulica;
-    jpk->profile->wojewodztwo = tak->Wojewodztwo;
-    jpk->header->domyslnyKodWaluty = tak->DomyslnyKodWaluty;
-    jpk->header->kodUrzedu = tak->KodUrzedu;
+    jpk->profile->email = tak->Email;
     return jpk;
 }

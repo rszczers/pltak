@@ -3,21 +3,9 @@
 #include "jpk.h"
 
 typedef struct {
-    char* DomyslnyKodWaluty;
-    char* KodUrzedu;
     char* NIP;
     char* PelnaNazwa;
-    char* REGON;
-    char* KodKraju;
-    char* Wojewodztwo;
-    char* Powiat;
-    char* Gmina;
-    char* Ulica;
-    char* NrDomu;
-    char* NrLokalu;
-    char* Miejscowosc;
-    char* KodPocztowy;
-    char* Poczta;
+    char* Email;
     JPKColumns* sellColumns;
     JPKColumns* purchaseColumns;
 } TakConfig;

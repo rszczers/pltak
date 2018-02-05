@@ -15,9 +15,8 @@
 typedef enum {
     COLUMN_NAME = 1,
     HEADER,
-    PROFILE_1,
-    PROFILE_2,
-    SELLS,
+    PROFILE,
+    SELLS = 5,
 } JPKRow;
 
 int PURCHASES;
@@ -31,22 +30,10 @@ typedef enum {
     DATAWYTWORZENIAJPK,
     DATAOD,
     DATADO,
-    DOMYSLNYKODWALUTY,
-    KODURZEDU,
+    NAZWASYSTEMU,
     NIP,
     PELNANAZWA,
-    REGON,
-    KODKRAJU,
-    WOJEWODZTWO,
-    POWIAT,
-    GMINA,
-    ULICA,
-    NRDOMU,
-    NRLOKALU,
-    MIEJSCOWOSC,
-    KODPOCZTOWY,
-    POCZTA,
-    TYPSPRZEDAZY,
+    EMAIL,
     LPSPRZEDAZY,
     NRKONTRAHENTA,
     NAZWAKONTRAHENTA,
@@ -86,7 +73,6 @@ typedef enum {
     K_39,
     LICZBAWIERSZYSPRZEDAZY,
     PODATEKNALEZNY,
-    TYPZAKUPU,
     LPZAKUPU,
     NRDOSTAWCY,
     NAZWADOSTAWCY,
@@ -103,7 +89,7 @@ typedef enum {
     K_49,
     K_50,
     LICZBAWIERSZYZAKUPOW,
-    PODATEKNALICZONY
+    PODATEKNALICZONY,
 } JPKCol;
 
 typedef struct sHeader {
@@ -115,28 +101,16 @@ typedef struct sHeader {
     char* dataWytworzeniaJPK;
     char* dataOd;
     char* dataDo;
-    char* domyslnyKodWaluty;
-    char* kodUrzedu;
+    char* nazwaSystemu;
 } JPKHeader;
 
 typedef struct sProfile {
     char* nip;
     char* pelnaNazwa;
-    char* regon;
-    char* kodKraju;
-    char* wojewodztwo;
-    char* powiat;
-    char* gmina;
-    char* ulica;
-    char* nrDomu;
-    char* nrLokalu;
-    char* miejscowosc;
-    char* kodPocztowy;
-    char* poczta;
+    char* email;
 } JPKProfile;
 
 typedef struct sSold {
-    char* typSprzedazy;
     unsigned int lpSprzedazy;
     char* nrKontrahenta;
     char* nazwaKontrahenta;
@@ -177,7 +151,6 @@ typedef struct sSold {
 } JPKSold;
 
 typedef struct sPurchase {
-    char* typZakupu;
     unsigned int lpZakupu;
     char* nrDostawcy;
     char* nazwaDostawcy;
@@ -318,26 +291,15 @@ JPKHeader* getHeader(tData* data) {
     header->dataWytworzeniaJPK = getCell(data, HEADER, DATAWYTWORZENIAJPK);
     header->dataOd = getCell(data, HEADER, DATAOD);
     header->dataDo = getCell(data, HEADER, DATADO);
-    header->domyslnyKodWaluty = getCell(data, HEADER, DOMYSLNYKODWALUTY);
-    header->kodUrzedu = getCell(data, HEADER, KODURZEDU);
+    header->nazwaSystemu = getCell(data, HEADER, NAZWASYSTEMU);
     return header;
 }
 
 JPKProfile* getProfile(tData* data) {
     JPKProfile* profile = (JPKProfile*)malloc(sizeof(JPKProfile));
-    profile->nip = getCell(data, PROFILE_1, NIP);
-    profile->pelnaNazwa = getCell(data, PROFILE_1, PELNANAZWA);
-    profile->regon = getCell(data, PROFILE_1, REGON);
-    profile->kodKraju = getCell(data, PROFILE_2, KODKRAJU);
-    profile->wojewodztwo = getCell(data, PROFILE_2, WOJEWODZTWO);
-    profile->powiat = getCell(data, PROFILE_2, POWIAT);
-    profile->gmina = getCell(data, PROFILE_2, GMINA);
-    profile->ulica = getCell(data, PROFILE_2, ULICA);
-    profile->nrDomu = getCell(data, PROFILE_2, NRDOMU);
-    profile->nrLokalu = getCell(data, PROFILE_2, NRLOKALU);
-    profile->miejscowosc = getCell(data, PROFILE_2, MIEJSCOWOSC);
-    profile->kodPocztowy = getCell(data, PROFILE_2, KODPOCZTOWY);
-    profile->poczta = getCell(data, PROFILE_2, POCZTA);
+    profile->nip = getCell(data, PROFILE, NIP);
+    profile->pelnaNazwa = getCell(data, PROFILE, PELNANAZWA);
+    profile->email = getCell(data, PROFILE, EMAIL);
     return profile;
 }
 
@@ -382,9 +344,6 @@ char* sell_d2m(JPK* data, int i, int j) {
             JPKSold* col = row->val;
 
             switch(j) {
-                case TYPSPRZEDAZY:
-                    asprintf(&out, "%s", col->typSprzedazy);
-                break;
                 case NRKONTRAHENTA:
                     asprintf(&out, "%s", col->nrKontrahenta);
                 break;
@@ -519,9 +478,6 @@ char* pur_d2m(JPK* data, int i, int j) {
             JPKPurchase* col = row->val;
 
             switch(j) {
-                case TYPZAKUPU:
-                    asprintf(&out, "%s", col->typZakupu);  //char*
-                    break;
                 case LPZAKUPU:
                     asprintf(&out, "%d", col->lpZakupu); //unsigned int
                     break;
@@ -579,7 +535,6 @@ char* pur_d2m(JPK* data, int i, int j) {
  */
 JPKSold* rowToSold(tData* data, int row) {
     JPKSold* raport = (JPKSold*)malloc(sizeof(JPKSold));
-    raport->typSprzedazy = getCell(data, row, TYPSPRZEDAZY);
     raport->lpSprzedazy = strtol(getCell(data, row, LPSPRZEDAZY), NULL, 10);
     raport->nrKontrahenta = getCell(data, row, NRKONTRAHENTA);
     raport->nazwaKontrahenta = getCell(data, row, NAZWAKONTRAHENTA);
@@ -626,7 +581,6 @@ JPKSold* rowToSold(tData* data, int row) {
  */
 JPKPurchase* rowToPurchase(tData* data, int row) {
     JPKPurchase* raport = (JPKPurchase*)malloc(sizeof(JPKPurchase));
-    raport->typZakupu = getCell(data, row, TYPZAKUPU);
     raport->lpZakupu = strtol(getCell(data, row, LPZAKUPU), NULL, 10);
     raport->nrDostawcy = getCell(data, row, NRDOSTAWCY);
     raport->nazwaDostawcy = getCell(data, row, NAZWADOSTAWCY);
@@ -651,7 +605,7 @@ int countSells(tData* data) {
     for (int i = 0; i < SELLS - 1; ++i) {
         cur = cur->next;
     }
-    while (cur != NULL && cur->row->colNum == TYPSPRZEDAZY) {
+    while (cur != NULL && cur->row->colNum == LPSPRZEDAZY) {
         c++;
         cur = cur->next;
     }
@@ -665,7 +619,7 @@ int countPurchases(tData* data) {
     for (int i = 0; i < PURCHASES - 1; ++i) {
         cur = cur->next;
     }
-    while (cur != NULL && cur->row->colNum == TYPZAKUPU) {
+    while (cur != NULL && cur->row->colNum == LPZAKUPU) {
         c++;
         cur = cur->next;
     }
@@ -676,7 +630,7 @@ JPKSoldList* getSoldList(tData* parsedData, int soldCount) {
     JPKSoldList* sells = (JPKSoldList*)malloc(sizeof(JPKSoldList));
     sells->val = NULL;
     sells->next = NULL;
-    if (parsedData->next->next->next->next->row->colNum == 24) {
+    if (parsedData->next->next->next->next->row->colNum == LPSPRZEDAZY) {
         for (int i = SELLS; i < SELLS + soldCount; ++i) {
             addSold(sells, rowToSold(parsedData, i));
         }
@@ -756,8 +710,7 @@ void printSold(JPK* jpk) {
     JPKSoldList* row = jpk->sold;
     int i = SELLS;
     while (row != NULL) {
-        printf("%d) \t typSprzedazy: %s, \n"
-                "\t lpSprzedazy: %d, \n"
+        printf("%d) \t lpSprzedazy: %d, \n"
                 "\t nrKontrahenta: %s, \n"
                 "\t nazwaKontrahenta: %s, \n"
                 "\t adresKontrahenta: %s, \n"
@@ -796,7 +749,6 @@ void printSold(JPK* jpk) {
                 "\t k_39: %.2lf, \n"
                 "\n",
                 i,
-                row->val->typSprzedazy,
                 row->val->lpSprzedazy,
                 row->val->nrKontrahenta,
                 row->val->nazwaKontrahenta,
@@ -843,8 +795,7 @@ void printPurchases(JPK* jpk) {
     JPKPurchaseList* row = jpk->purchase;
     int i = PURCHASES;
     while (row != NULL) {
-        printf("%d) \t typZakupu: %s, \n"
-                "\t lpZakupu: %d, \n"
+        printf("%d) \t lpZakupu: %d, \n"
                 "\t nrDostawcy: %s, \n"
                 "\t nazwaDostawcy: %s, \n"
                 "\t adresDostawcy: %s, \n"
@@ -861,7 +812,6 @@ void printPurchases(JPK* jpk) {
                 "\t k_50: %.2lf, \n"
                 "\n",
                 i,
-                row->val->typZakupu,
                 row->val->lpZakupu,
                 row->val->nrDostawcy,
                 row->val->nazwaDostawcy,
@@ -898,7 +848,6 @@ void addSellRow(JPK* jpk) {
     asprintf(&new->val->dataSprzedazy, "%s-%s-%s", data->year, data->month, data->day);
 
     asprintf(&new->val->dataWystawienia, "%s-%s-%s", data->year, data->month, data->day);
-    new->val->typSprzedazy = "G";
     new->val->adresKontrahenta = "";
     new->val->dowodSprzedazy = "";
     new->val->k_10 = 0.0;
@@ -958,7 +907,6 @@ void addPurchaseRow(JPK* jpk) {
     Date* data = getDate();
     asprintf(&new->val->dataZakupu, "%s-%s-%s", data->year, data->month, data->day);
     asprintf(&new->val->dataWplywu, "%s-%s-%s", data->year, data->month, data->day);
-    new->val->typZakupu = "G";
     new->val->nrDostawcy = "";
     new->val->adresDostawcy = "";
     new->val->nazwaDostawcy = "";
@@ -1169,9 +1117,6 @@ JPK* changePurData(JPK* data, int i, int j, char* input) {
     }
 
     switch(j) {
-        case TYPZAKUPU:
-            asprintf(&(current->val->typZakupu), "%s", input);  //char*
-            break;
         case LPZAKUPU:
             current->val->lpZakupu = atoi(input); //unsigned int
             break;
@@ -1224,13 +1169,15 @@ JPK* changePurData(JPK* data, int i, int j, char* input) {
 }
 
 char* mf2human(char* name) {
-    char* out;
+    char* out = "";
     if (strcmp("NrKontrahenta", name) == 0) {
         out = "Numer, za pomocą którego kontrahent jest zidentyfikowany na potrzeby podatku lub podatku od wartości dodanej. W przypadkach, w których zgodnie z ustawą podanie numeru nie jest wymagane, należy wpisać \"brak\" ";
     } else if (strcmp("NazwaKontrahenta", name) == 0) {
         out = "Imię i nazwisko lub nazwa kontrahenta";
     } else if (strcmp("AdresKontrahenta", name) == 0) {
         out = "";
+    } else if (strcmp("Email", name) == 0) {
+        out = "Adres e-mail";
     } else if (strcmp("DowodSprzedazy", name) == 0) {
         out = "Numer dowodu sprzedaży";
     } else if (strcmp("DataWystawienia", name) == 0) {
@@ -1369,7 +1316,7 @@ JPK* newJPK() {
     asprintf(&timestamp, "%s-%s-%s", date->year, date->month, date->day);
     asprintf(&timestamp_start, "%s-%s-%s", year, month, "1");
     asprintf(&timestamp_end, "%s-%s-%d", year, month, getLastDayOfMonth(month_i, atoi(year)));
-
+    
     e->header->dataWytworzeniaJPK = date->timestamp;
     e->header->dataOd = timestamp_start;
     e->header->dataDo = timestamp_end;

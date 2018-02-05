@@ -20,7 +20,7 @@ install: pltak
 pltak: main.o parse.o jpk.o tocsv.o gui.o config.o history.o
 	$(CC) $(BUILD_DIR)main.o $(BUILD_DIR)config.o $(BUILD_DIR)tocsv.o $(BUILD_DIR)jpk.o $(BUILD_DIR)parse.o $(BUILD_DIR)gui.o $(BUILD_DIR)utils.o $(BUILD_DIR)history.o -o $(BUILD_DIR)$(PROJECT_NAME) $(CFLAGS) -g
 
-configuration: rebuild_configdir kodyurzedow
+configuration: rebuild_configdir #kodyurzedow
 	cp ./data/default.csv ~/.pltak/
 
 kodyurzedow: xmltodict_pkg

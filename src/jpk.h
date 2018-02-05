@@ -11,22 +11,10 @@ typedef enum {
     DATAWYTWORZENIAJPK,
     DATAOD,
     DATADO,
-    DOMYSLNYKODWALUTY,
-    KODURZEDU,
+    NAZWASYSTEMU,
     NIP,
     PELNANAZWA,
-    REGON,
-    KODKRAJU,
-    WOJEWODZTWO,
-    POWIAT,
-    GMINA,
-    ULICA,
-    NRDOMU,
-    NRLOKALU,
-    MIEJSCOWOSC,
-    KODPOCZTOWY,
-    POCZTA,
-    TYPSPRZEDAZY,
+    EMAIL,
     LPSPRZEDAZY,
     NRKONTRAHENTA,
     NAZWAKONTRAHENTA,
@@ -66,7 +54,6 @@ typedef enum {
     K_39,
     LICZBAWIERSZYSPRZEDAZY,
     PODATEKNALEZNY,
-    TYPZAKUPU,
     LPZAKUPU,
     NRDOSTAWCY,
     NAZWADOSTAWCY,
@@ -83,7 +70,7 @@ typedef enum {
     K_49,
     K_50,
     LICZBAWIERSZYZAKUPOW,
-    PODATEKNALICZONY
+    PODATEKNALICZONY,
 } JPKCol;
 
 typedef struct sHeader {
@@ -95,28 +82,16 @@ typedef struct sHeader {
     char* dataWytworzeniaJPK;
     char* dataOd;
     char* dataDo;
-    char* domyslnyKodWaluty;
-    char* kodUrzedu;
+    char* nazwaSystemu;
 } JPKHeader;
 
 typedef struct sProfile {
     char* nip;
     char* pelnaNazwa;
-    char* regon;
-    char* kodKraju;
-    char* wojewodztwo;
-    char* powiat;
-    char* gmina;
-    char* ulica;
-    char* nrDomu;
-    char* nrLokalu;
-    char* miejscowosc;
-    char* kodPocztowy;
-    char* poczta;
+    char* email;
 } JPKProfile;
 
 typedef struct sSold {
-    char* typSprzedazy;
     unsigned int lpSprzedazy;
     char* nrKontrahenta;
     char* nazwaKontrahenta;
@@ -159,7 +134,6 @@ typedef struct sSold {
 } JPKSold;
 
 typedef struct sPurchase {
-    char* typZakupu;
     unsigned int lpZakupu;
     char* nrDostawcy;
     char* nazwaDostawcy;
@@ -178,7 +152,6 @@ typedef struct sPurchase {
     double liczbaWierszyZakupow;
     double podatekNaliczony;
 } JPKPurchase;
-
 
 typedef struct SoldNode {
     JPKSold* val;

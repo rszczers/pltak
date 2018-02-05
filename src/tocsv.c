@@ -10,13 +10,13 @@
 
 #define ENDL "\r\n"
 #define SEP ";"
-#define CATEGORIES "KodFormularza;kodSystemowy;wersjaSchemy;WariantFormularza;CelZlozenia;DataWytworzeniaJPK;DataOd;DataDo;DomyslnyKodWaluty;KodUrzedu;NIP;PelnaNazwa;REGON;KodKraju;Wojewodztwo;Powiat;Gmina;Ulica;NrDomu;NrLokalu;Miejscowosc;KodPocztowy;Poczta;typSprzedazy;LpSprzedazy;NrKontrahenta;NazwaKontrahenta;AdresKontrahenta;DowodSprzedazy;DataWystawienia;DataSprzedazy;K_10;K_11;K_12;K_13;K_14;K_15;K_16;K_17;K_18;K_19;K_20;K_21;K_22;K_23;K_24;K_25;K_26;K_27;K_28;K_29;K_30;K_31;K_32;K_33;K_34;K_35;K_36;K_37;K_38;K_39;LiczbaWierszySprzedazy;PodatekNalezny;typZakupu;LpZakupu;NrDostawcy;NazwaDostawcy;AdresDostawcy;DowodZakupu;DataZakupu;DataWplywu;K_43;K_44;K_45;K_46;K_47;K_48;K_49;K_50;LiczbaWierszyZakupow;PodatekNaliczony"
+#define CATEGORIES "KodFormularza;kodSystemowy;wersjaSchemy;WariantFormularza;CelZlozenia;DataWytworzeniaJPK;DataOd;DataDo;NazwaSystemu;NIP;PelnaNazwa;Email;LpSprzedazy;NrKontrahenta;NazwaKontrahenta;AdresKontrahenta;DowodSprzedazy;DataWystawienia;DataSprzedazy;K_10;K_11;K_12;K_13;K_14;K_15;K_16;K_17;K_18;K_19;K_20;K_21;K_22;K_23;K_24;K_25;K_26;K_27;K_28;K_29;K_30;K_31;K_32;K_33;K_34;K_35;K_36;K_37;K_38;K_39;LiczbaWierszySprzedazy;PodatekNalezny;LpZakupu;NrDostawcy;NazwaDostawcy;AdresDostawcy;DowodZakupu;DataZakupu;DataWplywu;K_43;K_44;K_45;K_46;K_47;K_48;K_49;K_50;LiczbaWierszyZakupow;PodatekNaliczony"
+#define CLINE ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;"
 
 char* genHeader(JPK* jpk) {
-    const char* tail = ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;";
+    const char* tail = ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;";
     char* header;
     char kodUrzedu[5];
-    strncpy(kodUrzedu, jpk->header->kodUrzedu, 4);
     kodUrzedu[4] = '\0';
     asprintf(&header, "%s" SEP
             "%s" SEP
@@ -26,154 +26,124 @@ char* genHeader(JPK* jpk) {
             "%s" SEP
             "%s" SEP
             "%s" SEP
-            "%s" SEP
             "%s" "%s" ENDL,
             jpk->header->kodFormularza,
             jpk->header->kodSystemowy,
             jpk->header->wersjaSchemy,
             jpk->header->wariantFormularza,
             jpk->header->celZlozenia,
-//            jpk->header->dataWytworzeniaJPK,
-            getDate()->timestamp,         
+            getDate()->timestamp,
             jpk->header->dataOd,
             jpk->header->dataDo,
-            jpk->header->domyslnyKodWaluty == NULL ? "" : jpk->header->domyslnyKodWaluty,
-            kodUrzedu,
+            jpk->header->nazwaSystemu,
             tail);
     return header;
 }
 
 char* genProfile(JPK* jpk) {
-    const char* head_1 = ";;;;;;;;;;";
-    const char* tail_1 = ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;";
-    const char* head_2 = ";;;;;;;;;;;;;";
-    const char* tail_2 = ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;";
+    const char* head = ";;;;;;;;;";
+    const char* tail = ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;";
     char* profile;
     asprintf(&profile,
    "%s" "%s" SEP
         "%s" SEP
-        "%s" "%s" ENDL
-   "%s" "%s" SEP
-        "%s" SEP
-        "%s" SEP
-        "%s" SEP
-        "%s" SEP
-        "%s" SEP
-        "%s" SEP
-        "%s" SEP
-        "%s" SEP
         "%s" "%s" ENDL,
-        head_1,
+        head,
         jpk->profile->nip == NULL ? "" : jpk->profile->nip,
         jpk->profile->pelnaNazwa == NULL ? "" : jpk->profile->pelnaNazwa,
-        jpk->profile->regon == NULL ? "" : jpk->profile->regon,
-        tail_1,
-        head_2,
-        jpk->profile->kodKraju == NULL ? "" : jpk->profile->kodKraju,
-        jpk->profile->wojewodztwo == NULL ? "" : jpk->profile->wojewodztwo,
-        jpk->profile->powiat == NULL ? "" : jpk->profile->powiat,
-        jpk->profile->gmina == NULL ? "" : jpk->profile->gmina,
-        jpk->profile->ulica == NULL ? "" : jpk->profile->ulica,
-        jpk->profile->nrDomu == NULL ? "" : jpk->profile->nrDomu,
-        jpk->profile->nrLokalu == NULL ? "" : jpk->profile->nrLokalu,
-        jpk->profile->miejscowosc == NULL ? "" : jpk->profile->miejscowosc,
-        jpk->profile->kodPocztowy == NULL ? "" : jpk->profile->kodPocztowy,
-        jpk->profile->poczta == NULL ? "" : jpk->profile->poczta,
-        tail_2);
+        jpk->profile->email == NULL ? "" : jpk->profile->email,
+        tail);
     return profile;
 }
 
 char* genSold(JPK* jpk) {
     JPKSoldList* row = jpk->sold;
-    const char* head_1 = ";;;;;;;;;;;;;;;;;;;;;;;";
-    const char* tail_1 = ";;;;;;;;;;;;;;;;;;;;";
-    const char* br = ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;";
-    const char* total_head = ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;";
-    const char* total_tail = ";;;;;;;;;;;;;;;;;;";
+    const char* head = ";;;;;;;;;;;;";
+    const char* tail = ";;;;;;;;;;;;;;;;;;;";
+    const char* total_head = ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;";
+    const char* total_tail = ";;;;;;;;;;;;;;;;;";
     char* soldField = "";
     char* soldRow;
     char* buffer;
-    if (jpk->soldCount > 0) 
-    while (row != NULL) {
-        asprintf(&soldRow,
-       "%s" "%s" SEP
-            "%d" SEP
-            "%s" SEP
-            "%s" SEP
-            "%s" SEP
-            "%s" SEP
-            "%s" SEP
-            "%s" SEP
-            "%.2lf" SEP
-            "%.2lf" SEP
-            "%.2lf" SEP
-            "%.2lf" SEP
-            "%.2lf" SEP
-            "%.2lf" SEP
-            "%.2lf" SEP
-            "%.2lf" SEP
-            "%.2lf" SEP
-            "%.2lf" SEP
-            "%.2lf" SEP
-            "%.2lf" SEP
-            "%.2lf" SEP
-            "%.2lf" SEP
-            "%.2lf" SEP
-            "%.2lf" SEP
-            "%.2lf" SEP
-            "%.2lf" SEP
-            "%.2lf" SEP
-            "%.2lf" SEP
-            "%.2lf" SEP
-            "%.2lf" SEP
-            "%.2lf" SEP
-            "%.2lf" SEP
-            "%.2lf" SEP
-            "%.2lf" SEP
-            "%.2lf" SEP
-            "%.2lf" SEP
-            "%.2lf" SEP
-            "%.2lf" "%s" ENDL,
-            head_1,
-            row->val->typSprzedazy,     //char*
-            row->val->lpSprzedazy,        //int
-            row->val->nrKontrahenta,      //int
-            row->val->nazwaKontrahenta,     //char*
-            row->val->adresKontrahenta,     //char*
-            row->val->dowodSprzedazy,       //char*
-            row->val->dataWystawienia,      //char*
-            row->val->dataSprzedazy,        //char*
-            row->val->k_10,        //double
-            row->val->k_11,        //double
-            row->val->k_12,        //double
-            row->val->k_13,        //double
-            row->val->k_14,        //double
-            row->val->k_15,        //double
-            row->val->k_16,        //double
-            row->val->k_17,        //double
-            row->val->k_18,        //double
-            row->val->k_19,        //double
-            row->val->k_20,        //double
-            row->val->k_21,        //double
-            row->val->k_22,        //double
-            row->val->k_23,        //double
-            row->val->k_24,        //double
-            row->val->k_25,        //double
-            row->val->k_26,        //double
-            row->val->k_27,        //double
-            row->val->k_28,        //double
-            row->val->k_29,        //double
-            row->val->k_30,        //double
-            row->val->k_31,        //double
-            row->val->k_32,        //double
-            row->val->k_33,        //double
-            row->val->k_34,        //double
-            row->val->k_35,        //double
-            row->val->k_36,        //double
-            row->val->k_37,        //double
-            row->val->k_38,        //double
-            row->val->k_39,        //double
-            tail_1);
+    if (jpk->soldCount > 0)
+        while (row != NULL) {
+            asprintf(&soldRow,
+           "%s" "%d" SEP
+                "%s" SEP
+                "%s" SEP
+                "%s" SEP
+                "%s" SEP
+                "%s" SEP
+                "%s" SEP
+                "%.2lf" SEP
+                "%.2lf" SEP
+                "%.2lf" SEP
+                "%.2lf" SEP
+                "%.2lf" SEP
+                "%.2lf" SEP
+                "%.2lf" SEP
+                "%.2lf" SEP
+                "%.2lf" SEP
+                "%.2lf" SEP
+                "%.2lf" SEP
+                "%.2lf" SEP
+                "%.2lf" SEP
+                "%.2lf" SEP
+                "%.2lf" SEP
+                "%.2lf" SEP
+                "%.2lf" SEP
+                "%.2lf" SEP
+                "%.2lf" SEP
+                "%.2lf" SEP
+                "%.2lf" SEP
+                "%.2lf" SEP
+                "%.2lf" SEP
+                "%.2lf" SEP
+                "%.2lf" SEP
+                "%.2lf" SEP
+                "%.2lf" SEP
+                "%.2lf" SEP
+                "%.2lf" SEP
+                "%.2lf" "%s" ENDL,
+                head,
+                row->val->lpSprzedazy,        //int
+                row->val->nrKontrahenta,      //int
+                row->val->nazwaKontrahenta,     //char*
+                row->val->adresKontrahenta,     //char*
+                row->val->dowodSprzedazy,       //char*
+                row->val->dataWystawienia,      //char*
+                row->val->dataSprzedazy,        //char*
+                row->val->k_10,        //double
+                row->val->k_11,        //double
+                row->val->k_12,        //double
+                row->val->k_13,        //double
+                row->val->k_14,        //double
+                row->val->k_15,        //double
+                row->val->k_16,        //double
+                row->val->k_17,        //double
+                row->val->k_18,        //double
+                row->val->k_19,        //double
+                row->val->k_20,        //double
+                row->val->k_21,        //double
+                row->val->k_22,        //double
+                row->val->k_23,        //double
+                row->val->k_24,        //double
+                row->val->k_25,        //double
+                row->val->k_26,        //double
+                row->val->k_27,        //double
+                row->val->k_28,        //double
+                row->val->k_29,        //double
+                row->val->k_30,        //double
+                row->val->k_31,        //double
+                row->val->k_32,        //double
+                row->val->k_33,        //double
+                row->val->k_34,        //double
+                row->val->k_35,        //double
+                row->val->k_36,        //double
+                row->val->k_37,        //double
+                row->val->k_38,        //double
+                row->val->k_39,        //double
+                tail);
 
         asprintf(&buffer, "%s%s", soldField, soldRow);
         free(soldRow);
@@ -182,8 +152,8 @@ char* genSold(JPK* jpk) {
         row = row->next;
     }
     char* total;
-    asprintf(&total, "%s" ENDL "%s" "%d" SEP "%.2lf" "%s" ENDL, br, total_head, jpk->soldCount, jpk->soldTotal, total_tail);
-    asprintf(&buffer, "%s%s", soldField, total);
+    asprintf(&total, "%s" "%d" SEP "%.2lf" "%s" ENDL, total_head, jpk->soldCount, jpk->soldTotal, total_tail);
+    asprintf(&buffer, "%s" ENDL "%s", soldField, total);
 
     soldField = buffer;
     return soldField;
@@ -191,17 +161,16 @@ char* genSold(JPK* jpk) {
 
 char* genPurchase(JPK* jpk) {
     JPKPurchaseList* row = jpk->purchase;
-    const char* head_1 = ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;";
-    const char* tail_1 = ";;";
+    const char* head = ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;";
+    const char* tail = ";;;;";
     const char* total_head = ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;";
     char* purchaseField = "";
     char* purchaseRow;
     char* buffer;
-    if (jpk->purchaseCount > 0) 
+    if (jpk->purchaseCount > 0)
     while (row != NULL) {
         asprintf(&purchaseRow,
-       "%s" "%s" SEP
-            "%d" SEP
+       "%s" "%d" SEP
             "%s" SEP
             "%s" SEP
             "%s" SEP
@@ -216,8 +185,7 @@ char* genPurchase(JPK* jpk) {
             "%.2lf" SEP
             "%.2lf" SEP
             "%.2lf" "%s" ENDL,
-            head_1,
-            row->val->typZakupu,        //char*
+            head,
             row->val->lpZakupu,       //int
             row->val->nrDostawcy,     //int
             row->val->nazwaDostawcy,        //char*
@@ -233,7 +201,7 @@ char* genPurchase(JPK* jpk) {
             row->val->k_48,        //double
             row->val->k_49,        //double
             row->val->k_50,        //double
-            tail_1);
+            tail);
         asprintf(&buffer, "%s%s", purchaseField, purchaseRow);
         free(purchaseRow);
 
