@@ -100,9 +100,7 @@ TakConfig* parseConfig() {
             fputs(defaultConfig, fp);
             fclose(fp);
         }
-        config->Email =  "";
-        config->PelnaNazwa = "";
-        config->NIP = "";
+        config = parseConfig();
     }
     return config;
 }
