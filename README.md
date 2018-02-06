@@ -1,12 +1,10 @@
 # ![Ikona PLTak](https://raw.githubusercontent.com/rszczers/pltak/master/data/icons/24x24/apps/pltak.png) PLTak
 
-Rozwijam tutaj aplikację ułatwiającą mikroprzedsiębiorcom edycję Jednolitych Plików Kontrolnych (JPK_VAT).
+Rozwijam tutaj aplikację ułatwiającą tworzenie Jednolitych Plików Kontrolnych (JPK_VAT). Celem programu jest umożliwienie prowadzadzenia mikroprzedsiębiorstwa bez konieczności posiadania [systemu Windows](https://stallman.org/microsoft.html).
 
 ## Zależności
 * gtk+2.0
 * pkg-config
-* python3
-* pip3
 
 ## Uruchomienie
 ```
@@ -25,4 +23,4 @@ pltak
 ![alt tag](https://github.com/rszczers/pltak/blob/master/screen.png)
 
 ## Licencja
-[BSD3](https://raw.githubusercontent.com/rszczers/pltak/master/LICENSE)
+[GPL3](https://raw.githubusercontent.com/rszczers/pltak/master/LICENSE)
