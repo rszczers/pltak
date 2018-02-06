@@ -796,42 +796,45 @@ static void create_purchase_notebook(GtkWidget *notebook, JPK* jpk, TakConfig* c
 }
 
 static void create_profile_notebook(GtkWidget *notebook, JPK* jpk, TakConfig* config) {
-    GtkWidget *hbox_profile = gtk_hbox_new(0, 0);
+    GtkWidget *vbox_profile = gtk_vbox_new(0, 0);
     GtkWidget* scroll_profile = gtk_scrolled_window_new(NULL, NULL);
     GtkWidget *label_tab = gtk_label_new("Firma");
     GtkWidget *label_profile;
     GtkWidget* table_profile = gtk_table_new(3, 2, FALSE);
-    gtk_table_set_col_spacings (GTK_TABLE(table_profile), 20);
+    gtk_table_set_col_spacings(GTK_TABLE(table_profile), 20);
     GtkWidget *entry;
 
     JPKChange* change = (JPKChange*)malloc(sizeof(JPKChange));
     change->jpk = jpk;
     change->tak = config;
 
-
     label_profile = gtk_label_new("NIP firmy");
+    gtk_widget_set_size_request(label_profile, 50, 30);
     gtk_table_attach_defaults(
             GTK_TABLE(table_profile),
             label_profile,
-            0, 1, 2, 3);
+            0, 1, 0, 1);
+    gtk_widget_set_tooltip_text(label_profile, mf2human("NIP"));
     entry = gtk_entry_new();
     if (config->NIP == NULL) {
         gtk_entry_set_text(GTK_ENTRY(entry), "");
     } else {
         gtk_entry_set_text(GTK_ENTRY(entry), config->NIP);
     }
-    gtk_widget_set_size_request(entry, 400, 30);
     g_signal_connect(entry, "changed", G_CALLBACK(nip_callback), change);
     gtk_table_attach_defaults(
             GTK_TABLE(table_profile),
             entry,
-            1, 2, 2, 3);
+            1, 2, 0, 1);
+    gtk_widget_set_size_request(entry, 400, 30);
 
     label_profile = gtk_label_new("Pełna nazwa");
+    gtk_widget_set_size_request(label_profile, 50, 30);
     gtk_table_attach_defaults(
             GTK_TABLE(table_profile),
             label_profile,
-            0, 1, 3, 4);
+            0, 1, 1, 2);
+    gtk_widget_set_tooltip_text(label_profile, mf2human("PelnaNazwa"));
     entry = gtk_entry_new();
     if (config->PelnaNazwa == NULL) {
         gtk_entry_set_text(GTK_ENTRY(entry), "");
@@ -842,13 +845,17 @@ static void create_profile_notebook(GtkWidget *notebook, JPK* jpk, TakConfig* co
     gtk_table_attach_defaults(
             GTK_TABLE(table_profile),
             entry,
-            1, 2, 3, 4);
+            1, 2, 1, 2);
+    gtk_widget_set_size_request(entry, 400, 30);
 
     label_profile = gtk_label_new("Email");
+    gtk_widget_set_size_request(label_profile, 50, 30);
     gtk_table_attach_defaults(
             GTK_TABLE(table_profile),
             label_profile,
-            0, 1, 14, 15);
+            0, 1, 2, 3);
+    gtk_widget_set_tooltip_text(label_profile, mf2human("Email"));
+
     entry = gtk_entry_new();
     if (config->Email == NULL) {
         gtk_entry_set_text(GTK_ENTRY(entry), "");
@@ -859,13 +866,18 @@ static void create_profile_notebook(GtkWidget *notebook, JPK* jpk, TakConfig* co
     gtk_table_attach_defaults(
             GTK_TABLE(table_profile),
             entry,
-            1, 2, 14, 15);
+            1, 2, 2, 3);
+    gtk_widget_set_size_request(entry, 400, 30);
 
-    gtk_box_pack_start(GTK_BOX(hbox_profile), table_profile, 1, 0, 0);
+    gtk_box_pack_start(GTK_BOX(vbox_profile), table_profile, 0, 1, 0);
+
+    GtkWidget* hbox_space = gtk_hbox_new(0, 0);
+    gtk_box_pack_start(GTK_BOX(vbox_profile), hbox_space, 1, 1, 0);
+    
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroll_profile),
             GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
     gtk_scrolled_window_add_with_viewport(
-            GTK_SCROLLED_WINDOW(scroll_profile), hbox_profile);
+            GTK_SCROLLED_WINDOW(scroll_profile), vbox_profile);
     gtk_notebook_append_page(GTK_NOTEBOOK(notebook), scroll_profile, label_tab);
 }
 
@@ -972,22 +984,19 @@ static void aim_callback(GtkSpinButton* widget, gpointer data) {
 }
 
 static GtkWidget* create_box_bottom(JPK* jpk) {
-    GtkWidget* hbox_bottom = gtk_hbox_new(0, 15);
-/*    GtkWidget* radio_aim_gr = gtk_radio_button_new_with_label(NULL,
-            "Złożenie po raz pierwszy");
-    if (jpk->header->celZlozenia == 0)
-        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_aim_gr), 1);
-    g_signal_connect(radio_aim_gr, "toggled", G_CALLBACK(aim_first_callback), jpk);
-    gtk_box_pack_start(GTK_BOX(hbox_bottom), radio_aim_gr, 0, 1, 0);
-*/
-    GtkWidget *label = gtk_label_new("Złożenie po raz: ");
-    gtk_box_pack_start(GTK_BOX(hbox_bottom), label, 0, 1, 0);
+    GtkWidget* hbox_bottom = gtk_hbox_new(0, 5);
+    GtkWidget *label = gtk_label_new("Złożenie po raz:");
+    gtk_widget_set_tooltip_text(label, mf2human("CelZlozenia"));
+    gtk_box_pack_start(GTK_BOX(hbox_bottom), label, 0, 1, 5);
     GtkAdjustment* spin_adjust = GTK_ADJUSTMENT(gtk_adjustment_new(0, 1, 999, 1, 0, 0));
     GtkWidget* spinButton = gtk_spin_button_new(spin_adjust, 1, 0);
+    gtk_widget_set_tooltip_text(spinButton, mf2human("CelZlozenia"));
     gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinButton), (double)(jpk->header->celZlozenia + 1));
     g_signal_connect(spinButton, "value-changed", G_CALLBACK(aim_callback), jpk);
+
     gtk_box_pack_start(GTK_BOX(hbox_bottom), spinButton, 0, 1, 0);
 
+    gtk_widget_set_size_request(spinButton, 40, 30);
     gtk_box_pack_start(GTK_BOX(hbox_bottom), create_date_menu(jpk), 1, 1, 0);
     return hbox_bottom;
 }

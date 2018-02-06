@@ -1175,9 +1175,15 @@ char* mf2human(char* name) {
     } else if (strcmp("NazwaKontrahenta", name) == 0) {
         out = "Imię i nazwisko lub nazwa kontrahenta";
     } else if (strcmp("AdresKontrahenta", name) == 0) {
-        out = "";
+        out = "Adres kontrahenta";
+    } else if (strcmp("NIP", name) == 0) {
+        out = "Identyfikator podatkowy NIP";
+    } else if (strcmp("PelnaNazwa", name) == 0) {
+        out = "Pełna nazwa";
     } else if (strcmp("Email", name) == 0) {
         out = "Adres e-mail";
+    } else if (strcmp("CelZlozenia", name) == 0) {
+        out = "Pole zawiera warianty:\n1 – Plik JPK za okres\n2 – korekta,\n3 – druga korekta itd.";
     } else if (strcmp("DowodSprzedazy", name) == 0) {
         out = "Numer dowodu sprzedaży";
     } else if (strcmp("DataWystawienia", name) == 0) {
