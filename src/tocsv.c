@@ -163,7 +163,7 @@ char* genPurchase(JPK* jpk) {
     JPKPurchaseList* row = jpk->purchase;
     const char* head = ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;";
     const char* tail = ";;";
-    const char* total_head = ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;";
+    const char* total_head = ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;";
     char* purchaseField = "";
     char* purchaseRow;
     char* buffer;

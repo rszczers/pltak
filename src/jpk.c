@@ -12,6 +12,8 @@
 #include "parse.h"
 #include "utils.h"
 
+#define PROGRAM_NAME "PLTak, http://github.com/rszczers/pltak"
+
 typedef enum {
     COLUMN_NAME = 1,
     HEADER,
@@ -630,7 +632,7 @@ JPKSoldList* getSoldList(tData* parsedData, int soldCount) {
     JPKSoldList* sells = (JPKSoldList*)malloc(sizeof(JPKSoldList));
     sells->val = NULL;
     sells->next = NULL;
-    if (parsedData->next->next->next->next->row->colNum == LPSPRZEDAZY) {
+    if (soldCount != 0 && parsedData->next->next->next->next->row->colNum == LPSPRZEDAZY) {
         for (int i = SELLS; i < SELLS + soldCount; ++i) {
             addSold(sells, rowToSold(parsedData, i));
         }
@@ -1315,22 +1317,45 @@ JPK* newJPK() {
     if (month[0] == '0') month_i = month[1] - '0';
     else month_i = atoi(month);
 
+    month_i = month_i - 1;
+
     char* timestamp;
     char* timestamp_start;
     char* timestamp_end;
 
-    asprintf(&timestamp, "%s-%s-%s", date->year, date->month, date->day);
-    asprintf(&timestamp_start, "%s-%s-%s", year, month, "01");
-    asprintf(&timestamp_end, "%s-%s-%d", year, month, getLastDayOfMonth(month_i, atoi(year)));
+    asprintf(&timestamp, "%s-%s-%s", 
+            date->year, 
+            date->month, 
+            date->day);
+
+    if (month_i > 9) {
+        asprintf(&timestamp_start, "%s-%d-%s", 
+                year, 
+                month_i, 
+                "01");
+        asprintf(&timestamp_end, "%s-%d-%d", 
+                year,
+                month_i,
+                getLastDayOfMonth(month_i, atoi(year)));
+    } else {
+        asprintf(&timestamp_start, "%s-0%d-%s", 
+                year, 
+                month_i, 
+                "01");
+        asprintf(&timestamp_end, "%s-0%d-%d", 
+                year,
+                month_i,
+                getLastDayOfMonth(month_i, atoi(year)));
+    }
 
     e->header->dataWytworzeniaJPK = date->timestamp;
     e->header->dataOd = timestamp_start;
     e->header->dataDo = timestamp_end;
-    e->header->nazwaSystemu = "PLTak";
-    e->purchase->val->dataZakupu = timestamp;
-    e->purchase->val->dataWplywu = timestamp;
-    e->sold->val->dataSprzedazy = timestamp;
-    e->sold->val->dataWystawienia = timestamp;
+    e->header->nazwaSystemu = PROGRAM_NAME;
+    //e->purchase->val->dataZakupu = timestamp;
+    //e->purchase->val->dataWplywu = timestamp;
+    //e->sold->val->dataSprzedazy = timestamp;
+    //e->sold->val->dataWystawienia = timestamp;
 
     return e;
 }
