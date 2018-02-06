@@ -23,4 +23,4 @@ pltak
 ![alt tag](https://github.com/rszczers/pltak/blob/master/screen.png)
 
 ## Licencja
-[BSD3](https://raw.githubusercontent.com/rszczers/pltak/master/LICENSE)
+[GPL3](https://raw.githubusercontent.com/rszczers/pltak/master/LICENSE)
