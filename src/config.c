@@ -94,8 +94,8 @@ TakConfig* parseConfig() {
         char* defaultConfig = "NIP=\n"
                               "PelnaNazwa=\n"
                               "Email=\n"
-                              "sellColumns=\n"
-                              "purchaseColumns=";
+                              "sellColumns=NrKontrahenta:NazwaKontrahenta:AdresKontrahenta:DowodSprzedazy:DataWystawienia:DataSprzedazy:K_19:K_20\n"
+                              "purchaseColumns=NrDostawcy:NazwaDostawcy:AdresDostawcy:DowodZakupu:DataZakupu:DataWplywu:K_45:K_46";
         if (fp != NULL) {
             fputs(defaultConfig, fp);
             fclose(fp);
